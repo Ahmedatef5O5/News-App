@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gap/gap.dart';
 import 'package:news_app/features/Home/cubit/home_cubit.dart';
 import 'package:news_app/features/Home/widgets/top_headers_carousel_slider.dart';
 import '../widgets/custom_carousel_item.dart';
+import '../widgets/title_headline_widget.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -23,6 +25,13 @@ class HomeView extends StatelessWidget {
             body: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                TitleHeadlineWidget(
+                  title: 'Breaking News',
+                  txtBtn: 'View all',
+                  wordSpacing: -2,
+                  onTap: () {},
+                ),
+                Gap(16),
                 BlocBuilder<HomeCubit, HomeState>(
                   bloc: BlocProvider.of<HomeCubit>(context),
                   buildWhen: (previous, current) =>
@@ -60,6 +69,14 @@ class HomeView extends StatelessWidget {
                       return SizedBox.shrink();
                     }
                   },
+                ),
+                Gap(22),
+                TitleHeadlineWidget(
+                  title: 'Recommendation',
+
+                  txtBtn: 'View all',
+                  wordSpacing: -2,
+                  onTap: () {},
                 ),
               ],
             ),
