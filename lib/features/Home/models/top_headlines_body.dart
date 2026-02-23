@@ -3,8 +3,8 @@ class TopHeadlinesBody {
   final String? category;
   final String? sources;
   final String? q;
-  final String? pageSize;
-  final String? page;
+  final int? pageSize;
+  final int? page;
 
   const TopHeadlinesBody({
     this.country = 'us',
@@ -32,8 +32,8 @@ class TopHeadlinesBody {
       category: map['category'] != null ? map['category'] as String : null,
       sources: map['sources'] != null ? map['sources'] as String : null,
       q: map['q'] != null ? map['q'] as String : null,
-      pageSize: map['pageSize'] != null ? map['pageSize'] as String : null,
-      page: map['page'] != null ? map['page'] as String : null,
+      pageSize: map['pageSize'] != null ? map['pageSize'] as int : null,
+      page: map['page'] != null ? map['page'] as int : null,
     );
   }
 }

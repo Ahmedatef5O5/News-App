@@ -9,11 +9,13 @@ environment:
 
 dependencies:
   cached_network_image: ^3.4.1
+  carousel_slider: ^5.1.2
   cupertino_icons: ^1.0.8
   dio: ^5.9.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_carousel_widget: ^3.1.0
   gap: ^3.0.1
   persistent_bottom_nav_bar_v2: ^6.3.0
 
