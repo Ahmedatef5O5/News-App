@@ -14,7 +14,7 @@ class CustomCarouselItem extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
 
       decoration: BoxDecoration(
-        color: AppColors.secColor,
+        color: AppColors.grey5Color,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
