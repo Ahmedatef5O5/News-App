@@ -1,15 +1,44 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
+import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/models/top_headlines_api_response.dart';
 
 class CustomCarouselItem extends StatelessWidget {
-  const CustomCarouselItem({super.key, required this.article, this.category});
+  const CustomCarouselItem({
+    super.key,
+    required this.article,
+    this.category,
+    this.publisher,
+    this.date,
+  });
   final Article article;
   final String? category;
+  final String? publisher, date;
+
   @override
   Widget build(BuildContext context) {
+    final DateTime? rawDate = DateTime.parse(
+      article.publishedAt ?? DateTime.now().toString(),
+    );
+    final publishedDate = rawDate != null
+        ? DateFormat.yMMMd().format(rawDate)
+        : DateFormat.yMMMd().format(DateTime.now());
+
+    String authorName = article.author ?? "No author";
+    if (article.author != null && article.author!.isNotEmpty) {
+      String cleanAuthorName = article.author!.replaceAll(',', '').trim();
+
+      List<String> words = cleanAuthorName.split(' ');
+
+      if (words.length > 2) {
+        authorName = '${words[0]} ${words[1]}';
+      }
+    }
+
     return Container(
       clipBehavior: Clip.antiAlias,
 
@@ -94,15 +123,62 @@ class CustomCarouselItem extends StatelessWidget {
                   bottomRight: Radius.circular(16),
                 ),
               ),
-              child: Text(
-                article.title ?? "No title",
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (article.author != null && article.author!.isNotEmpty)
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            authorName,
+                            // article.author ?? "No author",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.titleMedium!
+                                .copyWith(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                          ),
+                        ),
+                        article.author != null
+                            ? Padding(
+                                padding: const EdgeInsets.only(left: 4),
+                                child: Image.asset(
+                                  AppImages.checked,
+                                  width: 14,
+                                  height: 14,
+                                ),
+                              )
+                            : SizedBox.shrink(),
+                        Gap(12),
+                        Text(
+                          '●  $publishedDate',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.titleMedium!
+                              .copyWith(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                              ),
+                        ),
+                      ],
+                    ),
+                  Gap(2),
+                  Text(
+                    article.title ?? "No title",
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

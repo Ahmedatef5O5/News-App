@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_carousel_widget/flutter_carousel_widget.dart';
 import 'package:gap/gap.dart';
 
+import '../../../core/utilities/theme/app_colors.dart';
+
 class CustomCarouselSlider extends StatefulWidget {
   final List<Widget> items;
   final double height;
@@ -32,7 +34,7 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
           },
           options: FlutterCarouselOptions(
             height: widget.height,
-            viewportFraction: 0.85,
+            viewportFraction: 0.88,
             autoPlay: true,
             enlargeCenterPage: true,
             showIndicator: false,
@@ -51,14 +53,14 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
             final isActive = index == _currentIndex;
             return AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
               width: isActive ? 22 : 8,
               height: 8,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(30),
                 color: isActive
                     ? Theme.of(context).primaryColor
-                    : Colors.grey[300],
+                    : AppColors.grey3Color,
               ),
             );
           }),
