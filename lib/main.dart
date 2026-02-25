@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.maintheme,
       // home: HomeView(),
       onGenerateRoute: AppRouter.onGenerateRoute,
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.homeView,
     );
   }
 }
