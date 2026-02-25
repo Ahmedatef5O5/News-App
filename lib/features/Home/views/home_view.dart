@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/cubit/home_cubit.dart';
+import 'package:news_app/features/Home/widgets/custom_app_drawer.dart';
 import '../widgets/custom_container_icon.dart';
 import '../widgets/recommendation_news_list_view.dart';
 import '../widgets/title_headline_widget.dart';
@@ -10,6 +11,8 @@ import '../widgets/top_headlines_news_section.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
+
+  // final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +24,8 @@ class HomeView extends StatelessWidget {
         return homecubit;
       }, // method Cascading
       child: Scaffold(
+        // key: _scaffoldKey,
+        drawer: CustomAppDrawer(),
         appBar: AppBar(
           toolbarHeight: MediaQuery.of(context).size.height * 0.08,
           elevation: 0,
@@ -30,8 +35,13 @@ class HomeView extends StatelessWidget {
           // toolbarHeight: 75,
           leading: Padding(
             padding: const EdgeInsets.only(left: 16),
-            child: CustomContainerIcon(
-              widgetIcon: Icon(Icons.menu, color: AppColors.blackColor),
+            child: Builder(
+              builder: (innercontext) {
+                return CustomContainerIcon(
+                  widgetIcon: Icon(Icons.menu, color: AppColors.blackColor),
+                  onTap: () => Scaffold.of(innercontext).openDrawer(),
+                );
+              },
             ),
           ),
           actions: [

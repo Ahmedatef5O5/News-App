@@ -25,7 +25,7 @@ class RecommendationNewsListView extends StatelessWidget {
             builder: (context, state) {
               if (state is RecommendedNewsLoading) {
                 return SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.2,
                   child: Center(
                     child: CupertinoActivityIndicator(color: AppColors.black12),
                   ),

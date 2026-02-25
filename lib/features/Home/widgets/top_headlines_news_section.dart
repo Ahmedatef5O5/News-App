@@ -18,7 +18,7 @@ class TopHeadlinesNewsSection extends StatelessWidget {
       builder: (context, state) {
         if (state is TopHeadlinesLoading) {
           return SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Center(
               child: CupertinoActivityIndicator(color: AppColors.black12),
             ),

@@ -21,7 +21,7 @@ class CustomContainerIcon extends StatelessWidget {
         shape: BoxShape.circle,
         color: AppColors.grey2Color,
       ),
-      child: IconButton(onPressed: () {}, icon: widgetIcon),
+      child: IconButton(onPressed: onTap, icon: widgetIcon),
     );
   }
 }
