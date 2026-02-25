@@ -11,7 +11,7 @@ class CustomCarouselSlider extends StatefulWidget {
   const CustomCarouselSlider({
     super.key,
     required this.items,
-    this.height = 180,
+    this.height = 190,
   });
 
   @override
@@ -45,7 +45,7 @@ class _CustomCarouselSliderState extends State<CustomCarouselSlider> {
             },
           ),
         ),
-        const Gap(8),
+        const Gap(10),
         // Dots Indicator
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

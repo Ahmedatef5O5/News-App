@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:intl/intl.dart';
 import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/models/top_headlines_api_response.dart';
@@ -21,24 +20,6 @@ class CustomCarouselItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime? rawDate = DateTime.parse(
-      article.publishedAt ?? DateTime.now().toString(),
-    );
-    final publishedDate = rawDate != null
-        ? DateFormat.yMMMd().format(rawDate)
-        : DateFormat.yMMMd().format(DateTime.now());
-
-    String authorName = article.author ?? "No author";
-    if (article.author != null && article.author!.isNotEmpty) {
-      String cleanAuthorName = article.author!.replaceAll(',', '').trim();
-
-      List<String> words = cleanAuthorName.split(' ');
-
-      if (words.length > 2) {
-        authorName = '${words[0]} ${words[1]}';
-      }
-    }
-
     return Container(
       clipBehavior: Clip.antiAlias,
 
@@ -58,7 +39,7 @@ class CustomCarouselItem extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           CachedNetworkImage(
-            imageUrl: article.urlToImage ?? '',
+            imageUrl: article.urlToImage ?? AppImages.placeholderImg,
             fit: BoxFit.cover,
             placeholder: (context, url) => const Center(
               child: CupertinoActivityIndicator(color: Colors.black12),
@@ -131,7 +112,7 @@ class CustomCarouselItem extends StatelessWidget {
                       children: [
                         Flexible(
                           child: Text(
-                            authorName,
+                            article.shortAuthor ?? "No author",
                             // article.author ?? "No author",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -155,7 +136,7 @@ class CustomCarouselItem extends StatelessWidget {
                             : SizedBox.shrink(),
                         Gap(12),
                         Text(
-                          '●  $publishedDate',
+                          '●  ${article.formattedDate}',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium!

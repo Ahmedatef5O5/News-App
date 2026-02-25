@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class TopHeadlinesApiResponse {
   final String status;
   final int totalResults;
@@ -97,5 +99,29 @@ class Source {
       id: map['id'] != null ? map['id'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
     );
+  }
+}
+
+extension ArticleExtension on Article {
+  String get formattedDate {
+    final DateTime? rawDate = DateTime.tryParse(
+      publishedAt ?? DateTime.now().toString(),
+    );
+    return rawDate != null
+        ? DateFormat.yMMMd().format(rawDate)
+        : DateFormat.yMMMd().format(DateTime.now());
+  }
+
+  String? get shortAuthor {
+    if (author != null && author!.isNotEmpty) {
+      String cleanAuthorName = author!.replaceAll(',', '').trim();
+      List<String> words = cleanAuthorName.split(' ');
+      if (words.length > 2) {
+        return '${words[0]} ${words[1]}';
+      }
+      return cleanAuthorName;
+    } else {
+      return null;
+    }
   }
 }

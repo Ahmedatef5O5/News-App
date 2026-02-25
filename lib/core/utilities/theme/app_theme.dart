@@ -6,6 +6,7 @@ class AppTheme {
     colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor!),
     useMaterial3: true,
     primaryColor: AppColors.primaryColor,
-    appBarTheme: const AppBarTheme(),
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
   );
 }
