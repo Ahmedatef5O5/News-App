@@ -16,7 +16,7 @@ class SearchServices {
       );
 
       if (response.statusCode == 200) {
-        return NewsApiResponse.fromMap(response.data);
+        return NewsApiResponse.fromJson(response.data);
       } else {
         throw Exception(response.statusMessage);
       }

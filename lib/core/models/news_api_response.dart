@@ -11,7 +11,7 @@ class NewsApiResponse {
     this.articles,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'status': status,
       'totalResults': totalResults,
@@ -19,7 +19,7 @@ class NewsApiResponse {
     };
   }
 
-  factory NewsApiResponse.fromMap(Map<String, dynamic> map) {
+  factory NewsApiResponse.fromJson(Map<String, dynamic> map) {
     return NewsApiResponse(
       status: map['status'] as String,
       totalResults: map['totalResults'] as int,
