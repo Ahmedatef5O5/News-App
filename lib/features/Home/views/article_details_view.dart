@@ -217,21 +217,36 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                     controller: scrollController,
                     padding: const EdgeInsets.all(20),
                     children: [
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 5,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            backgroundImage: AssetImage(AppImages.news),
                           ),
-                        ),
+                          Gap(16),
+                          Text(
+                            widget.article.source!.name ?? '',
+                            style: Theme.of(context).textTheme.titleMedium!
+                                .copyWith(
+                                  fontSize: 20,
+                                  color: AppColors.blackColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                          Gap(6),
+                          Image.asset(AppImages.checked, width: 12, height: 12),
+                        ],
                       ),
                       const Gap(20),
                       Text(
                         widget.article.description ??
                             'No Description Available...',
-                        style: const TextStyle(fontSize: 18, height: 1.5),
+                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                          fontSize: 18,
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       const Gap(20),
                       Text(
@@ -241,15 +256,79 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                           color: Colors.grey,
                         ),
                       ),
-
-                      ...List.generate(
-                        10,
-                        (index) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Text(
-                            "Extra Paragraph #$index: More details about the news...",
-                          ),
+                      const Gap(20),
+                      Text(
+                        widget.article.content ?? 'Full content goes here...',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
                         ),
+                      ),
+                      const Gap(25),
+                      Text(
+                        'authored by:',
+                        style: Theme.of(context).textTheme.labelMedium!
+                            .copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black45,
+                            ),
+                      ),
+                      Gap(10),
+                      Row(
+                        children: [
+                          if (widget.article.author != null)
+                            Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 14,
+                                  child: Icon(Icons.person),
+                                ),
+                                Gap(6),
+                                Text(
+                                  widget.article.shortAuthor ?? '',
+
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelMedium!
+                                      .copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.blackColor,
+                                      ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 4),
+                                  child: Image.asset(
+                                    AppImages.checked,
+                                    width: 11,
+                                    height: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                      Gap(20),
+
+                      Text(
+                        'Published at:',
+                        style: Theme.of(context).textTheme.labelMedium!
+                            .copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black45,
+                            ),
+                      ),
+                      Gap(12),
+                      Text(
+                        '  ● ${widget.article.formattedDate}',
+                        style: Theme.of(context).textTheme.labelMedium!
+                            .copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.blackColor,
+                            ),
                       ),
                     ],
                   ),
