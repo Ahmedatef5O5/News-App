@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/router/app_router.dart';
+import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/widgets/custom_carousel_item.dart';
 import 'package:news_app/features/Home/widgets/top_headers_carousel_slider.dart';
@@ -29,14 +31,18 @@ class TopHeadlinesNewsSection extends StatelessWidget {
             return const Center(child: Text('No articles Found'));
           }
           return CustomCarouselSlider(
-            items: articles
-                .map(
-                  (singleArticle) => CustomCarouselItem(
-                    article: singleArticle,
-                    category: singleArticle.source?.name,
-                  ),
-                )
-                .toList(),
+            items: articles.map((singleArticle) {
+              return GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed(
+                  AppRoutes.artcileDetailsView,
+                  arguments: singleArticle,
+                ),
+                child: CustomCarouselItem(
+                  article: singleArticle,
+                  category: singleArticle.source?.name,
+                ),
+              );
+            }).toList(),
           );
         } else if (state is TopHeadlinesError) {
           return Center(child: Text(state.errMsg));
