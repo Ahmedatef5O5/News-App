@@ -1,11 +1,11 @@
 import 'package:intl/intl.dart';
 
-class TopHeadlinesApiResponse {
+class NewsApiResponse {
   final String status;
   final int totalResults;
   final List<Article>? articles;
 
-  const TopHeadlinesApiResponse({
+  const NewsApiResponse({
     required this.status,
     required this.totalResults,
     this.articles,
@@ -19,8 +19,8 @@ class TopHeadlinesApiResponse {
     };
   }
 
-  factory TopHeadlinesApiResponse.fromMap(Map<String, dynamic> map) {
-    return TopHeadlinesApiResponse(
+  factory NewsApiResponse.fromMap(Map<String, dynamic> map) {
+    return NewsApiResponse(
       status: map['status'] as String,
       totalResults: map['totalResults'] as int,
       articles: map['articles'] != null
@@ -116,10 +116,19 @@ extension ArticleExtension on Article {
     if (author != null && author!.isNotEmpty) {
       String cleanAuthorName = author!.replaceAll(',', '').trim();
       List<String> words = cleanAuthorName.split(' ');
+      String result;
       if (words.length > 2) {
-        return '${words[0]} ${words[1]}';
+        result = '${words[0]} ${words[1]}';
+      } else {
+        result = cleanAuthorName;
       }
-      return cleanAuthorName;
+
+      const int maxChars = 14;
+      if (result.length > maxChars) {
+        return '${result.substring(0, maxChars)}...';
+      }
+
+      return result;
     } else {
       return null;
     }
