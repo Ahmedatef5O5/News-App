@@ -5,6 +5,9 @@ class AppColors {
   static Color? whiteColor = Colors.white;
   static Color? blackColor = Colors.black;
   static Color? black12 = Colors.black12;
+  static Color? black26 = Colors.black26;
+  static Color? black38 = Colors.black38;
+  static Color? black45 = Colors.black45;
   static Color? grey7Color = Colors.grey[700];
   static Color? grey6Color = Colors.grey[600];
   static Color? grey5Color = Colors.grey[500];

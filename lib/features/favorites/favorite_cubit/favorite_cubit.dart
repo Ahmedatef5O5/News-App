@@ -1,9 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/models/news_api_response.dart';
-import 'package:news_app/core/services/local_database_services.dart';
-import 'package:news_app/core/utilities/constants/app_constants.dart';
 import 'package:news_app/features/favorites/services/favorite_services.dart';
 part 'favorite_state.dart';
 
