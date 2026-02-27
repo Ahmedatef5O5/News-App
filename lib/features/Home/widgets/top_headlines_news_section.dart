@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/router/app_router.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/widgets/custom_carousel_item.dart';
