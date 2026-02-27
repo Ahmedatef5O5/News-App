@@ -7,4 +7,7 @@ class AppConstants {
   static const String everything = '/v2/everything';
   static const String topHeadlines = '/v2/top-headlines';
   static const String topHeadlinesSources = '/v2/top-headlines/sources';
+
+  //Shared preferences
+  static const String favKey = 'favorite_articles';
 }
