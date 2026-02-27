@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/features/Home/views/article_details_view.dart';
 import 'package:news_app/features/Home/views/home_view.dart';
+import 'package:news_app/features/favorites/views/favorites_view.dart';
 import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
 import 'package:news_app/features/search/views/search_view.dart';
 import '../models/news_api_response.dart';
@@ -22,6 +23,12 @@ class AppRouter {
             create: (context) => SearchCubit(),
             child: SearchView(),
           ),
+          settings: settings,
+        );
+      case AppRoutes.favoriteView:
+        // final article = settings.arguments as Article;
+        return MaterialPageRoute(
+          builder: (BuildContext context) => FavoritesView(),
           settings: settings,
         );
       case AppRoutes.artcileDetailsView:

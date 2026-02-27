@@ -8,9 +8,14 @@ import '../utilities/constants/app_images.dart';
 import '../utilities/theme/app_colors.dart';
 
 class ArticleWidgetItem extends StatelessWidget {
-  const ArticleWidgetItem({super.key, required this.article});
+  const ArticleWidgetItem({
+    super.key,
+    required this.article,
+    required this.author,
+  });
 
   final Article? article;
+  final String? author;
 
   @override
   Widget build(BuildContext context) {

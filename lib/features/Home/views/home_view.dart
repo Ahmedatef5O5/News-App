@@ -5,7 +5,7 @@ import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/Home_Cubit/home_cubit.dart';
-import 'package:news_app/features/Home/widgets/custom_app_drawer.dart';
+import 'package:news_app/core/widgets/custom_app_drawer.dart';
 import '../widgets/custom_container_icon.dart';
 import '../widgets/recommendation_news_list_view.dart';
 import '../widgets/title_headline_widget.dart';
