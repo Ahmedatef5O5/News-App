@@ -1,3 +1,6 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:convert';
+
 import 'package:intl/intl.dart';
 
 class NewsApiResponse {
@@ -82,6 +85,11 @@ class Article {
       map['content'] != null ? map['content'] as String : null,
     );
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory Article.fromJson(String source) =>
+      Article.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
 class Source {

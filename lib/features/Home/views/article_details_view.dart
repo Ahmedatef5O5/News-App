@@ -1,7 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
+import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
 import '../../../core/utilities/constants/app_images.dart';
 import '../../../core/models/news_api_response.dart';
 import '../widgets/custom_glass_container.dart';
@@ -163,21 +165,46 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                         onTap: () => Navigator.pop(context),
                       ),
                       const Spacer(),
-                      CustomGlassContainer(
-                        width: 42,
-                        height: 42,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            AppImages.saved,
-                            color: AppColors.whiteColor,
-                          ),
-                        ),
-                        // child: Icon(
-                        //   Icons.favorite_border,
-                        //   color: AppColors.whiteColor,
-                        // ),
-                        onTap: () {},
+                      BlocBuilder<FavoriteCubit, FavoriteState>(
+                        builder: (context, state) {
+                          bool isSaved = false;
+                          if (state is FavoriteLoaded) {
+                            isSaved = state.articles.any(
+                              (e) => e.title == widget.article.title,
+                            );
+                          }
+                          return CustomGlassContainer(
+                            width: 42,
+                            height: 42,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                AppImages.saved,
+                                // color: AppColors.whiteColor,
+                                color: isSaved
+                                    ? Colors.amberAccent
+                                    : AppColors.whiteColor,
+                              ),
+                            ),
+
+                            onTap: () {
+                              context.read<FavoriteCubit>().toggleFavorite(
+                                widget.article,
+                              );
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isSaved
+                                        ? 'Removed from favorites'
+                                        : 'Added to favorites',
+                                  ),
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
                       const Gap(8),
                       CustomGlassContainer(

@@ -1,11 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/core/models/news_api_response.dart';
 import 'package:news_app/features/Home/widgets/custom_glass_container.dart';
+import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
 
 class CustomCarouselItem extends StatelessWidget {
   const CustomCarouselItem({
@@ -50,21 +52,41 @@ class CustomCarouselItem extends StatelessWidget {
           Positioned(
             right: 8,
             top: 8,
-            child: CustomGlassContainer(
-              width: 36,
-              height: 36,
-              child: Padding(
-                padding: const EdgeInsets.all(6.0),
-                child: Image.asset(
-                  AppImages.saved,
-                  color: AppColors.whiteColor,
-                ),
-              ),
-              // child: Icon(
-              //   Icons.favorite_border,
-              //   color: AppColors.whiteColor,
-              // ),
-              onTap: () {},
+            child: BlocBuilder<FavoriteCubit, FavoriteState>(
+              builder: (context, state) {
+                bool isSaved = false;
+                if (state is FavoriteLoaded) {
+                  isSaved = state.articles.any((e) => e.title == article.title);
+                }
+                return CustomGlassContainer(
+                  width: 36,
+                  height: 36,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: Image.asset(
+                      AppImages.saved,
+                      // color: AppColors.whiteColor,
+                      color: isSaved
+                          ? Colors.amberAccent
+                          : AppColors.whiteColor,
+                    ),
+                  ),
+                  onTap: () {
+                    context.read<FavoriteCubit>().toggleFavorite(article);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          isSaved
+                              ? 'Removed from favorites'
+                              : 'Added to favorites',
+                        ),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
           ),
           Positioned(
