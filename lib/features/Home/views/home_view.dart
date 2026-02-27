@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
+import 'package:news_app/core/router/app_routes.dart';
+import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
-import 'package:news_app/features/Home/cubit/home_cubit.dart';
+import 'package:news_app/features/Home/Home_Cubit/home_cubit.dart';
 import 'package:news_app/features/Home/widgets/custom_app_drawer.dart';
 import '../widgets/custom_container_icon.dart';
 import '../widgets/recommendation_news_list_view.dart';
@@ -50,14 +52,26 @@ class HomeView extends StatelessWidget {
               child: Row(
                 children: [
                   CustomContainerIcon(
-                    widgetIcon: Icon(Icons.search, color: AppColors.blackColor),
+                    widgetIcon: Image.asset(
+                      AppImages.search,
+                      width: 26,
+                      height: 26,
+                    ),
+                    // widgetIcon: Icon(Icons.search, color: AppColors.blackColor),
+                    onTap: () =>
+                        Navigator.of(context).pushNamed(AppRoutes.searchView),
                   ),
                   Gap(8),
                   CustomContainerIcon(
-                    widgetIcon: Icon(
-                      Icons.notification_add,
-                      color: AppColors.blackColor,
+                    widgetIcon: Image.asset(
+                      AppImages.notification,
+                      width: 25,
+                      height: 25,
                     ),
+                    // widgetIcon: Icon(
+                    //   Icons.notification_add,
+                    //   color: AppColors.blackColor,
+                    // ),
                   ),
                 ],
               ),

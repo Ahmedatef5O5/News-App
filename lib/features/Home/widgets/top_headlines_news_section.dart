@@ -5,7 +5,7 @@ import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/features/Home/widgets/custom_carousel_item.dart';
 import 'package:news_app/features/Home/widgets/top_headers_carousel_slider.dart';
-import '../cubit/home_cubit.dart';
+import '../Home_Cubit/home_cubit.dart';
 
 class TopHeadlinesNewsSection extends StatelessWidget {
   const TopHeadlinesNewsSection({super.key});

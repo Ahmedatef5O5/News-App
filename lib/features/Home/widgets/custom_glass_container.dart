@@ -20,8 +20,8 @@ class CustomGlassContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: height ?? 45,
-      width: width ?? 45,
+      height: height ?? 42,
+      width: width ?? 42,
       child: ClipOval(
         child: InkWell(
           onTap: onTap,
@@ -31,13 +31,13 @@ class CustomGlassContainer extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                 child: Center(
                   child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    // height: height ?? 46,
-                    // width: width ?? 46,
+                    width: width ?? double.infinity,
+                    height: height ?? double.infinity,
+
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withValues(alpha: 0.18),
+                      // color: Colors.white.withOpacity(0.15),
                       // border: Border.all(
                       //   color: Colors.black12.withOpacity(0.2),
                       //   width: 1.5,

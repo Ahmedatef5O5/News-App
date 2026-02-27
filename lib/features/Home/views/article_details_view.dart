@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import '../../../core/utilities/constants/app_images.dart';
-import '../models/top_headlines_api_response.dart';
+import '../../../core/models/news_api_response.dart';
 import '../widgets/custom_glass_container.dart';
 
 class ArticleDetailsView extends StatefulWidget {
@@ -164,18 +164,36 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                       ),
                       const Spacer(),
                       CustomGlassContainer(
-                        child: Icon(
-                          Icons.favorite_border,
-                          color: AppColors.whiteColor,
+                        width: 42,
+                        height: 42,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            AppImages.saved,
+                            color: AppColors.whiteColor,
+                          ),
                         ),
+                        // child: Icon(
+                        //   Icons.favorite_border,
+                        //   color: AppColors.whiteColor,
+                        // ),
                         onTap: () {},
                       ),
                       const Gap(8),
                       CustomGlassContainer(
-                        child: Icon(
-                          Icons.share_outlined,
-                          color: AppColors.whiteColor,
+                        width: 42,
+                        height: 42,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Image.asset(
+                            AppImages.option,
+                            color: AppColors.whiteColor,
+                          ),
                         ),
+                        // child: Icon(
+                        //   Icons.share_outlined,
+                        //   color: AppColors.whiteColor,
+                        // ),
                         onTap: () {},
                       ),
                       const Gap(16),
@@ -264,20 +282,26 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                           color: Colors.grey,
                         ),
                       ),
-                      const Gap(25),
-                      Text(
-                        'authored by:',
-                        style: Theme.of(context).textTheme.labelMedium!
-                            .copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black45,
-                            ),
-                      ),
-                      Gap(10),
-                      Row(
+                      if (widget.article.author != null) const Gap(25),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (widget.article.author != null)
+                            Text(
+                              'authored by:',
+                              style: Theme.of(context).textTheme.labelMedium!
+                                  .copyWith(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black45,
+                                  ),
+                            ),
+                          Gap(10),
+                        ],
+                      ),
+                      if (widget.article.author != null)
+                        Row(
+                          children: [
                             Row(
                               children: [
                                 CircleAvatar(
@@ -307,10 +331,9 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                                 ),
                               ],
                             ),
-                        ],
-                      ),
+                          ],
+                        ),
                       Gap(20),
-
                       Text(
                         'Published at:',
                         style: Theme.of(context).textTheme.labelMedium!
@@ -330,6 +353,7 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
                               color: AppColors.blackColor,
                             ),
                       ),
+                      Gap(12),
                     ],
                   ),
                 );

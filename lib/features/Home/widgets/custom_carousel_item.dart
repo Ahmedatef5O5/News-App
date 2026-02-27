@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
-import 'package:news_app/features/Home/models/top_headlines_api_response.dart';
+import 'package:news_app/core/models/news_api_response.dart';
+import 'package:news_app/features/Home/widgets/custom_glass_container.dart';
 
 class CustomCarouselItem extends StatelessWidget {
   const CustomCarouselItem({
@@ -46,7 +47,26 @@ class CustomCarouselItem extends StatelessWidget {
             ),
             errorWidget: (context, url, error) => const Icon(Icons.error),
           ),
-
+          Positioned(
+            right: 8,
+            top: 8,
+            child: CustomGlassContainer(
+              width: 36,
+              height: 36,
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Image.asset(
+                  AppImages.saved,
+                  color: AppColors.whiteColor,
+                ),
+              ),
+              // child: Icon(
+              //   Icons.favorite_border,
+              //   color: AppColors.whiteColor,
+              // ),
+              onTap: () {},
+            ),
+          ),
           Positioned(
             top: 1,
             left: 1,

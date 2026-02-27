@@ -2,19 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import '../../features/Home/models/top_headlines_api_response.dart';
+import '../../features/Home/widgets/custom_glass_container.dart';
+import '../models/news_api_response.dart';
 import '../utilities/constants/app_images.dart';
 import '../utilities/theme/app_colors.dart';
 
 class ArticleWidgetItem extends StatelessWidget {
-  const ArticleWidgetItem({
-    super.key,
-    required this.article,
-    required this.author,
-  });
+  const ArticleWidgetItem({super.key, required this.article});
 
   final Article? article;
-  final String? author;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +20,38 @@ class ArticleWidgetItem extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadiusGeometry.all(Radius.circular(12)),
-            child: CachedNetworkImage(
-              imageUrl: article?.urlToImage ?? AppImages.placeholderImg,
-              placeholder: (context, url) =>
-                  CupertinoActivityIndicator(color: AppColors.black12),
-              errorWidget: (context, url, error) => const Icon(Icons.error),
-              width: 130,
-              height: 125,
-              fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                CachedNetworkImage(
+                  imageUrl: article?.urlToImage ?? AppImages.placeholderImg,
+                  placeholder: (context, url) =>
+                      CupertinoActivityIndicator(color: AppColors.black12),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  width: 130,
+                  height: 125,
+                  fit: BoxFit.cover,
+                ),
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: CustomGlassContainer(
+                    width: 32,
+                    height: 32,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6.0),
+                      child: Image.asset(
+                        AppImages.saved,
+                        color: AppColors.whiteColor,
+                      ),
+                    ),
+                    // child: Icon(
+                    //   Icons.favorite_border,
+                    //   color: AppColors.whiteColor,
+                    // ),
+                    onTap: () {},
+                  ),
+                ),
+              ],
             ),
           ),
           Gap(12),
@@ -63,7 +83,7 @@ class ArticleWidgetItem extends StatelessWidget {
 
                   Row(
                     children: [
-                      if (author != null)
+                      if (article!.shortAuthor != null)
                         Row(
                           children: [
                             Padding(
@@ -75,8 +95,9 @@ class ArticleWidgetItem extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              article?.shortAuthor ?? '',
-
+                              article!.shortAuthor ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.labelMedium!
                                   .copyWith(
                                     fontSize: 12,
