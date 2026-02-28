@@ -26,7 +26,7 @@ class ArticleWidgetItem extends StatelessWidget {
       child: Row(
         children: [
           ClipRRect(
-            borderRadius: BorderRadiusGeometry.all(Radius.circular(12)),
+            borderRadius: BorderRadius.all(Radius.circular(12)),
             child: Stack(
               children: [
                 CachedNetworkImage(
@@ -63,11 +63,10 @@ class ArticleWidgetItem extends StatelessWidget {
                                 : AppColors.whiteColor,
                           ),
                         ),
-
                         onTap: () {
                           context.read<FavoriteCubit>().toggleFavorite(
-                            article!,
-                          );
+                                article!,
+                              );
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
@@ -98,22 +97,21 @@ class ArticleWidgetItem extends StatelessWidget {
                   Text(
                     article?.source!.name ?? 'No source',
                     style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.grey7Color,
-                    ),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColors.grey7Color,
+                        ),
                   ),
                   Text(
                     article?.title ?? 'No title',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.blackColor,
-                    ),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.blackColor,
+                        ),
                   ),
-
                   Row(
                     children: [
                       if (article!.shortAuthor != null)
@@ -131,7 +129,9 @@ class ArticleWidgetItem extends StatelessWidget {
                               article!.shortAuthor ?? '',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.labelMedium!
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .labelMedium!
                                   .copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
@@ -141,15 +141,14 @@ class ArticleWidgetItem extends StatelessWidget {
                             Gap(8),
                           ],
                         ),
-
                       Text(
                         '● ${article?.formattedDate}',
-                        style: Theme.of(context).textTheme.labelMedium!
-                            .copyWith(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                              color: AppColors.grey5Color,
-                            ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium!.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.grey5Color,
+                                ),
                       ),
                     ],
                   ),

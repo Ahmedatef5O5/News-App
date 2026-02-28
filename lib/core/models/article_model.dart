@@ -1,17 +1,28 @@
 import 'dart:convert';
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+part 'article_model.g.dart';
 
-class Article {
+@HiveType(typeId: 0)
+class Article extends HiveObject {
+  @HiveField(0)
   final Source? source;
+  @HiveField(1)
   final String? author;
+  @HiveField(2)
   final String? title;
+  @HiveField(3)
   final String? description;
+  @HiveField(4)
   final String? url;
+  @HiveField(5)
   final String? urlToImage;
+  @HiveField(6)
   final String? publishedAt;
+  @HiveField(7)
   final String? content;
 
-  const Article(
+  Article(
     this.source,
     this.author,
     this.title,
@@ -56,8 +67,11 @@ class Article {
       Article.fromMap(json.decode(source) as Map<String, dynamic>);
 }
 
+@HiveType(typeId: 1)
 class Source {
+  @HiveField(0)
   final String? id;
+  @HiveField(1)
   final String? name;
 
   const Source({this.id, this.name});
