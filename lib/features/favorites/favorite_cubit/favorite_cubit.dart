@@ -5,7 +5,9 @@ import 'package:news_app/features/favorites/services/favorite_services.dart';
 part 'favorite_state.dart';
 
 class FavoriteCubit extends Cubit<FavoriteState> {
-  FavoriteCubit() : super(FavoriteInitial());
+  FavoriteCubit() : super(FavoriteInitial()) {
+    getFavorites();
+  }
 
   final favoriteServices = FavoriteServices();
   //

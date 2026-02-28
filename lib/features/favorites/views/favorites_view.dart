@@ -39,9 +39,12 @@ class FavoritesView extends StatelessWidget {
                     current is FavoriteError,
                 builder: (context, state) {
                   if (state is FavoriteLoading) {
-                    return Center(
-                      child: CupertinoActivityIndicator(
-                        color: AppColors.black12,
+                    return SizedBox(
+                      height: MediaQuery.sizeOf(context).height * 0.75,
+                      child: Center(
+                        child: CupertinoActivityIndicator(
+                          color: AppColors.black12,
+                        ),
                       ),
                     );
                   } else if (state is FavoriteLoaded) {
