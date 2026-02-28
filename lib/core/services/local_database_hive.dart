@@ -7,8 +7,8 @@ class LocalDatabaseHive {
     return await Hive.openBox(AppConstants.localDatabaseBox);
   }
 
-  static void initHive() {
-    Hive.initFlutter();
+  static Future<void> initHive() async {
+    await Hive.initFlutter();
     Hive.registerAdapter(ArticleAdapter());
     Hive.registerAdapter(SourceAdapter());
   }
@@ -18,12 +18,12 @@ class LocalDatabaseHive {
     await box.put(key, value);
   }
 
-  Future<void> getData<T>(String key, T value) async {
+  Future<T?> getData<T>(String key) async {
     final box = await _getBox();
-    await box.get(key);
+    return box.get(key) as T?;
   }
 
-  Future<void> deleteData<T>(String key, T value) async {
+  Future<void> deleteData<T>(String key) async {
     final box = await _getBox();
     await box.delete(key);
   }
