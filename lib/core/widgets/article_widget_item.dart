@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
 import '../../features/Home/widgets/custom_glass_container.dart';
-import '../models/news_api_response.dart';
+import '../models/article_model.dart';
 import '../utilities/constants/app_images.dart';
 import '../utilities/theme/app_colors.dart';
 

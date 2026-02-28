@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
-import 'package:news_app/core/models/news_api_response.dart';
+import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
 import 'package:news_app/core/widgets/article_widget_item.dart';

@@ -5,9 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gap/gap.dart';
 import 'package:news_app/core/utilities/constants/app_images.dart';
 import 'package:news_app/core/utilities/theme/app_colors.dart';
-import 'package:news_app/core/models/news_api_response.dart';
 import 'package:news_app/features/Home/widgets/custom_glass_container.dart';
 import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
+import '../../../core/models/article_model.dart';
 
 class CustomCarouselItem extends StatelessWidget {
   const CustomCarouselItem({

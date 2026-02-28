@@ -2,8 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/features/search/models/search_body.dart';
 import 'package:news_app/features/search/services/search_services.dart';
-
-import '../../../core/models/news_api_response.dart';
+import '../../../core/models/article_model.dart';
 import '../../../core/utilities/constants/app_constants.dart';
 import '../services/search_services_retrofit.dart';
 part 'search_state.dart';

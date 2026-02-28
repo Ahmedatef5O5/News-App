@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/features/Home/Home_Cubit/home_cubit.dart';
-import 'package:news_app/core/models/news_api_response.dart';
 import '../../../core/utilities/theme/app_colors.dart';
 import '../../../core/widgets/article_widget_item.dart';
 

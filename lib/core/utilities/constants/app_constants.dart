@@ -10,4 +10,7 @@ class AppConstants {
 
   //Shared preferences
   static const String favKey = 'favorite_articles';
+
+  //
+  static const String localDatabaseBox = 'local_database';
 }

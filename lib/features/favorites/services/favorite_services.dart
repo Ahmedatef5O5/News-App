@@ -1,8 +1,6 @@
 import 'dart:convert';
-
-import 'package:news_app/core/models/news_api_response.dart';
 import 'package:news_app/core/utilities/constants/app_constants.dart';
-
+import '../../../core/models/article_model.dart';
 import '../../../core/services/local_database_services.dart';
 
 class FavoriteServices {
