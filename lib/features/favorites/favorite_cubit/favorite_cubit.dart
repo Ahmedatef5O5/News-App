@@ -1,37 +1,42 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/features/favorites/services/favorite_services.dart';
-import '../../../core/models/article_model.dart';
-part 'favorite_state.dart';
+import 'package:news_app/core/models/article_model.dart';
+import '../services/favorite_services.dart';
+import 'favorite_state.dart';
 
-class FavoriteCubit extends Cubit<FavoriteState> {
-  FavoriteCubit() : super(FavoriteInitial()) {
-    getFavorites();
+class FavoritesCubit extends Cubit<FavoritesState> {
+  FavoritesCubit({FavoritesService? service})
+      : _service = service ?? FavoritesService(),
+        super(const FavoritesState()) {
+    loadFavorites();
   }
 
-  final favoriteServices = FavoriteServices();
-  //
-  Future<void> getFavorites() async {
-    emit(FavoriteLoading());
+  final FavoritesService _service;
+
+  Future<void> loadFavorites() async {
+    emit(state.copyWith(status: FavStatus.loading));
     try {
-      final articles = await favoriteServices.getFavorites();
-      if (articles.isEmpty) {
-        emit(FavoriteLoaded([]));
-      } else {
-        emit(FavoriteLoaded(articles));
-      }
+      final articles = await _service.getFavorites();
+      emit(state.copyWith(status: FavStatus.success, articles: articles));
     } catch (e) {
-      emit(FavoriteError(e.toString()));
+      emit(state.copyWith(status: FavStatus.failure, error: e.toString()));
     }
   }
 
-  //
   Future<void> toggleFavorite(Article article) async {
     try {
-      await favoriteServices.toggleFavorite(article);
-      getFavorites();
+      final isSaved = state.isSaved(article);
+      await _service.toggleFavorite(article);
+      final updated = List<Article>.from(state.articles);
+      if (isSaved) {
+        updated.removeWhere((a) => a.uniqueId == article.uniqueId);
+      } else {
+        updated.add(article);
+      }
+      emit(state.copyWith(articles: updated, status: FavStatus.success));
     } catch (e) {
-      emit(FavoriteError(e.toString()));
+      emit(state.copyWith(error: e.toString()));
     }
   }
+
+  bool isSaved(Article article) => state.isSaved(article);
 }

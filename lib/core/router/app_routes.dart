@@ -1,6 +1,6 @@
 class AppRoutes {
-  static const String homeView = '/';
-  static const String searchView = '/search-view';
-  static const String favoriteView = '/favorite-view';
-  static const String artcileDetailsView = '/article-details-view';
+  static const String homeRoute = '/home';
+  static const String searchRoute = '/search-view';
+  static const String favoriteRoute = '/favorite-view';
+  static const String artcileDetailsRoute = '/article-details-view';
 }

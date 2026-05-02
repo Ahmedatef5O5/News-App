@@ -1,27 +1,26 @@
 import 'package:dio/dio.dart';
-import 'package:news_app/core/utilities/constants/app_constants.dart';
-import '../../../core/models/news_api_response.dart';
-import '../models/search_body.dart';
+import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/models/news_api_response.dart';
+import 'package:news_app/core/network/dio_client.dart';
 
-class SearchServices {
-  final aDio = Dio();
-  Future<NewsApiResponse> search(SearchBody body) async {
-    try {
-      aDio.options.baseUrl = AppConstants.baseUrl;
-      final headers = {'Authorization': "Bearer ${AppConstants.apiKey}"};
-      final response = await aDio.get(
-        AppConstants.everything,
-        queryParameters: body.toMap(),
-        options: Options(headers: headers),
-      );
+class SearchService {
+  final Dio _dio = DioClient.instance.dio;
 
-      if (response.statusCode == 200) {
-        return NewsApiResponse.fromJson(response.data);
-      } else {
-        throw Exception(response.statusMessage);
-      }
-    } catch (e) {
-      rethrow;
-    }
+  Future<NewsApiResponse> search({
+    required String query,
+    String searchIn = 'title',
+    int page = 1,
+    int pageSize = AppConstants.pageSize,
+  }) async {
+    final response = await _dio.get(
+      AppConstants.everything,
+      queryParameters: {
+        'q': query,
+        'searchIn': searchIn,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
 }

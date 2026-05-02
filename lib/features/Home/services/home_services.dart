@@ -1,26 +1,43 @@
 import 'package:dio/dio.dart';
-import 'package:news_app/core/utilities/constants/app_constants.dart';
+import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/news_api_response.dart';
-import 'package:news_app/features/Home/models/top_headlines_body.dart';
+import 'package:news_app/core/network/dio_client.dart';
 
 class HomeServices {
-  final aDio = Dio();
+  // implement DioClient singleton
+  final Dio _dio = DioClient.instance.dio;
 
-  Future getTopHeadlines(TopHeadlinesBody body) async {
-    try {
-      aDio.options.baseUrl = AppConstants.baseUrl;
-      final header = {'Authorization': 'Bearer ${AppConstants.apiKey}'};
-      final response = await aDio.get(
-        AppConstants.topHeadlines,
-        // '${AppConstants.apiKey}${AppConstants.topHeadlines}',
-        queryParameters: body.toMap(),
-        options: Options(headers: header),
-      );
-      if (response.statusCode == 200) {
-        return NewsApiResponse.fromJson(response.data);
-      }
-    } catch (e) {
-      rethrow;
-    }
+  Future<NewsApiResponse> getTopHeadlines({
+    String country = 'us',
+    String? category,
+    int page = 1,
+    int pageSize = AppConstants.headlinesPageSize,
+  }) async {
+    final response = await _dio.get(
+      AppConstants.topHeadlines,
+      queryParameters: {
+        'country': country,
+        if (category != null) 'category': category,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  Future<NewsApiResponse> getRecommended({
+    String country = 'us',
+    int page = 1,
+    int pageSize = AppConstants.pageSize,
+  }) async {
+    final response = await _dio.get(
+      AppConstants.topHeadlines,
+      queryParameters: {
+        'country': country,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
 }

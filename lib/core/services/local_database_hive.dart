@@ -1,11 +1,16 @@
 import 'package:hive_flutter/adapters.dart';
-import 'package:news_app/core/utilities/constants/app_constants.dart';
+import 'package:news_app/core/constants/app_constants.dart';
 import '../models/article_model.dart';
 
+/// Singleton Hive wrapper.
+/// Opens box once and reuses it — no repeated openBox() calls.
+
 class LocalDatabaseHive {
-  Future<Box> _getBox() async {
-    return await Hive.openBox(AppConstants.localDatabaseBox);
-  }
+// singleton Pattern
+  LocalDatabaseHive._();
+  static final LocalDatabaseHive instance = LocalDatabaseHive._();
+
+  Box? _box;
 
   static Future<void> initHive() async {
     await Hive.initFlutter();
@@ -13,22 +18,28 @@ class LocalDatabaseHive {
     Hive.registerAdapter(SourceAdapter());
   }
 
-  Future<void> saveData<T>(String key, T value) async {
+  Future<Box> _getBox() async {
+    if (_box != null && _box!.isOpen) return _box!;
+    _box = await Hive.openBox(AppConstants.articlesBox);
+    return _box!;
+  }
+
+  Future<void> put<T>(String key, T value) async {
     final box = await _getBox();
     await box.put(key, value);
   }
 
-  Future<T?> getData<T>(String key) async {
+  Future<T?> get<T>(String key) async {
     final box = await _getBox();
     return box.get(key) as T?;
   }
 
-  Future<void> deleteData<T>(String key) async {
+  Future<void> delete<T>(String key) async {
     final box = await _getBox();
     await box.delete(key);
   }
 
-  Future<void> clearData() async {
+  Future<void> clear() async {
     final box = await _getBox();
     await box.clear();
   }

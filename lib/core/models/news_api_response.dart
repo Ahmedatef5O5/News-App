@@ -20,16 +20,25 @@ class NewsApiResponse {
   }
 
   factory NewsApiResponse.fromJson(Map<String, dynamic> map) {
+    final rawArticles = map['articles'] as List<dynamic>? ?? [];
     return NewsApiResponse(
       status: map['status'] as String,
       totalResults: map['totalResults'] as int,
-      articles: map['articles'] != null
-          ? List<Article>.from(
-              (map['articles'] as List).map<Article?>(
-                (x) => Article.fromMap(x as Map<String, dynamic>),
-              ),
-            )
-          : null,
+      articles: rawArticles
+          .whereType<Map<String, dynamic>>()
+          // Filter out "[Removed]" articles from NewsAPI
+          .where((a) {
+            final title = a['title'];
+            final description = a['description'];
+            final content = a['content'];
+
+            return title != '[Removed]' &&
+                description != '[Removed]' &&
+                content != '[Removed]';
+          })
+          // .where((a) => a['title'] != '[Removed]')
+          .map(Article.fromMap)
+          .toList(),
     );
   }
 }
