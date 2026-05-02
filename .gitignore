@@ -33,6 +33,11 @@ migrate_working_dir/
 /build/
 /coverage/
 
+*app_secrets.dart
+*.env
+*repomix-output.md
+
+
 # Symbolication related
 app.*.symbols
 
