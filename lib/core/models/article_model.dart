@@ -65,6 +65,10 @@ class Article extends HiveObject {
 
   factory Article.fromJson(String source) =>
       Article.fromMap(json.decode(source) as Map<String, dynamic>);
+
+  /// Unique identifier based on URL or title for Hive key operations.
+  String get uniqueId =>
+      url ?? title ?? publishedAt ?? DateTime.now().toIso8601String();
 }
 
 @HiveType(typeId: 1)
@@ -88,35 +92,60 @@ class Source {
   }
 }
 
+/// Clean computed properties on Article — no UI logic in the model.
+
 extension ArticleExtension on Article {
+  /// Human-readable date like "Apr 30, 2026".
   String get formattedDate {
-    final DateTime? rawDate = DateTime.tryParse(
-      publishedAt ?? DateTime.now().toString(),
-    );
-    return rawDate != null
-        ? DateFormat.yMMMd().format(rawDate)
+    final parsed = DateTime.tryParse(publishedAt ?? '');
+    return parsed != null
+        ? DateFormat.yMMMd().format(parsed)
         : DateFormat.yMMMd().format(DateTime.now());
   }
 
+  /// Shortened author — max 2 words, max 20 chars.
   String? get shortAuthor {
-    if (author != null && author!.isNotEmpty) {
-      String cleanAuthorName = author!.replaceAll(',', '').trim();
-      List<String> words = cleanAuthorName.split(' ');
-      String result;
-      if (words.length > 2) {
-        result = '${words[0]} ${words[1]}';
-      } else {
-        result = cleanAuthorName;
-      }
-
-      const int maxChars = 14;
-      if (result.length > maxChars) {
-        return '${result.substring(0, maxChars)}...';
-      }
-
-      return result;
-    } else {
-      return null;
-    }
+    final raw = author?.trim();
+    if (raw == null || raw.isEmpty) return null;
+    final clean = raw.replaceAll(',', '').trim();
+    final words = clean.split(' ');
+    final twoWords = words.length > 2 ? '${words[0]} ${words[1]}' : clean;
+    return twoWords.length > 20 ? '${twoWords.substring(0, 20)}…' : twoWords;
   }
+
+  /// Strip HTML tags and truncation markers like "[+1046 chars]".
+  String get cleanDescription {
+    if (description == null || description!.isEmpty) {
+      return 'No description available.';
+    }
+    return _stripHtml(description!);
+  }
+
+  /// Strip HTML and remove the "[+N chars]" truncation NewsAPI adds.
+  String get cleanContent {
+    if (content == null || content!.isEmpty) return '';
+    final stripped = _stripHtml(content!);
+    // Remove "[+1234 chars]" pattern
+    return stripped.replaceAll(RegExp(r'\[\+\d+ chars?\]'), '').trim();
+  }
+
+  String _stripHtml(String input) {
+    return input
+        .replaceAll(RegExp(r'<[^>]*>'), '') // remove HTML tags
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>')
+        .replaceAll('&nbsp;', ' ')
+        .replaceAll('&quot;', '"')
+        .trim();
+  }
+
+  /// Whether this article has a valid image.
+  bool get hasImage =>
+      urlToImage != null &&
+      urlToImage!.isNotEmpty &&
+      urlToImage!.startsWith('http');
+
+  /// Whether the article URL can be opened in browser.
+  bool get hasUrl => url != null && url!.isNotEmpty && url!.startsWith('http');
 }
