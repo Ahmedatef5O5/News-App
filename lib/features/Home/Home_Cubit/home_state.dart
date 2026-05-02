@@ -1,37 +1,60 @@
 part of 'home_cubit.dart';
 
-sealed class HomeState {
-  const HomeState();
-}
+enum LoadStatus { initial, loading, success, failure }
 
-final class HomeInitial extends HomeState {}
+class HomeState extends Equatable {
+  final LoadStatus headlinesStatus;
+  final LoadStatus recommendedStatus;
+  final List<Article> headlines;
+  final List<Article> recommended;
+  final String? headlinesError;
+  final String? recommendedError;
+  final NewsCategory selectedCategory;
+  final bool isRefreshing;
 
-/// TopHeadlines States
-final class TopHeadlinesLoading extends HomeState {}
+  const HomeState({
+    this.headlinesStatus = LoadStatus.initial,
+    this.recommendedStatus = LoadStatus.initial,
+    this.headlines = const [],
+    this.recommended = const [],
+    this.headlinesError,
+    this.recommendedError,
+    this.selectedCategory = NewsCategory.general,
+    this.isRefreshing = false,
+  });
 
-final class TopHeadlinesSuccessLoaded extends HomeState {
-  final List<Article>? articles;
+  HomeState copyWith({
+    LoadStatus? headlinesStatus,
+    LoadStatus? recommendedStatus,
+    List<Article>? headlines,
+    List<Article>? recommended,
+    String? headlinesError,
+    String? recommendedError,
+    NewsCategory? selectedCategory,
+    bool? isRefreshing,
+  }) {
+    return HomeState(
+      headlinesStatus: headlinesStatus ?? this.headlinesStatus,
+      recommendedStatus: recommendedStatus ?? this.recommendedStatus,
+      headlines: headlines ?? this.headlines,
+      recommended: recommended ?? this.recommended,
+      headlinesError: headlinesError ?? this.headlinesError,
+      recommendedError: recommendedError ?? this.recommendedError,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      isRefreshing: isRefreshing ?? this.isRefreshing,
+    );
+  }
 
-  const TopHeadlinesSuccessLoaded(this.articles);
-}
-
-final class TopHeadlinesError extends HomeState {
-  final String errMsg;
-
-  const TopHeadlinesError(this.errMsg);
-}
-
-/// RecommendedNews States
-final class RecommendedNewsLoading extends HomeState {}
-
-final class RecommendedNewsLoaded extends HomeState {
-  final List<Article>? articles;
-
-  const RecommendedNewsLoaded(this.articles);
-}
-
-final class RecommendedNewsError extends HomeState {
-  final String errMsg;
-
-  const RecommendedNewsError(this.errMsg);
+// to ensure if any change happend to rebuild state
+  @override
+  List<Object?> get props => [
+        headlinesStatus,
+        recommendedStatus,
+        headlines,
+        recommended,
+        headlinesError,
+        recommendedError,
+        selectedCategory,
+        isRefreshing,
+      ];
 }
