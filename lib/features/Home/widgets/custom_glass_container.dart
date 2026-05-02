@@ -33,15 +33,9 @@ class CustomGlassContainer extends StatelessWidget {
                   child: Container(
                     width: width ?? double.infinity,
                     height: height ?? double.infinity,
-
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: Colors.white.withValues(alpha: 0.18),
-                      // color: Colors.white.withOpacity(0.15),
-                      // border: Border.all(
-                      //   color: Colors.black12.withOpacity(0.2),
-                      //   width: 1.5,
-                      // ),
                     ),
                     child: child,
                   ),

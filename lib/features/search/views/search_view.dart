@@ -1,129 +1,182 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
-import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/router/app_routes.dart';
-import 'package:news_app/core/utilities/theme/app_colors.dart';
-import 'package:news_app/core/widgets/article_widget_item.dart';
-import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
+import 'package:news_app/core/theme/app_colors.dart';
+import '../../../core/helpers/empty_state.dart';
+import '../../../core/helpers/error_state.dart';
+import '../../../core/helpers/shimmer_box.dart';
+import '../../../core/widgets/article_card_widget.dart';
+import '../Search_cubit/search_cubit.dart';
 
-class SearchView extends StatelessWidget {
+class SearchView extends StatefulWidget {
   const SearchView({super.key});
 
   @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focus.requestFocus();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-    final searchCubit = BlocProvider.of<SearchCubit>(context);
+    final tt = Theme.of(context).textTheme;
+
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
-        scrolledUnderElevation: 0,
         title: const Text('Search'),
-        centerTitle: true,
+        centerTitle: false,
+        leadingWidth: 48,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        child: Column(
-          children: [
-            Gap(12),
-            TextField(
-              controller: searchController,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: TextField(
+              controller: _controller,
+              focusNode: _focus,
+              onChanged: (q) => context.read<SearchCubit>().onQueryChanged(q),
+              style: tt.bodyLarge,
               decoration: InputDecoration(
-                hintText: 'Search by title',
-                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search articles, topics, sources…',
+                prefixIcon:
+                    const Icon(Icons.search_rounded, color: AppColors.ink300),
                 suffixIcon: BlocBuilder<SearchCubit, SearchState>(
-                  bloc: searchCubit,
-                  buildWhen: (previous, current) =>
-                      current is SearchResultsSuccessLoaded ||
-                      current is SearchResultsLoading ||
-                      current is SearchResultsError,
                   builder: (context, state) {
-                    if (state is SearchResultsLoading) {
-                      return CupertinoActivityIndicator(
-                        color: AppColors.primaryColor,
+                    if (state.status == SearchStatus.loading) {
+                      return const Padding(
+                        padding: EdgeInsets.all(14),
+                        child: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       );
-
-                      // return TextButton(onPressed: null, child: Text('Search'));
                     }
-                    return TextButton(
-                      onPressed: () async =>
-                          await searchCubit.search(searchController.text),
-                      child: Text('Search'),
-                    );
+                    if (_controller.text.isNotEmpty) {
+                      return IconButton(
+                        icon: const Icon(Icons.close_rounded,
+                            color: AppColors.ink300),
+                        onPressed: () {
+                          _controller.clear();
+                          context.read<SearchCubit>().clear();
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
             ),
-            Gap(12),
-            Expanded(
-              child: BlocBuilder<SearchCubit, SearchState>(
-                bloc: searchCubit,
-                buildWhen: (previous, current) =>
-                    current is SearchResultsSuccessLoaded ||
-                    current is SearchResultsLoading ||
-                    current is SearchResultsError,
-                builder: (context, state) {
-                  if (state is SearchResultsLoading) {
-                    return Center(
-                      child: CupertinoActivityIndicator(
-                        color: AppColors.black12,
-                      ),
-                    );
-                  } else if (state is SearchResultsSuccessLoaded) {
-                    final articles = state.articles;
-                    if (articles.isEmpty) {
-                      return Center(
-                        child: Text(
-                          'No articles found',
-                          style: Theme.of(context).textTheme.titleMedium!
-                              .copyWith(
-                                color: AppColors.grey5Color,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w400,
-                              ),
-                        ),
-                      );
-                    }
-                    return ListView.builder(
-                      itemCount: articles.length,
-                      itemBuilder: (context, index) {
-                        final article = articles[index];
-                        return GestureDetector(
-                          onTap: () => Navigator.of(context).pushNamed(
-                            AppRoutes.artcileDetailsView,
-                            arguments: article,
-                          ),
-                          child: ArticleWidgetItem(
-                            article: article,
-                            author: article.shortAuthor ?? '',
-                          ),
-                        );
-                      },
-                    );
-                  } else if (state is SearchResultsError) {
-                    return Center(child: Text(state.errMsg));
-                  } else {
-                    return Center(
-                      child: Text(
-                        'Search for articles',
-                        style: Theme.of(context).textTheme.titleMedium!
-                            .copyWith(
-                              color: AppColors.grey5Color,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                            ),
-                      ),
-                    );
-
-                    // return SizedBox.shrink();
-                  }
-                },
-              ),
+          ),
+          const SizedBox(height: 12),
+          Expanded(
+            child: BlocBuilder<SearchCubit, SearchState>(
+              builder: (context, state) {
+                return switch (state.status) {
+                  SearchStatus.initial => _InitialHint(),
+                  SearchStatus.loading => _LoadingSkeleton(),
+                  SearchStatus.success => _ResultsList(state: state),
+                  SearchStatus.failure => ErrorState(
+                      message: state.error ?? 'Search failed',
+                      onRetry: () => context.read<SearchCubit>().retry(),
+                    ),
+                };
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+  }
+}
+
+class _InitialHint extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const EmptyState(
+      icon: Icons.search_rounded,
+      title: 'Search for news',
+      subtitle: 'Find articles by title, topic, or keyword',
+    );
+  }
+}
+
+class _LoadingSkeleton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: 5,
+      itemBuilder: (_, __) => const ArticleCardSkeleton(),
+    );
+  }
+}
+
+class _ResultsList extends StatelessWidget {
+  const _ResultsList({required this.state});
+  final SearchState state;
+
+  @override
+  Widget build(BuildContext context) {
+    if (state.results.isEmpty) {
+      return EmptyState(
+        icon: Icons.article_outlined,
+        title: 'No results found',
+        subtitle: 'Try different keywords or check your spelling.',
+      );
+    }
+
+    final tt = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          child: Text(
+            '${state.totalResults} results',
+            style: tt.bodySmall?.copyWith(
+              color: AppColors.ink300,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: state.results.length,
+            itemBuilder: (ctx, index) {
+              final article = state.results[index];
+              return ArticleCard(
+                article: article,
+                onTap: () => Navigator.of(ctx).pushNamed(
+                  AppRoutes.artcileDetailsRoute,
+                  arguments: article,
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

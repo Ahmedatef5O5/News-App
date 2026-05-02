@@ -1,141 +1,144 @@
+import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gap/gap.dart';
-import 'package:news_app/core/utilities/theme/app_colors.dart';
-import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
-import '../../../core/models/article_model.dart';
-import '../../../core/utilities/constants/app_images.dart';
-import '../widgets/custom_glass_container.dart';
+import 'package:flutter/services.dart';
+import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/models/article_model.dart';
+import 'package:news_app/core/theme/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../core/widgets/save_button_widget.dart';
 
-class ArticleDetailsView extends StatefulWidget {
-  const ArticleDetailsView({super.key, required this.article});
+class ArticleDetailView extends StatefulWidget {
+  const ArticleDetailView({super.key, required this.article});
   final Article article;
 
   @override
-  State<ArticleDetailsView> createState() => _ArticleDetailsViewState();
+  State<ArticleDetailView> createState() => _ArticleDetailViewState();
 }
 
-class _ArticleDetailsViewState extends State<ArticleDetailsView> {
-  final ValueNotifier<double> _sheetPosition = ValueNotifier(0.5);
+class _ArticleDetailViewState extends State<ArticleDetailView> {
+  final ValueNotifier<double> _sheetExtent = ValueNotifier(0.48);
+
+  @override
+  void dispose() {
+    _sheetExtent.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openUrl() async {
+    if (!widget.article.hasUrl) return;
+    final uri = Uri.parse(widget.article.url!);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _share() async {
+    final text = '${widget.article.title}\n\n${widget.article.url ?? ""}';
+    await Clipboard.setData(ClipboardData(text: text));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Link copied to clipboard'),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          margin: const EdgeInsets.all(16),
+          duration: const Duration(milliseconds: 1800),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final tt = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         toolbarHeight: 0,
-        elevation: 0,
         backgroundColor: Colors.transparent,
-        automaticallyImplyLeading: false,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: Stack(
         children: [
+          // ── Hero background image ─────────────────────────────────────────
           ValueListenableBuilder<double>(
-            valueListenable: _sheetPosition,
-            builder: (context, value, child) {
+            valueListenable: _sheetExtent,
+            builder: (_, extent, child) {
+              final parallax = (extent - 0.48).clamp(0.0, 1.0) * 60;
               return Transform.translate(
-                offset: Offset(0, -value * 50),
-                child: CachedNetworkImage(
-                  imageUrl:
-                      widget.article.urlToImage ?? AppImages.placeholderImg,
-                  width: double.infinity,
-                  height: size.height * 0.6,
-                  fit: BoxFit.cover,
-                ),
+                offset: Offset(0, -parallax),
+                child: child,
               );
             },
+            child: CachedNetworkImage(
+              imageUrl: widget.article.hasImage
+                  ? widget.article.urlToImage!
+                  : AppConstants.placeholderImageUrl,
+              width: double.infinity,
+              height: size.height * 0.55,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(color: AppColors.surfaceDark),
+              errorWidget: (_, __, ___) =>
+                  Container(color: AppColors.surfaceDark),
+            ),
           ),
-          Container(
-            height: size.height * 0.6,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                end: Alignment.center,
-                begin: Alignment.bottomCenter,
-                colors: [
-                  AppColors.black12!.withValues(alpha: 0.75),
-                  AppColors.black12!.withValues(alpha: 0.1),
-                ],
+
+          // ── Gradient on image ─────────────────────────────────────────────
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: size.height * 0.55,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.3, 1.0],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.5),
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.4),
+                  ],
+                ),
               ),
             ),
           ),
 
+          // ── AppBar overlay ────────────────────────────────────────────────
           ValueListenableBuilder<double>(
-            valueListenable: _sheetPosition,
-            builder: (context, value, child) {
-              double opacity = (1 - (value - 0.5) * 4).clamp(0.0, 1.0);
-              return Positioned(
-                top: size.height * ((0.35) - (value - 0.5) * 0.2),
-                left: 8,
-                right: 8,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: Opacity(
-                    opacity: opacity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            valueListenable: _sheetExtent,
+            builder: (_, extent, __) {
+              final opacity = (1.0 - (extent - 0.45) * 5.0).clamp(0.0, 1.0);
+              return Opacity(
+                opacity: opacity,
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
                       children: [
-                        DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            shape: BoxShape.rectangle,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(18),
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(5.0),
-                            child: Text(
-                              'General',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(
-                                    color: AppColors.whiteColor,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                            ),
-                          ),
+                        _GlassButton(
+                          icon: Icons.arrow_back_ios_new_rounded,
+                          onTap: () => Navigator.pop(context),
                         ),
-                        Gap(5),
-                        Text(
-                          widget.article.title ?? '',
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleLarge!
-                              .copyWith(
-                                color: AppColors.whiteColor,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 22,
-                              ),
+                        const Spacer(),
+                        SaveButton(
+                          article: widget.article,
+                          size: 42,
+                          isGlass: true,
+                          iconColor: Colors.white,
                         ),
-                        Gap(5),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Trending',
-                              style: Theme.of(context).textTheme.bodyMedium!
-                                  .copyWith(
-                                    color: AppColors.whiteColor,
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 14,
-                                  ),
-                            ),
-                            Gap(12),
-                            Text(
-                              '●  ${widget.article.formattedDate}',
-                              style: Theme.of(context).textTheme.labelMedium!
-                                  .copyWith(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColors.grey2Color,
-                                  ),
-                            ),
-                          ],
+                        const SizedBox(width: 8),
+                        _GlassButton(
+                          icon: Icons.share_outlined,
+                          onTap: _share,
                         ),
-                        Gap(16),
                       ],
                     ),
                   ),
@@ -143,244 +146,208 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
               );
             },
           ),
-          ValueListenableBuilder<double>(
-            valueListenable: _sheetPosition,
-            builder: (context, value, child) {
-              double appBarOpacity = (1 - (value - 0.45) * 2.5).clamp(0.0, 1.0);
 
-              return Opacity(
-                opacity: appBarOpacity,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).padding.top + 10,
-                  ),
-                  child: Row(
-                    children: [
-                      const Gap(16),
-                      CustomGlassContainer(
-                        child: Icon(
-                          Icons.arrow_back_ios_new_outlined,
-                          color: AppColors.whiteColor,
-                        ),
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const Spacer(),
-                      BlocBuilder<FavoriteCubit, FavoriteState>(
-                        builder: (context, state) {
-                          bool isSaved = false;
-                          if (state is FavoriteLoaded) {
-                            isSaved = state.articles.any(
-                              (e) => e.title == widget.article.title,
-                            );
-                          }
-                          return CustomGlassContainer(
-                            width: 42,
-                            height: 42,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                AppImages.saved,
-                                // color: AppColors.whiteColor,
-                                color: isSaved
-                                    ? Colors.amberAccent
-                                    : AppColors.whiteColor,
-                              ),
-                            ),
-
-                            onTap: () {
-                              context.read<FavoriteCubit>().toggleFavorite(
-                                widget.article,
-                              );
-
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    isSaved
-                                        ? 'Removed from favorites'
-                                        : 'Added to favorites',
-                                  ),
-                                  duration: const Duration(seconds: 1),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      const Gap(8),
-                      CustomGlassContainer(
-                        width: 42,
-                        height: 42,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.asset(
-                            AppImages.option,
-                            color: AppColors.whiteColor,
-                          ),
-                        ),
-                        // child: Icon(
-                        //   Icons.share_outlined,
-                        //   color: AppColors.whiteColor,
-                        // ),
-                        onTap: () {},
-                      ),
-                      const Gap(16),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-
+          // ── Draggable bottom sheet ────────────────────────────────────────
           NotificationListener<DraggableScrollableNotification>(
-            onNotification: (notification) {
-              _sheetPosition.value = notification.extent;
+            onNotification: (n) {
+              _sheetExtent.value = n.extent;
               return true;
             },
             child: DraggableScrollableSheet(
-              initialChildSize: 0.47,
-              minChildSize: 0.46,
-              maxChildSize: 0.95,
-              builder: (context, scrollController) {
+              initialChildSize: 0.48,
+              minChildSize: 0.47,
+              maxChildSize: 0.96,
+              builder: (_, scrollController) {
                 return Container(
-                  clipBehavior: Clip.hardEdge,
-                  decoration: BoxDecoration(
-                    color: AppColors.whiteColor,
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(36),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        // color: Colors.black.withOpacity(0.1),
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 10,
-                        spreadRadius: 1,
-                        offset: const Offset(0, -2),
-                      ),
-                    ],
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(32)),
                   ),
                   child: ListView(
                     controller: scrollController,
-                    padding: const EdgeInsets.all(20),
+                    padding: EdgeInsets.zero,
                     children: [
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 18,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            backgroundImage: AssetImage(AppImages.news),
-                          ),
-                          Gap(16),
-                          Text(
-                            widget.article.source!.name ?? '',
-                            style: Theme.of(context).textTheme.titleMedium!
-                                .copyWith(
-                                  fontSize: 20,
-                                  color: AppColors.blackColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                          ),
-                          Gap(6),
-                          Image.asset(AppImages.checked, width: 12, height: 12),
-                        ],
-                      ),
-                      const Gap(20),
-                      Text(
-                        widget.article.description ??
-                            'No Description Available...',
-                        style: Theme.of(context).textTheme.titleSmall!.copyWith(
-                          fontSize: 18,
-                          color: AppColors.blackColor,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const Gap(20),
-                      Text(
-                        widget.article.content ?? 'Full content goes here...',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const Gap(20),
-                      Text(
-                        widget.article.content ?? 'Full content goes here...',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      if (widget.article.author != null) const Gap(25),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (widget.article.author != null)
-                            Text(
-                              'authored by:',
-                              style: Theme.of(context).textTheme.labelMedium!
-                                  .copyWith(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w400,
-                                    color: Colors.black45,
-                                  ),
+                      // Drag handle
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12, bottom: 8),
+                          child: Container(
+                            width: 40,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: AppColors.ink100,
+                              borderRadius: BorderRadius.circular(2),
                             ),
-                          Gap(10),
-                        ],
+                          ),
+                        ),
                       ),
-                      if (widget.article.author != null)
-                        Row(
+
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // ── Source row ──────────────────────────────────
                             Row(
                               children: [
                                 CircleAvatar(
-                                  radius: 14,
-                                  child: Icon(Icons.person),
+                                  radius: 16,
+                                  backgroundColor: AppColors.primary,
+                                  child: const Icon(Icons.language_rounded,
+                                      color: Colors.white, size: 16),
                                 ),
-                                Gap(6),
-                                Text(
-                                  widget.article.shortAuthor ?? '',
-
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelMedium!
-                                      .copyWith(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
-                                        color: AppColors.blackColor,
-                                      ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 4),
-                                  child: Image.asset(
-                                    AppImages.checked,
-                                    width: 11,
-                                    height: 11,
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    widget.article.source?.name ?? 'Unknown',
+                                    style: tt.titleMedium?.copyWith(
+                                      color: AppColors.ink900,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
+                                ),
+                                const Icon(Icons.verified_rounded,
+                                    color: AppColors.primary, size: 18),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+
+                            // ── Title / Category badge ────────────────────────
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                widget.article.source?.name ?? 'General',
+                                style: tt.labelSmall?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+
+                            // ── Headline ────────────────────────────────────
+                            Text(
+                              widget.article.title ?? '',
+                              style: tt.headlineMedium?.copyWith(
+                                fontSize: 20,
+                                height: 1.3,
+                              ),
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            // ── Meta: author + date ─────────────────────────
+                            Row(
+                              children: [
+                                if (widget.article.shortAuthor != null) ...[
+                                  const Icon(Icons.person_outline,
+                                      size: 14, color: AppColors.ink300),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    widget.article.shortAuthor!,
+                                    style: tt.bodySmall
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(width: 16),
+                                ],
+                                const Icon(Icons.schedule_outlined,
+                                    size: 14, color: AppColors.ink300),
+                                const SizedBox(width: 4),
+                                Text(
+                                  widget.article.formattedDate,
+                                  style: tt.bodySmall,
                                 ),
                               ],
                             ),
+
+                            const SizedBox(height: 20),
+                            const Divider(),
+                            const SizedBox(height: 20),
+
+                            // ── Description ─────────────────────────────────
+                            Text(
+                              widget.article.cleanDescription,
+                              style: tt.bodyLarge?.copyWith(
+                                color: AppColors.ink700,
+                                height: 1.7,
+                              ),
+                            ),
+
+                            // ── Content ──────────────────────────────────────
+                            if (widget.article.cleanContent.isNotEmpty) ...[
+                              const SizedBox(height: 16),
+                              Text(
+                                widget.article.cleanContent,
+                                style: tt.bodyMedium?.copyWith(
+                                  color: AppColors.ink500,
+                                  height: 1.7,
+                                ),
+                              ),
+                            ],
+
+                            const SizedBox(height: 32),
+
+                            // ── Read Full Article CTA ─────────────────────────
+                            if (widget.article.hasUrl)
+                              SizedBox(
+                                width: double.infinity,
+                                child: FilledButton.icon(
+                                  onPressed: _openUrl,
+                                  icon:
+                                      const Icon(Icons.open_in_browser_rounded),
+                                  label: const Text('Read Full Article'),
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    textStyle: const TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                            const SizedBox(height: 12),
+
+                            // ── Share button ──────────────────────────────────
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: _share,
+                                icon: const Icon(Icons.share_outlined),
+                                label: const Text('Share Article'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.ink700,
+                                  side: const BorderSide(
+                                      color: AppColors.divider),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  textStyle: const TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                      Gap(20),
-                      Text(
-                        'Published at:',
-                        style: Theme.of(context).textTheme.labelMedium!
-                            .copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.black45,
-                            ),
                       ),
-                      Gap(12),
-                      Text(
-                        '  ● ${widget.article.formattedDate}',
-                        style: Theme.of(context).textTheme.labelMedium!
-                            .copyWith(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                              color: AppColors.blackColor,
-                            ),
-                      ),
-                      Gap(12),
                     ],
                   ),
                 );
@@ -388,6 +355,30 @@ class _ArticleDetailsViewState extends State<ArticleDetailsView> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _GlassButton extends StatelessWidget {
+  const _GlassButton({required this.icon, required this.onTap});
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            width: 42,
+            height: 42,
+            color: Colors.white.withValues(alpha: 0.2),
+            child: Icon(icon, color: Colors.white, size: 20),
+          ),
+        ),
       ),
     );
   }
