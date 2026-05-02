@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:news_app/core/utilities/theme/app_colors.dart';
+import 'package:news_app/core/theme/app_colors.dart';
 
 class TitleHeadlineWidget extends StatelessWidget {
   const TitleHeadlineWidget({
@@ -22,11 +22,11 @@ class TitleHeadlineWidget extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.labelLarge!.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 17,
-              color: AppColors.blackColor,
-              wordSpacing: wordSpacing,
-            ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 17,
+                  color: AppColors.blackColor,
+                  wordSpacing: wordSpacing,
+                ),
           ),
           Spacer(),
           TextButton(
@@ -34,9 +34,9 @@ class TitleHeadlineWidget extends StatelessWidget {
             child: Text(
               txtBtn ?? '',
               style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                color: Theme.of(context).primaryColor,
-                wordSpacing: wordSpacing,
-              ),
+                    color: Theme.of(context).primaryColor,
+                    wordSpacing: wordSpacing,
+                  ),
             ),
           ),
         ],
