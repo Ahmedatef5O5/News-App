@@ -1,40 +1,63 @@
-import 'package:dio/dio.dart';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/features/search/models/search_body.dart';
-import 'package:news_app/features/search/services/search_services.dart';
-import '../../../core/models/article_model.dart';
-import '../../../core/utilities/constants/app_constants.dart';
-import '../services/search_services_retrofit.dart';
+import 'package:equatable/equatable.dart';
+import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/models/article_model.dart';
+
+import '../services/search_services.dart';
+
 part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit() : super(SearchInitial());
+  SearchCubit({SearchService? service})
+      : _service = service ?? SearchService(),
+        super(const SearchState());
 
-  final searchServices = SearchServices();
-  final searchServicesRetrofit = SearchServicesRetrofit(
-    Dio(
-      BaseOptions(
-        baseUrl: AppConstants.baseUrl,
-        // headers: {'Authorization': "Bearer ${AppConstants.apiKey}"},
-      ),
-    ),
-  );
+  final SearchService _service;
+  Timer? _debounce;
 
-  Future<void> search(String keyword) async {
-    emit(SearchResultsLoading());
-    try {
-      final body = SearchBody(q: keyword);
-      // final response = await searchServices.search(body);
-      final response = await searchServicesRetrofit.search(
-        q: body.q,
-        page: body.page,
-        pageSize: body.pageSize,
-        searchIn: body.searchIn,
-        apiKey: 'Bearer ${AppConstants.apiKey}',
-      );
-      emit(SearchResultsSuccessLoaded(response.articles ?? []));
-    } catch (e) {
-      emit(SearchResultsError(e.toString()));
+  /// Called on every keystroke — debounced by 500ms.
+  void onQueryChanged(String query) {
+    _debounce?.cancel();
+    if (query.trim().isEmpty) {
+      emit(const SearchState());
+      return;
     }
+    emit(state.copyWith(query: query, status: SearchStatus.loading));
+    _debounce = Timer(AppConstants.searchDebounce, () => _search(query));
+  }
+
+  Future<void> _search(String query) async {
+    try {
+      final result = await _service.search(query: query.trim());
+      emit(state.copyWith(
+        status: SearchStatus.success,
+        results: result.articles,
+        totalResults: result.totalResults,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        status: SearchStatus.failure,
+        error: e.toString(),
+      ));
+    }
+  }
+
+  /// Manual retry.
+  Future<void> retry() async {
+    if (state.query.isEmpty) return;
+    emit(state.copyWith(status: SearchStatus.loading, error: null));
+    await _search(state.query);
+  }
+
+  void clear() {
+    _debounce?.cancel();
+    emit(const SearchState());
+  }
+
+  @override
+  Future<void> close() {
+    _debounce?.cancel();
+    return super.close();
   }
 }
