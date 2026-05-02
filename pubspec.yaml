@@ -9,8 +9,7 @@ environment:
   # sdk: ^3.9.2
 
 dependencies:
-  cached_network_image: ^3.4.1
-  carousel_slider: ^5.1.2
+  cached_network_image: ^3.4.1  
   cupertino_icons: ^1.0.8
   device_preview: ^1.2.0
   dio: ^5.9.1
@@ -18,7 +17,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
-  flutter_carousel_widget: ^3.1.0
   flutter_dotenv: ^6.0.1
   gap: ^3.0.1
   hive: ^2.2.3
