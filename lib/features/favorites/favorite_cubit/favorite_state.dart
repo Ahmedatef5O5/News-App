@@ -1,22 +1,34 @@
-part of 'favorite_cubit.dart';
+import 'package:equatable/equatable.dart';
+import '../../../core/models/article_model.dart';
 
-@immutable
-sealed class FavoriteState {
-  const FavoriteState();
-}
+enum FavStatus { initial, loading, success, failure }
 
-final class FavoriteInitial extends FavoriteState {}
-
-final class FavoriteLoading extends FavoriteState {}
-
-final class FavoriteLoaded extends FavoriteState {
+class FavoritesState extends Equatable {
+  final FavStatus status;
   final List<Article> articles;
+  final String? error;
 
-  const FavoriteLoaded(this.articles);
-}
+  const FavoritesState({
+    this.status = FavStatus.initial,
+    this.articles = const [],
+    this.error,
+  });
 
-final class FavoriteError extends FavoriteState {
-  final String errMsg;
+  bool isSaved(Article article) =>
+      articles.any((a) => a.uniqueId == article.uniqueId);
 
-  const FavoriteError(this.errMsg);
+  FavoritesState copyWith({
+    FavStatus? status,
+    List<Article>? articles,
+    String? error,
+  }) {
+    return FavoritesState(
+      status: status ?? this.status,
+      articles: articles ?? this.articles,
+      error: error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [status, articles, error];
 }
