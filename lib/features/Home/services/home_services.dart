@@ -25,10 +25,14 @@ class HomeServices {
     return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
+  /// Paginated recommended feed.
+  /// Returns the full [NewsApiResponse] including [totalResults]
+  /// so the repository can pass it to the cubit for pagination math.
+
   Future<NewsApiResponse> getRecommended({
     String country = 'us',
     int page = 1,
-    int pageSize = AppConstants.pageSize,
+    int pageSize = AppConstants.recommendedPageSize,
   }) async {
     final response = await _dio.get(
       AppConstants.topHeadlines,

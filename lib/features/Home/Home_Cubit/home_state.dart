@@ -2,44 +2,72 @@ part of 'home_cubit.dart';
 
 enum LoadStatus { initial, loading, success, failure }
 
+enum PageLoadStatus {
+  idle,
+  loadingInitial,
+  loadingMore,
+  loadingPage,
+  success,
+  failure,
+}
+
 class HomeState extends Equatable {
+  /// HeadLines  status
   final LoadStatus headlinesStatus;
-  final LoadStatus recommendedStatus;
   final List<Article> headlines;
-  final List<Article> recommended;
   final String? headlinesError;
+
+  /// Recommended status
+  final PageLoadStatus recommendedStatus;
+  final List<Article> recommended;
   final String? recommendedError;
+  final PaginationMeta pagination;
+
+  // global
   final NewsCategory selectedCategory;
   final bool isRefreshing;
 
   const HomeState({
     this.headlinesStatus = LoadStatus.initial,
-    this.recommendedStatus = LoadStatus.initial,
     this.headlines = const [],
-    this.recommended = const [],
     this.headlinesError,
+    this.recommendedStatus = PageLoadStatus.idle,
+    this.recommended = const [],
     this.recommendedError,
+    this.pagination = const PaginationMeta(),
     this.selectedCategory = NewsCategory.general,
     this.isRefreshing = false,
   });
 
+  bool get isRecommendedLoading =>
+      recommendedStatus == PageLoadStatus.loadingInitial ||
+      recommendedStatus == PageLoadStatus.loadingMore ||
+      recommendedStatus == PageLoadStatus.loadingPage;
+
+  bool get showPaginationBar =>
+      recommendedStatus == PageLoadStatus.success && recommended.isNotEmpty;
+
   HomeState copyWith({
     LoadStatus? headlinesStatus,
-    LoadStatus? recommendedStatus,
     List<Article>? headlines,
-    List<Article>? recommended,
     String? headlinesError,
+    PageLoadStatus? recommendedStatus,
+    List<Article>? recommended,
     String? recommendedError,
+    PaginationMeta? pagination,
     NewsCategory? selectedCategory,
     bool? isRefreshing,
+    bool clearRecommendedError = false,
+    bool clearHeadlinesError = false,
   }) {
     return HomeState(
       headlinesStatus: headlinesStatus ?? this.headlinesStatus,
-      recommendedStatus: recommendedStatus ?? this.recommendedStatus,
       headlines: headlines ?? this.headlines,
-      recommended: recommended ?? this.recommended,
       headlinesError: headlinesError ?? this.headlinesError,
+      recommendedStatus: recommendedStatus ?? this.recommendedStatus,
+      recommended: recommended ?? this.recommended,
       recommendedError: recommendedError ?? this.recommendedError,
+      pagination: pagination ?? this.pagination,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       isRefreshing: isRefreshing ?? this.isRefreshing,
     );
@@ -54,6 +82,7 @@ class HomeState extends Equatable {
         recommended,
         headlinesError,
         recommendedError,
+        pagination,
         selectedCategory,
         isRefreshing,
       ];
