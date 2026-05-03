@@ -16,9 +16,17 @@ abstract final class AppConstants {
   static const String cachedHeadlinesKey = 'cached_headlines';
   static const String cachedRecommendedKey = 'cached_recommended';
 
-  // ── Pagination ───────────────────────────────────────────────────────────
-  static const int pageSize = 15;
+  // ── Pagination ──────────────────────────────────────────────────────────
+  static const int recommendedPageSize = 5;
+  // static const int recommendedPageSize = 10;
   static const int headlinesPageSize = 10;
+  static const int searchPageSize = 15;
+  static const int paginationWindowSize = 5;
+  static const int maxApiResults = 100;
+  static const int infiniteScrollThreshold = 3;
+
+  // ── Cache ─────────────────────────────────────────────────────────────────
+  static const String recommendedPageKeyPrefix = 'rec_page_';
 
   // ── Search Debounce ──────────────────────────────────────────────────────
   static const Duration searchDebounce = Duration(milliseconds: 500);
