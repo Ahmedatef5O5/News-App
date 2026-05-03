@@ -5,6 +5,7 @@ import 'package:news_app/features/Home/views/home_view.dart';
 import 'package:news_app/features/favorites/views/favorites_view.dart';
 import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
 import 'package:news_app/features/search/views/search_view.dart';
+import '../../features/Headlines/views/headlines_view.dart';
 import '../../features/Home/views/article_details_view.dart';
 import '../models/article_model.dart';
 
@@ -27,6 +28,11 @@ class AppRouter {
       case AppRoutes.favoriteRoute:
         return _slideRoute(
           FavoritesView(),
+          settings,
+        );
+      case AppRoutes.headlinesRoute:
+        return _slideRoute(
+          const HeadlinesView(),
           settings,
         );
 
