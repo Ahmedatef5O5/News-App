@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/cubits/category_cubit.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
@@ -7,11 +10,31 @@ import '../../../core/repositories/home_repository.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  HomeCubit({HomeRepository? repository})
-      : _repo = repository ?? HomeRepository(),
-        super(const HomeState());
-
   final HomeRepository _repo;
+
+  final CategoryCubit categoryCubit;
+  late final StreamSubscription _categorySubscription;
+
+  HomeCubit({required this.categoryCubit, HomeRepository? repository})
+      : _repo = repository ?? HomeRepository(),
+        super(const HomeState()) {
+    _syncCategory(categoryCubit.state);
+
+    _categorySubscription = categoryCubit.stream.listen((category) {
+      _syncCategory(category);
+    });
+  }
+
+  void _syncCategory(NewsCategory category) {
+    emit(state.copyWith(
+      selectedCategory: category,
+      headlinesStatus: LoadStatus.loading,
+    ));
+
+    fetchHeadlines(
+        category: category == NewsCategory.general ? null : category.value,
+        forceRefresh: true);
+  }
 
   /// Fetches both sections on initial load.
   Future<void> init() async {
@@ -31,20 +54,6 @@ class HomeCubit extends Cubit<HomeState> {
       _loadPage(1, mode: PageLoadStatus.loadingInitial, forceRefresh: true),
     ]);
     emit(state.copyWith(isRefreshing: false));
-  }
-
-  /// Select a category chip and reload headlines.
-  Future<void> selectCategory(NewsCategory category) async {
-    if (state.selectedCategory == category) return;
-    emit(state.copyWith(
-      selectedCategory: category,
-      headlinesStatus: LoadStatus.loading,
-      clearHeadlinesError: true,
-    ));
-    await fetchHeadlines(
-      category: category == NewsCategory.general ? null : category.value,
-      forceRefresh: true,
-    );
   }
 
   Future<void> fetchHeadlines({
@@ -72,10 +81,6 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  // ── Infinite Scroll ───────────────────────────────────────────────────────
-
-  /// Called by ScrollController listener when nearing the bottom.
-  /// Appends the next page's articles to the existing list.
   Future<void> loadNextPage() async {
     final pag = state.pagination;
     if (!pag.hasNextPage) return;
@@ -85,10 +90,6 @@ class HomeCubit extends Cubit<HomeState> {
     await _loadPage(nextPage, mode: PageLoadStatus.loadingMore);
   }
 
-  // ── Numbered Pagination ───────────────────────────────────────────────────
-
-  /// Called when user taps a page number in the PaginationBar.
-  /// Replaces the list entirely with the new page's articles.
   Future<void> goToPage(int page) async {
     if (page == state.pagination.currentPage) return;
     if (page < 1 || page > state.pagination.totalPages) return;
@@ -99,8 +100,6 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> goToNextPage() => goToPage(state.pagination.nextPage);
   Future<void> goToPreviousPage() => goToPage(state.pagination.previousPage);
 
-  // ── Retry ─────────────────────────────────────────────────────────────────
-
   Future<void> retryRecommended() async {
     await _loadPage(
       state.pagination.currentPage,
@@ -108,8 +107,6 @@ class HomeCubit extends Cubit<HomeState> {
       forceRefresh: true,
     );
   }
-
-  // ── Core page loader ──────────────────────────────────────────────────────
 
   Future<void> _loadPage(
     int page, {
@@ -142,7 +139,6 @@ class HomeCubit extends Cubit<HomeState> {
             .toList();
         updatedList = [...state.recommended, ...newArticles];
       } else {
-        // Replace (initial load, page jump, or category change)
         updatedList = result.articles;
       }
 
@@ -157,5 +153,11 @@ class HomeCubit extends Cubit<HomeState> {
         recommendedError: e.toString(),
       ));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _categorySubscription.cancel();
+    return super.close();
   }
 }

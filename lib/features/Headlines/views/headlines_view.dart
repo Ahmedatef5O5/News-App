@@ -5,6 +5,7 @@ import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import '../../../core/cubits/category_cubit.dart';
 import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
@@ -19,7 +20,9 @@ class HeadlinesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HeadlinesCubit()..init(),
+      create: (context) => HeadlinesCubit(
+        categoryCubit: context.read<CategoryCubit>(),
+      ),
       child: const _HeadlinesContent(),
     );
   }
@@ -114,7 +117,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 child: GlassCategoryRow(
                   selected: state.selectedCategory,
                   onSelected: (cat) =>
-                      context.read<HeadlinesCubit>().selectCategory(cat),
+                      context.read<CategoryCubit>().selectCategory(cat),
                 ),
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 8)),

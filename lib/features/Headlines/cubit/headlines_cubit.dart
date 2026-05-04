@@ -1,31 +1,38 @@
+import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/cubits/category_cubit.dart';
 import '../../../core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
 part 'headlines_state.dart';
 
 class HeadlinesCubit extends Cubit<HeadlinesState> {
-  HeadlinesCubit({HomeRepository? repository})
-      : _repo = repository ?? HomeRepository(),
-        super(const HeadlinesState());
-
   final HomeRepository _repo;
 
-  Future<void> init() => _fetchAndShowPage(category: null, page: 1);
+  final CategoryCubit categoryCubit;
+  late final StreamSubscription _categorySubscription;
 
-  Future<void> selectCategory(NewsCategory category) async {
-    if (state.selectedCategory == category) return;
+  HeadlinesCubit({required this.categoryCubit, HomeRepository? repository})
+      : _repo = repository ?? HomeRepository(),
+        super(const HeadlinesState()) {
+    _syncCategory(categoryCubit.state);
+
+    _categorySubscription = categoryCubit.stream.listen((category) {
+      _syncCategory(category);
+    });
+  }
+
+  void _syncCategory(NewsCategory category) {
     emit(state.copyWith(
       selectedCategory: category,
       status: HeadlinesPageLoadStatus.loading,
       clearError: true,
     ));
-    await _fetchAndShowPage(
-      category: category == NewsCategory.general ? null : category.value,
-      page: 1,
-    );
+    _fetchAndShowPage(
+        category: category == NewsCategory.general ? null : category.value,
+        page: 1);
   }
 
   Future<void> goToPage(int page) async {
@@ -86,5 +93,11 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
         pageSize: pageSize,
       ),
     ));
+  }
+
+  @override
+  Future<void> close() {
+    _categorySubscription.cancel();
+    return super.close();
   }
 }
