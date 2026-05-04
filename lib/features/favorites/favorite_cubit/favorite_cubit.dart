@@ -25,14 +25,16 @@ class FavoritesCubit extends Cubit<FavoritesState> {
   Future<void> toggleFavorite(Article article) async {
     try {
       final isSaved = state.isSaved(article);
-      await _service.toggleFavorite(article);
       final updated = List<Article>.from(state.articles);
+
       if (isSaved) {
         updated.removeWhere((a) => a.uniqueId == article.uniqueId);
       } else {
         updated.add(article);
       }
+
       emit(state.copyWith(articles: updated, status: FavStatus.success));
+      await _service.toggleFavorite(article);
     } catch (e) {
       emit(state.copyWith(error: e.toString()));
     }

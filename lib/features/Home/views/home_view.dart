@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/widgets/app_drawer.dart';
+import 'package:news_app/features/home/widgets/home_carousel_section.dart';
+import '../../../core/cubits/category_cubit.dart';
 import '../../../core/helpers/category_chips.dart';
-import '../../../core/helpers/empty_state.dart';
-import '../../../core/helpers/error_state.dart';
-import '../../../core/helpers/shimmer_box.dart';
-import '../../../core/widgets/article_card_widget.dart';
+import '../../../core/pagination/widgets/load_more_footer.dart';
 import '../Home_Cubit/home_cubit.dart';
-import '../widgets/home_carousel_section.dart';
+import '../widgets/home_app_bar_widget.dart';
+import '../widgets/page_info_badge.dart';
+import '../widgets/recommended_feed.dart';
+import '../widgets/section_header_widget.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -17,71 +20,95 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HomeCubit()..init(),
+      create: (_) => HomeCubit(
+        categoryCubit: context.read<CategoryCubit>(),
+      )..init(),
       child: const _HomeContent(),
     );
   }
 }
 
-class _HomeContent extends StatelessWidget {
+class _HomeContent extends StatefulWidget {
   const _HomeContent();
 
   @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+  State<_HomeContent> createState() => _HomeContentState();
+}
 
+class _HomeContentState extends State<_HomeContent> {
+  late final ScrollController _scrollController;
+  final GlobalKey _forYouKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToForYou() {
+    if (_forYouKey.currentContext != null) {
+      Scrollable.ensureVisible(
+        _forYouKey.currentContext!,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeOutCubic,
+        alignment: 0.0,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       drawer: const AppDrawer(),
-      body: BlocBuilder<HomeCubit, HomeState>(
+      body: BlocConsumer<HomeCubit, HomeState>(
+        buildWhen: (prev, curr) =>
+            prev.headlinesStatus != curr.headlinesStatus ||
+            prev.recommendedStatus != curr.recommendedStatus ||
+            prev.selectedCategory != curr.selectedCategory ||
+            prev.isRefreshing != curr.isRefreshing ||
+            prev.pagination != curr.pagination ||
+            prev.recommended.length != curr.recommended.length,
+        listenWhen: (prev, curr) =>
+            prev.pagination.currentPage != curr.pagination.currentPage &&
+            curr.recommendedStatus == PageLoadStatus.success,
+        listener: (_, state) {
+          if (state.recommendedStatus == PageLoadStatus.success &&
+              state.pagination.currentPage > 1) {
+            _scrollToForYou();
+          }
+        },
         builder: (context, state) {
           return RefreshIndicator(
             color: AppColors.primary,
             strokeWidth: 2.5,
             onRefresh: () => context.read<HomeCubit>().refresh(),
             child: CustomScrollView(
+              controller: _scrollController,
               slivers: [
-                // ── SliverAppBar ─────────────────────────────────────────
-                _AppBar(),
+                HomeAppBarWidget(),
 
-                // ── Category Chips ───────────────────────────────────────
                 SliverToBoxAdapter(
                   child: CategoryChips(
                     selected: state.selectedCategory,
                     onSelected: (cat) =>
-                        context.read<HomeCubit>().selectCategory(cat),
+                        context.read<CategoryCubit>().selectCategory(cat),
                   ),
                 ),
 
-                // ── Breaking News Label ──────────────────────────────────
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 20, 22, 12),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: AppColors.accent,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Breaking News',
-                          style: tt.headlineMedium?.copyWith(fontSize: 18),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('View all'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                    child: SectionHeaderWidget(
+                  label: 'Breaking News',
+                  accentColor: AppColors.accent,
+                  onViewAll: () =>
+                      Navigator.of(context).pushNamed(AppRoutes.headlinesRoute),
+                )),
 
-                // ── Headlines Carousel ───────────────────────────────────
                 SliverToBoxAdapter(
                   child: HomeCarouselSection(
                     status: state.headlinesStatus,
@@ -97,40 +124,53 @@ class _HomeContent extends StatelessWidget {
                   ),
                 ),
 
-                // ── Recommended Label ────────────────────────────────────
                 SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(22, 24, 22, 12),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(2),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'For You',
-                          style: tt.headlineMedium?.copyWith(fontSize: 18),
-                        ),
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text('View all'),
-                        ),
-                      ],
-                    ),
+                    child: SectionHeaderWidget(
+                  key: _forYouKey,
+                  label: 'For You',
+                  accentColor: AppColors.primary,
+                  trailing: state.showPaginationBar
+                      ? PageInfoBadge(pagination: state.pagination)
+                      : null,
+                  onViewAll: () {},
+                  // onViewAll: () => Navigator.of(context)
+                  // .pushNamed(AppRoutes.headlinesRoute),
+                )),
+
+                RecommendedFeed(state: state),
+
+                SliverToBoxAdapter(
+                  child: _buildLoadMoreFooter(context, state),
+                ),
+
+                SliverToBoxAdapter(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: state.showPaginationBar
+                        ? PaginationBarWidget(
+                            key: const ValueKey('pagination_bar'),
+                            meta: state.pagination,
+                            isLoading: state.recommendedStatus ==
+                                PageLoadStatus.loadingPage,
+                            onPageTap: (page) {
+                              context.read<HomeCubit>().goToPage(page);
+                              _scrollToForYou();
+                            },
+                            onPrevious: () {
+                              context.read<HomeCubit>().goToPreviousPage();
+                              _scrollToForYou();
+                            },
+                            onNext: () {
+                              context.read<HomeCubit>().goToNextPage();
+                              _scrollToForYou();
+                            },
+                          )
+                        : const SizedBox.shrink(key: ValueKey('no_bar')),
                   ),
                 ),
 
-                // ── Recommended Articles ─────────────────────────────────
-                _RecommendedSection(state: state),
-
                 // Bottom padding
-                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
             ),
           );
@@ -138,134 +178,24 @@ class _HomeContent extends StatelessWidget {
       ),
     );
   }
-}
 
-class _AppBar extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
-    return SliverAppBar(
-      floating: true,
-      snap: true,
-      pinned: false,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      leadingWidth: 64,
-      leading: Builder(
-        builder: (ctx) => GestureDetector(
-          onTap: () => Scaffold.of(ctx).openDrawer(),
-          child: Container(
-            margin: const EdgeInsets.only(left: 16),
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.surfaceCard,
-            ),
-            child: const Icon(Icons.menu_rounded, size: 22),
-          ),
+  Widget _buildLoadMoreFooter(BuildContext context, HomeState state) {
+    final pag = state.pagination;
+    return switch (state.recommendedStatus) {
+      PageLoadStatus.loadingMore => const LoadMoreFooter(
+          status: LoadMoreStatus.loading,
         ),
-      ),
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'NewsWave',
-            style: tt.headlineMedium?.copyWith(
-              color: AppColors.primary,
-              fontSize: 20,
-            ),
-          ),
-        ],
-      ),
-      actions: [
-        GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(AppRoutes.searchRoute),
-          child: Container(
-            width: 42,
-            height: 42,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.surfaceCard,
-            ),
-            child: const Icon(Icons.search_rounded, size: 22),
-          ),
+      PageLoadStatus.failure => LoadMoreFooter(
+          status: LoadMoreStatus.error,
+          onRetry: () => context.read<HomeCubit>().retryRecommended(),
         ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed(AppRoutes.favoriteRoute),
-          child: Container(
-            width: 42,
-            height: 42,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.surfaceCard,
-            ),
-            child: const Icon(Icons.bookmark_outline_rounded, size: 22),
-          ),
+      PageLoadStatus.success
+          when pag.isLastPage && state.recommended.isNotEmpty =>
+        const LoadMoreFooter(
+          status: LoadMoreStatus.endOfList,
+          isLastPage: true,
         ),
-        const SizedBox(width: 16),
-      ],
-    );
-  }
-}
-
-class _RecommendedSection extends StatelessWidget {
-  const _RecommendedSection({required this.state});
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) {
-    if (state.recommendedStatus == LoadStatus.loading) {
-      return SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, __) => const ArticleCardSkeleton(),
-            childCount: 5,
-          ),
-        ),
-      );
-    }
-
-    if (state.recommendedStatus == LoadStatus.failure) {
-      return SliverFillRemaining(
-        hasScrollBody: false,
-        child: ErrorState(
-          message: state.recommendedError ?? 'Failed to load articles',
-          onRetry: () =>
-              context.read<HomeCubit>().fetchRecommended(forceRefresh: true),
-        ),
-      );
-    }
-
-    if (state.recommended.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: EmptyState(
-          icon: Icons.article_outlined,
-          title: 'No articles found',
-          subtitle: 'Pull down to refresh',
-        ),
-      );
-    }
-
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (ctx, index) {
-            final article = state.recommended[index];
-            return ArticleCard(
-              article: article,
-              onTap: () => Navigator.of(ctx).pushNamed(
-                AppRoutes.artcileDetailsRoute,
-                arguments: article,
-              ),
-            );
-          },
-          childCount: state.recommended.length,
-        ),
-      ),
-    );
+      _ => const LoadMoreFooter(status: LoadMoreStatus.idle),
+    };
   }
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
@@ -5,6 +6,7 @@ import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
 import '../../../core/widgets/article_card_widget.dart';
+import '../../../core/widgets/custom_app_bar_icon.dart';
 import '../favorite_cubit/favorite_cubit.dart';
 import '../favorite_cubit/favorite_state.dart';
 
@@ -15,8 +17,19 @@ class FavoritesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: CustomAppBarIcon(
+            icon: CupertinoIcons.chevron_back,
+            onTap: () => Navigator.of(context).maybePop(),
+          ),
+        ),
         title: const Text('Saved Articles'),
         centerTitle: false,
+        leadingWidth: 42,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: BlocBuilder<FavoritesCubit, FavoritesState>(
         builder: (context, state) {

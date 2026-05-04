@@ -10,7 +10,7 @@ class SearchService {
     required String query,
     String searchIn = 'title',
     int page = 1,
-    int pageSize = AppConstants.pageSize,
+    int pageSize = AppConstants.searchPageSize,
   }) async {
     final response = await _dio.get(
       AppConstants.everything,

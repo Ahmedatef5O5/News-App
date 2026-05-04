@@ -14,83 +14,101 @@ class AppDrawer extends StatelessWidget {
       width: MediaQuery.sizeOf(context).width * 0.82,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ProfileHeader(tt: tt),
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'MENU',
-                style: tt.labelSmall?.copyWith(
-                  letterSpacing: 1.5,
-                  color: AppColors.ink300,
-                  fontWeight: FontWeight.w600,
+        child: LayoutBuilder(builder: (context, constraints) {
+          return SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _ProfileHeader(tt: tt),
+                    const SizedBox(height: 8),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'MENU',
+                        style: tt.labelSmall?.copyWith(
+                          letterSpacing: 1.5,
+                          color: AppColors.ink300,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _DrawerItem(
+                      icon: Icons.home_rounded,
+                      label: 'Home',
+                      isActive: true,
+                      onTap: () => Navigator.of(context).pop(),
+                    ),
+                    _DrawerItem(
+                      icon: Icons.bookmark_rounded,
+                      label: 'Saved Articles',
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context)
+                            .pushNamed(AppRoutes.favoriteRoute);
+                      },
+                    ),
+                    _DrawerItem(
+                      icon: Icons.search_rounded,
+                      label: 'Search',
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pushNamed(AppRoutes.searchRoute);
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        'CATEGORIES',
+                        style: tt.labelSmall?.copyWith(
+                          letterSpacing: 1.5,
+                          color: AppColors.ink300,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ...NewsCategory.values
+                        .where((c) => c != NewsCategory.general)
+                        .map(
+                          (cat) => _CategoryItem(category: cat),
+                        ),
+                    const Spacer(),
+                    // const SizedBox(height: 24),
+                    const Divider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline_rounded,
+                              size: 16, color: AppColors.ink300),
+                          const SizedBox(width: 8),
+                          Text(
+                            '${AppConstants.appName} v1.0.0',
+                            style:
+                                tt.bodySmall?.copyWith(color: AppColors.ink300),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            _DrawerItem(
-              icon: Icons.home_rounded,
-              label: 'Home',
-              isActive: true,
-              onTap: () => Navigator.of(context).pop(),
-            ),
-            _DrawerItem(
-              icon: Icons.bookmark_rounded,
-              label: 'Saved Articles',
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(AppRoutes.favoriteRoute);
-              },
-            ),
-            _DrawerItem(
-              icon: Icons.search_rounded,
-              label: 'Search',
-              onTap: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushNamed(AppRoutes.searchRoute);
-              },
-            ),
-            const SizedBox(height: 8),
-            const Divider(),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text(
-                'CATEGORIES',
-                style: tt.labelSmall?.copyWith(
-                  letterSpacing: 1.5,
-                  color: AppColors.ink300,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
-            ...NewsCategory.values.where((c) => c != NewsCategory.general).map(
-                  (cat) => _CategoryItem(category: cat),
-                ),
-            const Spacer(),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  const Icon(Icons.info_outline_rounded,
-                      size: 16, color: AppColors.ink300),
-                  const SizedBox(width: 8),
-                  Text(
-                    '${AppConstants.appName} v1.0.0',
-                    style: tt.bodySmall?.copyWith(color: AppColors.ink300),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          );
+        }),
       ),
     );
   }

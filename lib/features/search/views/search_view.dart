@@ -1,12 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/router/app_routes.dart';
-import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/core/widgets/custom_app_bar_icon.dart';
 import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
-import '../../../core/widgets/article_card_widget.dart';
 import '../Search_cubit/search_cubit.dart';
+import '../widgets/results_with_bar_widget.dart';
+import '../widgets/search_input_field_area.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
@@ -18,19 +19,29 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focus = FocusNode();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _focus.requestFocus();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _focus.requestFocus());
+  }
+
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _focus.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -40,62 +51,73 @@ class _SearchViewState extends State<SearchView> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: CustomAppBarIcon(
+            icon: CupertinoIcons.chevron_back,
+            onTap: () => Navigator.of(context).maybePop(),
+          ),
+        ),
         title: const Text('Search'),
         centerTitle: false,
-        leadingWidth: 48,
+        leadingWidth: 42,
+        elevation: 0,
+        scrolledUnderElevation: 0,
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-            child: TextField(
-              controller: _controller,
-              focusNode: _focus,
-              onChanged: (q) => context.read<SearchCubit>().onQueryChanged(q),
-              style: tt.bodyLarge,
-              decoration: InputDecoration(
-                hintText: 'Search articles, topics, sources…',
-                prefixIcon:
-                    const Icon(Icons.search_rounded, color: AppColors.ink300),
-                suffixIcon: BlocBuilder<SearchCubit, SearchState>(
-                  builder: (context, state) {
-                    if (state.status == SearchStatus.loading) {
-                      return const Padding(
-                        padding: EdgeInsets.all(14),
-                        child: SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      );
-                    }
-                    if (_controller.text.isNotEmpty) {
-                      return IconButton(
-                        icon: const Icon(Icons.close_rounded,
-                            color: AppColors.ink300),
-                        onPressed: () {
-                          _controller.clear();
-                          context.read<SearchCubit>().clear();
-                        },
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
-              ),
-            ),
+            child: SearchInputFieldArea(
+                controller: _controller, focus: _focus, tt: tt),
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: BlocBuilder<SearchCubit, SearchState>(
+            child: BlocConsumer<SearchCubit, SearchState>(
+              listenWhen: (prev, curr) =>
+                  prev.pagination.currentPage != curr.pagination.currentPage &&
+                  curr.status == SearchStatus.success,
+              listener: (_, __) => _scrollToTop(),
               builder: (context, state) {
                 return switch (state.status) {
                   SearchStatus.initial => _InitialHint(),
                   SearchStatus.loading => _LoadingSkeleton(),
-                  SearchStatus.success => _ResultsList(state: state),
+                  SearchStatus.loadingPage => _LoadingSkeleton(),
+                  SearchStatus.loadingMore => ResultsWithBar(
+                      state: state,
+                      scrollController: _scrollController,
+                      onPageTap: (p) {
+                        context.read<SearchCubit>().goToPage(p);
+                        _scrollToTop();
+                      },
+                      onPrev: () {
+                        context.read<SearchCubit>().goToPreviousPage();
+                        _scrollToTop();
+                      },
+                      onNext: () {
+                        context.read<SearchCubit>().goToNextPage();
+                        _scrollToTop();
+                      },
+                    ),
+                  SearchStatus.success => state.results.isEmpty
+                      ? _EmptyResults()
+                      : ResultsWithBar(
+                          state: state,
+                          scrollController: _scrollController,
+                          onPageTap: (p) {
+                            context.read<SearchCubit>().goToPage(p);
+                            _scrollToTop();
+                          },
+                          onPrev: () {
+                            context.read<SearchCubit>().goToPreviousPage();
+                            _scrollToTop();
+                          },
+                          onNext: () {
+                            context.read<SearchCubit>().goToNextPage();
+                            _scrollToTop();
+                          },
+                        ),
                   SearchStatus.failure => ErrorState(
                       message: state.error ?? 'Search failed',
                       onRetry: () => context.read<SearchCubit>().retry(),
@@ -132,51 +154,13 @@ class _LoadingSkeleton extends StatelessWidget {
   }
 }
 
-class _ResultsList extends StatelessWidget {
-  const _ResultsList({required this.state});
-  final SearchState state;
-
+class _EmptyResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (state.results.isEmpty) {
-      return EmptyState(
-        icon: Icons.article_outlined,
-        title: 'No results found',
-        subtitle: 'Try different keywords or check your spelling.',
-      );
-    }
-
-    final tt = Theme.of(context).textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-          child: Text(
-            '${state.totalResults} results',
-            style: tt.bodySmall?.copyWith(
-              color: AppColors.ink300,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: state.results.length,
-            itemBuilder: (ctx, index) {
-              final article = state.results[index];
-              return ArticleCard(
-                article: article,
-                onTap: () => Navigator.of(ctx).pushNamed(
-                  AppRoutes.artcileDetailsRoute,
-                  arguments: article,
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+    return const EmptyState(
+      icon: Icons.article_outlined,
+      title: 'No results found',
+      subtitle: 'Try different keywords or check your spelling.',
     );
   }
 }
