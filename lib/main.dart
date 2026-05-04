@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/router/app_router.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
@@ -25,8 +26,15 @@ class NewsWave extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => FavoritesCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => FavoritesCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CategoryCubit(),
+        ),
+      ],
       child: MaterialApp(
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
