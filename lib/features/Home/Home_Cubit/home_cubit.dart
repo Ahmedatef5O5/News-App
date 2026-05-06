@@ -26,6 +26,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void _syncCategory(NewsCategory category) {
+    if (isClosed) return;
     emit(state.copyWith(
       selectedCategory: category,
       headlinesStatus: LoadStatus.loading,
@@ -37,7 +38,10 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   /// Fetches both sections on initial load.
+  bool _initialized = false;
   Future<void> init() async {
+    if (_initialized || isClosed) return;
+    _initialized = true;
     await Future.wait([
       fetchHeadlines(),
       // fetchRecommended(),
@@ -60,6 +64,7 @@ class HomeCubit extends Cubit<HomeState> {
     String? category,
     bool forceRefresh = false,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(
       headlinesStatus: LoadStatus.loading,
       clearHeadlinesError: true,
@@ -69,11 +74,13 @@ class HomeCubit extends Cubit<HomeState> {
         category: category,
         forceRefresh: forceRefresh,
       );
+      if (isClosed) return;
       emit(state.copyWith(
         headlinesStatus: LoadStatus.success,
         headlines: articles,
       ));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
         headlinesStatus: LoadStatus.failure,
         headlinesError: e.toString(),
@@ -113,6 +120,7 @@ class HomeCubit extends Cubit<HomeState> {
     required PageLoadStatus mode,
     bool forceRefresh = false,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(
       recommendedStatus: mode,
       clearRecommendedError: true,
@@ -123,6 +131,7 @@ class HomeCubit extends Cubit<HomeState> {
         page: page,
         forceRefresh: forceRefresh,
       );
+      if (isClosed) return;
 
       final newPagination = state.pagination.copyWith(
         currentPage: page,
@@ -148,6 +157,7 @@ class HomeCubit extends Cubit<HomeState> {
         pagination: newPagination,
       ));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
         recommendedStatus: PageLoadStatus.failure,
         recommendedError: e.toString(),

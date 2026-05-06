@@ -4,6 +4,7 @@ import 'package:news_app/core/theme/app_colors.dart';
 
 class AppTheme {
   static ThemeData get light => _buildTheme(Brightness.light);
+  static ThemeData get dark => _buildTheme(Brightness.dark);
 
   static ThemeData _buildTheme(Brightness brightness) {
     final isLight = brightness == Brightness.light;
