@@ -12,11 +12,21 @@ import 'package:news_app/features/search/views/search_view.dart';
 import '../../features/Headlines/views/headlines_view.dart';
 import '../../features/Home/views/article_details_view.dart';
 import '../../features/auth/views/sign_up_view.dart';
+import '../../features/auth/views/update_password_view.dart';
 import '../models/article_model.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
+    String routeName = settings.name ?? '';
+    if (routeName.contains('?')) {
+      routeName = routeName.split('?').first;
+    }
+
+    if (routeName.isEmpty || routeName == '/') {
+      routeName = AppRoutes.signInRoute;
+    }
+    // switch (settings.name)
+    switch (routeName) {
       case AppRoutes.signInRoute:
         return _fadeRoute(
           SignInView(),
@@ -32,7 +42,11 @@ class AppRouter {
           ForgotPasswordView(),
           settings,
         );
-
+      case AppRoutes.upadatePasswordRoute:
+        return _fadeRoute(
+          const UpdatePasswordView(), // الشاشة اللي هتصممها
+          settings,
+        );
       case AppRoutes.onboardingRoute:
         return _fadeRoute(
           OnboardingView(),
