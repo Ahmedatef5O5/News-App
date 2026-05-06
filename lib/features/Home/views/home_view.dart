@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import 'package:news_app/core/widgets/app_drawer.dart';
+import 'package:news_app/core/widgets/drawer/app_drawer.dart';
 import 'package:news_app/features/home/widgets/home_carousel_section.dart';
 import '../../../core/cubits/category_cubit.dart';
 import '../../../core/helpers/category_chips.dart';
 import '../../../core/pagination/widgets/load_more_footer.dart';
+import '../../../core/theme/model/theme_model.dart';
+import '../../../core/theme/theme_picker_dialog.dart';
 import '../Home_Cubit/home_cubit.dart';
 import '../widgets/home_app_bar_widget.dart';
 import '../widgets/page_info_badge.dart';
@@ -43,6 +45,12 @@ class _HomeContentState extends State<_HomeContent> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!context.read<ThemeCubit>().hasChosen) {
+        ThemePickerDialog.show(context);
+      }
+    });
   }
 
   @override
