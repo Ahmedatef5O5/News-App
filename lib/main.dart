@@ -1,6 +1,7 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
@@ -13,6 +14,13 @@ import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Lock to portrait — news apps are portrait-first
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   await dotenv.load(fileName: ".env");
   await LocalDatabaseHive.initHive();
   runApp(
@@ -29,10 +37,16 @@ class NewsWave extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
+          create: (_) => AuthCubit()..init(),
+        ),
+        BlocProvider(
           create: (context) => FavoritesCubit(),
         ),
         BlocProvider(
           create: (context) => CategoryCubit(),
+        ),
+        BlocProvider(
+          create: (_) => ThemeCubit()..init(),
         ),
       ],
       child: MaterialApp(
@@ -42,7 +56,8 @@ class NewsWave extends StatelessWidget {
         title: AppConstants.appName,
         theme: AppTheme.light,
         onGenerateRoute: AppRouter.onGenerateRoute,
-        initialRoute: AppRoutes.homeRoute,
+        initialRoute: AppRoutes.splashRoute,
+        // initialRoute: AppRoutes.homeRoute,
       ),
     );
   }
