@@ -104,10 +104,12 @@ class AuthCubit extends Cubit<AuthUserState> {
     emit(const AuthLoading());
     try {
       await _repo.updatePassword(newPassword);
-      // Re-emit current authenticated state to reset the UI.
-      final current = state;
-      if (current is AuthAuthenticated) {
-        emit(AuthAuthenticated(user: current.user, profile: current.profile));
+
+      final user = await _repo.restoreSession();
+      if (user != null) {
+        await _loadProfileAndEmit(user);
+      } else {
+        emit(const AuthUnauthenticated());
       }
     } on AuthException catch (e) {
       emit(AuthError(e.message));
