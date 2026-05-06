@@ -1,10 +1,58 @@
-part of 'auth_cubit.dart';
+import 'package:equatable/equatable.dart';
+import '../../profile/model/profile_model.dart';
+import '../model/user_model.dart';
 
-sealed class AuthState extends Equatable {
-  const AuthState();
+sealed class AuthUserState extends Equatable {
+  const AuthUserState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-final class AuthInitial extends AuthState {}
+final class AuthInitial extends AuthUserState {
+  const AuthInitial();
+}
+
+final class AuthLoading extends AuthUserState {
+  const AuthLoading();
+}
+
+final class AuthAuthenticated extends AuthUserState {
+  const AuthAuthenticated({
+    required this.user,
+    required this.profile,
+  });
+
+  final UserModel user;
+  final ProfileModel profile;
+
+  bool get needsOnboarding => !profile.isOnboarded;
+
+  @override
+  List<Object?> get props => [user, profile];
+}
+
+final class AuthGuest extends AuthUserState {
+  const AuthGuest();
+}
+
+final class AuthUnauthenticated extends AuthUserState {
+  const AuthUnauthenticated();
+}
+
+final class AuthError extends AuthUserState {
+  const AuthError(this.message);
+  final String message;
+
+  @override
+  List<Object?> get props => [message];
+}
+
+/// Password-reset email was sent successfully (feedback state).
+final class AuthPasswordResetSent extends AuthUserState {
+  const AuthPasswordResetSent(this.email);
+  final String email;
+
+  @override
+  List<Object?> get props => [email];
+}
