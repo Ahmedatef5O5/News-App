@@ -3,7 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
+import '../widgets/auth_primary_button.dart';
+import '../widgets/auth_text_field.dart';
 import '../widgets/glass_auth_scaffold.dart';
+import '../widgets/glass_card_widget.dart';
 
 class ForgotPasswordView extends StatefulWidget {
   const ForgotPasswordView({super.key});
