@@ -36,6 +36,7 @@ migrate_working_dir/
 *app_secrets.dart
 *.env
 *repomix-output.md
+*setup_notes.md
 
 
 # Symbolication related
