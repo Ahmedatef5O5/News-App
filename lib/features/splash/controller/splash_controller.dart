@@ -38,7 +38,7 @@ class SplashController {
 
   late final AnimationController exitCtrl = AnimationController(
     vsync: _vsync,
-    duration: const Duration(milliseconds: 500),
+    duration: const Duration(milliseconds: 600),
   );
 
   late final Animation<double> backgroundAnim = CurvedAnimation(
@@ -85,7 +85,6 @@ class SplashController {
     curve: const Interval(0.0, 0.7, curve: Curves.easeOut),
   );
 
-  // Tagline
   late final Animation<double> taglineFade = CurvedAnimation(
     parent: taglineCtrl,
     curve: Curves.easeOut,
@@ -109,15 +108,15 @@ class SplashController {
     end: 0.0,
   ).animate(CurvedAnimation(
     parent: exitCtrl,
-    curve: Curves.easeInCubic,
+    curve: Curves.easeInOutQuart,
   ));
 
   late final Animation<double> exitScale = Tween<double>(
     begin: 1.0,
-    end: 1.06,
+    end: 1.15,
   ).animate(CurvedAnimation(
     parent: exitCtrl,
-    curve: Curves.easeInCubic,
+    curve: Curves.easeOutExpo,
   ));
 
   Future<void> play({required VoidCallback onComplete}) async {
@@ -146,7 +145,7 @@ class SplashController {
 
     HapticFeedback.lightImpact();
     exitCtrl.forward();
-    await Future.delayed(const Duration(milliseconds: 480));
+    await Future.delayed(const Duration(milliseconds: 580));
 
     onComplete();
   }
