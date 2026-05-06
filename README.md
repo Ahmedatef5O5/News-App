@@ -146,77 +146,100 @@ Search is built on a dedicated `SearchCubit` with these production-level details
 ---
 
 ## 📱 Screenshots
-
+<!--
 > 📂 **To add your screenshots:** Place images inside `docs/screenshots/` in your repository, then replace the placeholder paths below. Recommended format: PNG, width 390px (iPhone 14 viewport). For a video demo, upload an `.mp4` or `.gif` to `docs/assets/` and embed it similarly.
-
+-->
 <br/>
+
+
 
 <table>
   <tr>
-    <td align="center">
-      <img src="docs/screenshots/sign_up.png" width="200" alt="Sign Up" />
+    <td align="center" valign="top">
+      <img width="290" height="599" alt="sign_up_view" src="https://github.com/user-attachments/assets/6e7cbe72-2b7a-4dcb-9700-dd270a564887" />
       <br/><sub><b>Sign Up</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/sign_in.png" width="200" alt="Sign In" />
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="sign_in_view" src="https://github.com/user-attachments/assets/302f1e95-ca31-46f4-9040-a8516994d7b2" />
       <br/><sub><b>Sign In</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/forgot_password.png" width="200" alt="Forgot Password" />
+    <td align="center" valign="top">
+      <img width="290" height="599" alt="reset_password_view" src="https://github.com/user-attachments/assets/0b5b2476-71df-40e6-8285-8555fee5a003" />
       <br/><sub><b>Forgot Password</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/update_password.png" width="200" alt="Update Password" />
+    <td align="center" valign="top">
+      <img width="293" height="610" alt="set_new_password" src="https://github.com/user-attachments/assets/8b53ef68-cdf6-4680-961a-903a2dbce6eb" />
       <br/><sub><b>Update Password</b></sub>
     </td>
   </tr>
+
   <tr>
-    <td align="center">
-      <img src="docs/screenshots/onboarding_1.png" width="200" alt="Onboarding Step 1" />
+    <td align="center" valign="top">
+      <img width="290" height="599" alt="onboarding_step_one" src="https://github.com/user-attachments/assets/642d0a6f-c214-456d-9cf5-a155fcdc351d" />
       <br/><sub><b>Onboarding — Step 1</b><br/><i>Name & Details</i></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/onboarding_2.png" width="200" alt="Onboarding Step 2" />
+    <td align="center" valign="top">
+      <img width="290" height="599" alt="onboarding_step_two" src="https://github.com/user-attachments/assets/1837ea9a-44b7-43a9-be8a-54d00e2b90e0" />
       <br/><sub><b>Onboarding — Step 2</b><br/><i>Country & Hobby</i></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/onboarding_3.png" width="200" alt="Onboarding Step 3" />
+    <td align="center" valign="top">
+      <img width="290" height="599" alt="onboarding_step_three" src="https://github.com/user-attachments/assets/b9d4d86f-c695-4aa2-877c-e55a3901a94a" />
       <br/><sub><b>Onboarding — Step 3</b><br/><i>News Categories</i></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/home_view.png" width="200" alt="Home View" />
-      <br/><sub><b>Home View</b></sub>
+    <td align="center" valign="top">
+      <img width="293" height="611" alt="home_view" src="https://github.com/user-attachments/assets/58118132-8b1b-4a7d-8a91-dd70bb25f109" />
+      <br/><sub><b>Home View</b><br/><i>(Light Mode)</i></sub>
     </td>
   </tr>
+
   <tr>
-    <td align="center">
-      <img src="docs/screenshots/article_details.png" width="200" alt="Article Details" />
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="home_feed_view" src="https://github.com/user-attachments/assets/b5f815a7-1e3d-4be8-a2d2-0a2029ee8a67" />
+      <br/><sub><b>Home View</b><br/><i>(Dark Mode)</i></sub>
+    </td>
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="article_details_view" src="https://github.com/user-attachments/assets/e7535c0f-bd07-4b87-bf1a-81107e330d7f" />
       <br/><sub><b>Article Details</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/search_view.png" width="200" alt="Search" />
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="search_view" src="https://github.com/user-attachments/assets/e95f7d4a-52a1-43dd-97a8-a3c0b02c817c" />
       <br/><sub><b>Search View</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/favorites_view.png" width="200" alt="Favorites" />
+    <td align="center" valign="top">
+     <img width="293" height="611" alt="saved_articles_view" src="https://github.com/user-attachments/assets/a102cedd-3752-459b-8d9c-7d35f07b6a1e" />
       <br/><sub><b>Saved Articles</b></sub>
     </td>
-    <td align="center">
-      <img src="docs/screenshots/profile_settings.png" width="200" alt="Profile Settings" />
+  </tr>
+  
+  <tr>
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="drawer_app" src="https://github.com/user-attachments/assets/f71d9ad8-d921-4562-a2d2-038fbdf3e424" />
+      <br/><sub><b>App Drawer</b></sub>
+    </td>
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="headlines_view_all" src="https://github.com/user-attachments/assets/3dccc65d-7f0c-4bcf-9eb1-d46ea2a00d4e" />
+      <br/><sub><b>Headlines (View All)</b></sub>
+    </td>
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="for_you_pagination" src="https://github.com/user-attachments/assets/7f7b3d0a-9cb2-4c40-b8fe-ba7eda93d2b1" />
+      <br/><sub><b>For You Section</b></sub>
+    </td>
+    <td align="center" valign="top">
+     <img width="290" height="599" alt="profile_settings_view" src="https://github.com/user-attachments/assets/57ae01ae-4221-4fdb-bb38-e1d88abfd45c" />
       <br/><sub><b>Profile Settings</b></sub>
     </td>
   </tr>
+
 </table>
-
 <br/>
-
+<!--
 > 💡 **How to add your screenshots to GitHub:**
 > 1. Create a `docs/screenshots/` folder in the root of your repository.
 > 2. Drag and drop your `.png` files with the exact filenames shown above.
 > 3. Commit and push — the images will render automatically in this README.
 > 4. For a video demo, upload a `.gif` (created with [LICEcap](https://www.cockos.com/licecap/) or [ScreenToGif](https://www.screentogif.com/)) to `docs/assets/demo.gif` and embed it at the top of this file.
+-->
 
----
 
 ## 🏗️ Architecture Overview
 
