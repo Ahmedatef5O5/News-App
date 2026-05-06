@@ -7,11 +7,15 @@ import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
 import 'package:news_app/features/search/views/search_view.dart';
 import '../../features/Headlines/views/headlines_view.dart';
 import '../../features/Home/views/article_details_view.dart';
+import '../../features/splash/view/splash_view.dart';
 import '../models/article_model.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case AppRoutes.splashRoute:
+        return _fadeRoute(const SplashView(), settings);
+
       case AppRoutes.homeRoute:
         return _fadeRoute(
           HomeView(),

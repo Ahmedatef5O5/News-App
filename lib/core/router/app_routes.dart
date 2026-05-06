@@ -1,4 +1,5 @@
 class AppRoutes {
+  static const String splashRoute = '/';
   static const String homeRoute = '/home';
   static const String searchRoute = '/search-view';
   static const String favoriteRoute = '/favorite-view';
