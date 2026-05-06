@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/constants/app_constants.dart';
-import 'package:news_app/core/theme/app_colors.dart';
 
 class CategoryChips extends StatelessWidget {
   const CategoryChips({
@@ -14,6 +13,9 @@ class CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return SizedBox(
       height: 44,
       child: ListView(
@@ -24,6 +26,7 @@ class CategoryChips extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: AnimatedContainer(
+              transform: Matrix4.identity()..scale(isSelected ? 1.02 : 1.0),
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
               child: FilterChip(
@@ -34,11 +37,11 @@ class CategoryChips extends StatelessWidget {
                   fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: isSelected ? Colors.white : AppColors.ink700,
+                  color: isSelected ? colors.onPrimary : colors.onSurface,
                 ),
-                backgroundColor: AppColors.surfaceCard,
-                selectedColor: AppColors.primary,
-                checkmarkColor: Colors.white,
+                backgroundColor: colors.surfaceContainerHighest,
+                selectedColor: colors.primary,
+                checkmarkColor: colors.onPrimary,
                 showCheckmark: false,
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 side: BorderSide.none,
@@ -46,6 +49,7 @@ class CategoryChips extends StatelessWidget {
                   borderRadius: BorderRadius.circular(24),
                 ),
                 elevation: 0,
+                pressElevation: 0,
               ),
             ),
           );

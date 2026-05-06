@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/features/Home/views/home_view.dart';
+import 'package:news_app/features/auth/views/forgot_password_view.dart';
+import 'package:news_app/features/auth/views/sign_in_view.dart';
+import 'package:news_app/features/auth/views/update_password_view.dart';
 import 'package:news_app/features/favorites/views/favorites_view.dart';
+import 'package:news_app/features/profile/views/profile_settings_view.dart';
 import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
 import 'package:news_app/features/search/views/search_view.dart';
 import '../../features/Headlines/views/headlines_view.dart';
 import '../../features/Home/views/article_details_view.dart';
+import '../../features/auth/views/sign_up_view.dart';
 import '../../features/splash/view/splash_view.dart';
 import '../models/article_model.dart';
 
@@ -15,6 +20,18 @@ class AppRouter {
     switch (settings.name) {
       case AppRoutes.splashRoute:
         return _fadeRoute(const SplashView(), settings);
+
+      case AppRoutes.signInRoute:
+        return _fadeRoute(const SignInView(), settings);
+
+      case AppRoutes.signUpRoute:
+        return _fadeRoute(const SignUpView(), settings);
+
+      case AppRoutes.forgotPasswordRoute:
+        return _fadeRoute(const ForgotPasswordView(), settings);
+
+      case AppRoutes.upadatePasswordRoute:
+        return _fadeRoute(const UpdatePasswordView(), settings);
 
       case AppRoutes.homeRoute:
         return _fadeRoute(
@@ -44,6 +61,11 @@ class AppRouter {
         final article = settings.arguments as Article;
         return _sharedAxisRoute(
           ArticleDetailView(article: article),
+          settings,
+        );
+      case AppRoutes.profileSettingsRoute:
+        return _slideRoute(
+          const ProfileSettingsView(),
           settings,
         );
 

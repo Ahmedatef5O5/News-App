@@ -8,7 +8,8 @@ class HomeAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return SliverAppBar(
       floating: true,
       snap: true,
@@ -23,17 +24,28 @@ class HomeAppBarWidget extends StatelessWidget {
             margin: const EdgeInsets.only(left: 18, right: 8),
             width: 34,
             height: 34,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surfaceCard,
+              color: isDarkMode
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : AppColors.surfaceCard,
+              border: Border.all(
+                color: isDarkMode
+                    ? Colors.white10
+                    : Colors.black.withValues(alpha: 0.05),
+              ),
             ),
-            child: const Icon(Icons.menu_rounded, size: 22),
+            child: Icon(
+              Icons.menu_rounded,
+              size: 22,
+              color: isDarkMode ? Colors.white : AppColors.ink900,
+            ),
           ),
         ),
       ),
       title: Text(
         'NewsWave',
-        style: tt.headlineMedium?.copyWith(
+        style: txtTheme.headlineMedium?.copyWith(
           color: AppColors.primary,
           fontSize: 20,
         ),

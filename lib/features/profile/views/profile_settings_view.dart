@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/widgets/custom_app_bar_icon.dart';
 import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
 import '../../auth/widgets/auth_text_field.dart';
@@ -115,6 +117,18 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
       },
       child: Scaffold(
         appBar: AppBar(
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          leadingWidth: 42,
+          automaticallyImplyLeading: false,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: CustomAppBarIcon(
+              icon: CupertinoIcons.chevron_back,
+              onTap: () => Navigator.of(context).maybePop(),
+            ),
+          ),
           title: const Text('Profile Settings'),
           actions: [
             BlocBuilder<AuthCubit, AuthUserState>(

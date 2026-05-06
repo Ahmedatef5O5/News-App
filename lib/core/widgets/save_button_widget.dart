@@ -29,6 +29,8 @@ class SaveButton extends StatelessWidget {
       },
       builder: (context, state) {
         final isSaved = state.isSaved(article);
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
         return GestureDetector(
           onTap: () {
             context.read<FavoritesCubit>().toggleFavorite(article);
@@ -59,10 +61,15 @@ class SaveButton extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isGlass
-                  ? Colors.white.withValues(alpha: 0.2)
+                  ? isDark
+                      ? Colors.black.withValues(alpha: 0.3)
+                      : Colors.white.withValues(alpha: 0.3)
                   : (isSaved
                       ? AppColors.saved.withValues(alpha: 0.12)
                       : Colors.transparent),
+              border: Border.all(
+                color: isDark ? Colors.white10 : Colors.white24,
+              ),
             ),
             child: Icon(
               isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,

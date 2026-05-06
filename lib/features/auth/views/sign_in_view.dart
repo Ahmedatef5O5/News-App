@@ -43,7 +43,7 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
@@ -78,10 +78,8 @@ class _SignInViewState extends State<SignInView> {
           child: Column(
             children: [
               const SizedBox(height: 40),
-              // ── Logo ──────────────────────────────────────────────────────
               _LogoBadge(),
               const SizedBox(height: 32),
-              // ── Glass card ────────────────────────────────────────────────
               GlassCard(
                 child: Form(
                   key: _formKey,
@@ -90,7 +88,7 @@ class _SignInViewState extends State<SignInView> {
                     children: [
                       Text(
                         'Welcome back',
-                        style: tt.headlineSmall?.copyWith(
+                        style: txtTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
                         ),
@@ -98,7 +96,7 @@ class _SignInViewState extends State<SignInView> {
                       const SizedBox(height: 4),
                       Text(
                         'Sign in to your ${AppConstants.appName} account',
-                        style: tt.bodyMedium?.copyWith(
+                        style: txtTheme.bodyMedium?.copyWith(
                           color: AppColors.ink300,
                         ),
                       ),
@@ -150,7 +148,7 @@ class _SignInViewState extends State<SignInView> {
                           ),
                           child: Text(
                             'Forgot password?',
-                            style: tt.labelMedium?.copyWith(
+                            style: txtTheme.labelMedium?.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
@@ -170,26 +168,24 @@ class _SignInViewState extends State<SignInView> {
                 ),
               ),
               const SizedBox(height: 20),
-              // ── Divider ───────────────────────────────────────────────────
               _OrDivider(),
               const SizedBox(height: 20),
-              // ── Guest button ──────────────────────────────────────────────
               _GuestButton(),
               const SizedBox(height: 24),
-              // ── Sign up link ──────────────────────────────────────────────
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     "Don't have an account? ",
-                    style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+                    style:
+                        txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                   ),
                   GestureDetector(
                     onTap: () =>
                         Navigator.of(context).pushNamed(AppRoutes.signUpRoute),
                     child: Text(
                       'Sign Up',
-                      style: tt.bodyMedium?.copyWith(
+                      style: txtTheme.bodyMedium?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
                       ),
@@ -205,8 +201,6 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 }
-
-// ─── Sub-widgets ──────────────────────────────────────────────────────────────
 
 class _LogoBadge extends StatelessWidget {
   @override
@@ -226,8 +220,8 @@ class _LogoBadge extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: AppColors.primary.withValues(alpha: 0.4),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                blurRadius: 12,
+                offset: const Offset(0, 0),
               ),
             ],
           ),

@@ -70,7 +70,6 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                 ],
               ),
               const SizedBox(height: 40),
-              // ── Icon ──────────────────────────────────────────────────────
               Container(
                 width: 88,
                 height: 88,
@@ -84,8 +83,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.primary.withValues(alpha: 0.35),
-                      blurRadius: 24,
-                      offset: const Offset(0, 8),
+                      blurRadius: 12,
+                      offset: const Offset(0, 0),
                     ),
                   ],
                 ),

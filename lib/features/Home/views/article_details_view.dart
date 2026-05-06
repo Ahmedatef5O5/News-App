@@ -147,7 +147,6 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
             },
           ),
 
-          // ── Draggable bottom sheet ────────────────────────────────────────
           NotificationListener<DraggableScrollableNotification>(
             onNotification: (n) {
               _sheetExtent.value = n.extent;
@@ -158,9 +157,13 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
               minChildSize: 0.47,
               maxChildSize: 0.96,
               builder: (_, scrollController) {
+                final isDark = Theme.of(context).brightness == Brightness.dark;
+                final theme = Theme.of(context);
+                final colors = theme.colorScheme;
+
                 return Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: colors.surface,
                     borderRadius:
                         BorderRadius.vertical(top: Radius.circular(32)),
                   ),
@@ -176,7 +179,8 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             width: 40,
                             height: 4,
                             decoration: BoxDecoration(
-                              color: AppColors.ink100,
+                              color: isDark ? Colors.white24 : AppColors.ink100,
+                              // color: colors.onSurface.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -188,21 +192,20 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // ── Source row ──────────────────────────────────
                             Row(
                               children: [
                                 CircleAvatar(
                                   radius: 16,
                                   backgroundColor: AppColors.primary,
-                                  child: const Icon(Icons.language_rounded,
-                                      color: Colors.white, size: 16),
+                                  child: Icon(Icons.language_rounded,
+                                      color: colors.onSurface, size: 16),
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     widget.article.source?.name ?? 'Unknown',
                                     style: tt.titleMedium?.copyWith(
-                                      color: AppColors.ink900,
+                                      color: colors.onSurface,
                                       fontWeight: FontWeight.w700,
                                     ),
                                   ),
@@ -274,7 +277,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             Text(
                               widget.article.cleanDescription,
                               style: tt.bodyLarge?.copyWith(
-                                color: AppColors.ink700,
+                                color: colors.onSurface.withValues(alpha: 0.85),
                                 height: 1.7,
                               ),
                             ),
@@ -285,7 +288,10 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                               Text(
                                 widget.article.cleanContent,
                                 style: tt.bodyMedium?.copyWith(
-                                  color: AppColors.ink500,
+                                  // color: AppColors.ink500,
+                                  color:
+                                      colors.onSurface.withValues(alpha: 0.7),
+
                                   height: 1.7,
                                 ),
                               ),
@@ -329,9 +335,8 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                 icon: const Icon(Icons.share_outlined),
                                 label: const Text('Share Article'),
                                 style: OutlinedButton.styleFrom(
-                                  foregroundColor: AppColors.ink700,
-                                  side: const BorderSide(
-                                      color: AppColors.divider),
+                                  foregroundColor: colors.onSurface,
+                                  side: BorderSide(color: colors.outline),
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 16),
                                   shape: RoundedRectangleBorder(
@@ -367,6 +372,7 @@ class _GlassButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: ClipOval(
@@ -375,8 +381,19 @@ class _GlassButton extends StatelessWidget {
           child: Container(
             width: 42,
             height: 42,
-            color: Colors.white.withValues(alpha: 0.2),
-            child: Icon(icon, color: Colors.white, size: 20),
+            decoration: BoxDecoration(
+              color: isDark
+                  ? Colors.black.withValues(alpha: 0.3)
+                  : Colors.white.withValues(alpha: 0.3),
+              border: Border.all(
+                color: isDark ? Colors.white10 : Colors.white24,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 20,
+              color: isDark ? Colors.white : AppColors.ink900,
+            ),
           ),
         ),
       ),

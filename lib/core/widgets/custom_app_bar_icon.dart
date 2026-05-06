@@ -8,16 +8,28 @@ class CustomAppBarIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: 42,
         height: 42,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.surfaceCard,
+          color: isDarkMode
+              ? Colors.white.withValues(alpha: 0.1)
+              : AppColors.surfaceCard,
+          border: Border.all(
+            color: isDarkMode
+                ? Colors.white10
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
-        child: Icon(icon, size: 22),
+        child: Icon(
+          icon,
+          size: 22,
+          color: isDarkMode ? Colors.white : AppColors.ink900,
+        ),
       ),
     );
   }

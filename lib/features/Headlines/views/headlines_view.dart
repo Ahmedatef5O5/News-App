@@ -56,8 +56,11 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.surfaceWarm,
+      backgroundColor: colors.surface,
       body: BlocConsumer<HeadlinesCubit, HeadlinesState>(
         listenWhen: (prev, curr) =>
             prev.pagination.currentPage != curr.pagination.currentPage,
@@ -70,7 +73,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 pinned: true,
                 elevation: 0,
                 scrolledUnderElevation: 0,
-                backgroundColor: AppColors.surfaceWarm,
+                backgroundColor: colors.surface,
                 leadingWidth: 42,
                 automaticallyImplyLeading: false,
                 leading: Padding(
@@ -83,7 +86,8 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 title: Text(
                   'Breaking News',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: AppColors.accent,
+                        // color: AppColors.accent,
+                        color: colors.primary,
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
                       ),
@@ -102,10 +106,11 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                           ),
                           child: Text(
                             'Page ${state.pagination.currentPage} of ${state.pagination.totalPages}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.primary,
+                              // color: AppColors.primary,
+                              color: colors.primary,
                             ),
                           ),
                         ),

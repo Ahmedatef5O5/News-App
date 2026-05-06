@@ -13,18 +13,21 @@ class GlassAuthScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          const _AnimatedBackground(),
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
-            child: const SizedBox.expand(),
-          ),
-          SafeArea(child: child),
-        ],
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            const _AnimatedBackground(),
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+              child: const SizedBox.expand(),
+            ),
+            SafeArea(child: child),
+          ],
+        ),
       ),
     );
   }
