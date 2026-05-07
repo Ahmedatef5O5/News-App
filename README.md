@@ -169,7 +169,7 @@ Search is built on a dedicated `SearchCubit` with these production-level details
       <br/><sub><b>Forgot Password</b></sub>
     </td>
     <td align="center" valign="top">
-      <img width="293" height="610" alt="set_new_password" src="https://github.com/user-attachments/assets/8b53ef68-cdf6-4680-961a-903a2dbce6eb" />
+      <img width="293" height="614" alt="set_new_password" src="https://github.com/user-attachments/assets/8b53ef68-cdf6-4680-961a-903a2dbce6eb" />
       <br/><sub><b>Update Password</b></sub>
     </td>
   </tr>
@@ -188,7 +188,7 @@ Search is built on a dedicated `SearchCubit` with these production-level details
       <br/><sub><b>Onboarding — Step 3</b><br/><i>News Categories</i></sub>
     </td>
     <td align="center" valign="top">
-      <img width="293" height="611" alt="home_view" src="https://github.com/user-attachments/assets/58118132-8b1b-4a7d-8a91-dd70bb25f109" />
+      <img width="293" height="614" alt="home_view" src="https://github.com/user-attachments/assets/58118132-8b1b-4a7d-8a91-dd70bb25f109" />
       <br/><sub><b>Home View</b><br/><i>(Light Mode)</i></sub>
     </td>
   </tr>
@@ -207,7 +207,7 @@ Search is built on a dedicated `SearchCubit` with these production-level details
       <br/><sub><b>Search View</b></sub>
     </td>
     <td align="center" valign="top">
-     <img width="293" height="611" alt="saved_articles_view" src="https://github.com/user-attachments/assets/a102cedd-3752-459b-8d9c-7d35f07b6a1e" />
+     <img width="293" height="614" alt="saved_articles_view" src="https://github.com/user-attachments/assets/a102cedd-3752-459b-8d9c-7d35f07b6a1e" />
       <br/><sub><b>Saved Articles</b></sub>
     </td>
   </tr>
@@ -226,7 +226,7 @@ Search is built on a dedicated `SearchCubit` with these production-level details
       <br/><sub><b>For You Section</b></sub>
     </td>
     <td align="center" valign="top">
-     <img width="290" height="599" alt="profile_settings_view" src="https://github.com/user-attachments/assets/57ae01ae-4221-4fdb-bb38-e1d88abfd45c" />
+     <img width="290" height="604" alt="profile_settings_view" src="https://github.com/user-attachments/assets/57ae01ae-4221-4fdb-bb38-e1d88abfd45c" />
       <br/><sub><b>Profile Settings</b></sub>
     </td>
   </tr>
