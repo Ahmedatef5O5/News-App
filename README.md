@@ -1,9 +1,10 @@
+
 <div align="center">
 
 <br/>
 
 <!-- PROJECT LOGO / BANNER -->
-<img src="docs/assets/banner.png" alt="NewsWave Banner" width="100%" />
+<img src="https://github.com/user-attachments/assets/0399d929-5597-4c01-881b-d26556d2c98d" alt="NewsWave Banner" width="100%" />
 
 <br/>
 <br/>
