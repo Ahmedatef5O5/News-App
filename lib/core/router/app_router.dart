@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/features/Home/views/home_view.dart';
 import 'package:news_app/features/auth/views/forgot_password_view.dart';
+import 'package:news_app/features/auth/views/onboarding_view.dart';
 import 'package:news_app/features/auth/views/sign_in_view.dart';
 import 'package:news_app/features/auth/views/update_password_view.dart';
 import 'package:news_app/features/favorites/views/favorites_view.dart';
@@ -33,22 +34,28 @@ class AppRouter {
       case AppRoutes.upadatePasswordRoute:
         return _fadeRoute(const UpdatePasswordView(), settings);
 
+      case AppRoutes.onboardingRoute:
+        return _fadeRoute(
+          const OnboardingView(),
+          settings,
+        );
+
       case AppRoutes.homeRoute:
         return _fadeRoute(
-          HomeView(),
+          const HomeView(),
           settings,
         );
       case AppRoutes.searchRoute:
         return _slideRoute(
           BlocProvider(
             create: (_) => SearchCubit(),
-            child: SearchView(),
+            child: const SearchView(),
           ),
           settings,
         );
       case AppRoutes.favoriteRoute:
         return _slideRoute(
-          FavoritesView(),
+          const FavoritesView(),
           settings,
         );
       case AppRoutes.headlinesRoute:

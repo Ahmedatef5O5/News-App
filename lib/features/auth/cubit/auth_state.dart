@@ -48,7 +48,6 @@ final class AuthError extends AuthUserState {
   List<Object?> get props => [message];
 }
 
-/// Password-reset email was sent successfully (feedback state).
 final class AuthPasswordResetSent extends AuthUserState {
   const AuthPasswordResetSent(this.email);
   final String email;

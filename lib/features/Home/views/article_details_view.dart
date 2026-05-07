@@ -165,7 +165,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                   decoration: BoxDecoration(
                     color: colors.surface,
                     borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(32)),
+                        const BorderRadius.vertical(top: Radius.circular(32)),
                   ),
                   child: ListView(
                     controller: scrollController,

@@ -28,7 +28,7 @@ class TitleHeadlineWidget extends StatelessWidget {
                   wordSpacing: wordSpacing,
                 ),
           ),
-          Spacer(),
+          const Spacer(),
           TextButton(
             onPressed: onTap,
             child: Text(

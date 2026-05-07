@@ -6,7 +6,7 @@ import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/widgets/article_card_widget.dart';
-import '../Home_Cubit/home_cubit.dart';
+import '../cubit/home_cubit.dart';
 
 class RecommendedFeed extends StatelessWidget {
   const RecommendedFeed({super.key, required this.state});
@@ -27,7 +27,6 @@ class RecommendedFeed extends StatelessWidget {
       );
     }
 
-    // Page-jump loading overlay
     if (state.recommendedStatus == PageLoadStatus.loadingPage) {
       return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -40,7 +39,6 @@ class RecommendedFeed extends StatelessWidget {
       );
     }
 
-    // Error state (initial)
     if (state.recommendedStatus == PageLoadStatus.failure &&
         state.recommended.isEmpty) {
       return SliverToBoxAdapter(
@@ -51,7 +49,6 @@ class RecommendedFeed extends StatelessWidget {
       );
     }
 
-    // Empty state
     if (state.recommended.isEmpty) {
       return const SliverToBoxAdapter(
         child: EmptyState(
@@ -62,7 +59,6 @@ class RecommendedFeed extends StatelessWidget {
       );
     }
 
-    // Article list
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       sliver: SliverList(

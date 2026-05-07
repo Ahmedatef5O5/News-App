@@ -10,7 +10,7 @@ import '../../../core/helpers/category_chips.dart';
 import '../../../core/pagination/widgets/load_more_footer.dart';
 import '../../../core/theme/model/theme_model.dart';
 import '../../../core/theme/theme_picker_dialog.dart';
-import '../Home_Cubit/home_cubit.dart';
+import '../cubit/home_cubit.dart';
 import '../widgets/home_app_bar_widget.dart';
 import '../widgets/page_info_badge.dart';
 import '../widgets/recommended_feed.dart';
@@ -99,7 +99,7 @@ class _HomeContentState extends State<_HomeContent> {
             child: CustomScrollView(
               controller: _scrollController,
               slivers: [
-                HomeAppBarWidget(),
+                const HomeAppBarWidget(),
 
                 SliverToBoxAdapter(
                   child: CategoryChips(

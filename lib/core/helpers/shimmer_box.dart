@@ -78,26 +78,26 @@ class ArticleCardSkeleton extends StatelessWidget {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Row(
+      child: const Row(
         children: [
           ShimmerBox(width: 110, height: 110, borderRadius: 20),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ShimmerBox(width: 80, height: 10),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ShimmerBox(width: double.infinity, height: 14),
-                const SizedBox(height: 6),
+                SizedBox(height: 6),
                 ShimmerBox(width: 140, height: 14),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 ShimmerBox(width: 60, height: 10),
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
         ],
       ),
     );
@@ -114,7 +114,7 @@ class CarouselCardSkeleton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 6),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
-        child: ShimmerBox(
+        child: const ShimmerBox(
           width: double.infinity,
           height: 220,
           borderRadius: 24,

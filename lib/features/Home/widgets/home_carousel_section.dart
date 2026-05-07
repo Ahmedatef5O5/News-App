@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import 'package:news_app/features/Home/Home_Cubit/home_cubit.dart';
 import 'package:news_app/features/home/widgets/headline_carousel_card.dart';
 import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
+import '../cubit/home_cubit.dart';
 
 class HomeCarouselSection extends StatefulWidget {
   const HomeCarouselSection({
@@ -45,13 +45,10 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
         child: PageView.builder(
           scrollDirection: Axis.horizontal,
           controller: PageController(viewportFraction: 0.88),
-          // padding: const EdgeInsets.symmetric(horizontal: 14),
           itemCount: 3,
           itemBuilder: (_, __) => const Padding(
             padding: EdgeInsets.symmetric(horizontal: 6),
             child: CarouselCardSkeleton(),
-
-            // width: MediaQuery.sizeOf(context).width * 0.88,
           ),
         ),
       );

@@ -46,7 +46,7 @@ class SplashProgressBar extends StatelessWidget {
                 widthFactor: progress.clamp(0.0, 1.0),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [
                         AppColors.primary,
                         AppColors.accent,

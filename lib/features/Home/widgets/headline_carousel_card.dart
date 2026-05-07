@@ -18,7 +18,9 @@ class HeadlineCarouselCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -38,7 +40,6 @@ class HeadlineCarouselCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // ── Background image ─────────────────────────────────────────
               CachedNetworkImage(
                 imageUrl: article.hasImage
                     ? article.urlToImage!
@@ -48,8 +49,6 @@ class HeadlineCarouselCard extends StatelessWidget {
                 errorWidget: (_, __, ___) =>
                     Container(color: AppColors.shimmer),
               ),
-
-              // ── Gradient overlay ─────────────────────────────────────────
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -64,8 +63,6 @@ class HeadlineCarouselCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // ── Save button top-right ─────────────────────────────────────
               Positioned(
                 top: 12,
                 right: 12,
@@ -73,19 +70,20 @@ class HeadlineCarouselCard extends StatelessWidget {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                     child: Container(
-                      color: Colors.white.withValues(alpha: 0.18),
+                      // color: Colors.white.withValues(alpha: 0.18),
+                      color: isDark ? Colors.white10 : Colors.white24,
                       child: SaveButton(
                         article: article,
                         size: 40,
                         isGlass: true,
-                        iconColor: Colors.white,
+                        iconColor: isDark
+                            ? Colors.white60
+                            : Colors.black26.withValues(alpha: 0.18),
                       ),
                     ),
                   ),
                 ),
               ),
-
-              // ── Source badge top-left ────────────────────────────────────
               Positioned(
                 top: 12,
                 left: 12,
@@ -113,8 +111,6 @@ class HeadlineCarouselCard extends StatelessWidget {
                   ),
                 ),
               ),
-
-              // ── Bottom content ───────────────────────────────────────────
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -129,7 +125,7 @@ class HeadlineCarouselCard extends StatelessWidget {
                         article.title ?? 'Untitled',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: tt.titleLarge?.copyWith(
+                        style: txtTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,
                           fontSize: 16,

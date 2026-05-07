@@ -95,7 +95,8 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
         if (state is AuthAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Profile updated successfully'),
+              content: const Text('Profile updated successfully',
+                  style: TextStyle(color: Colors.white)),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -140,7 +141,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                         height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(
+                    : const Text(
                         'Save',
                         style: TextStyle(
                           color: AppColors.primary,
@@ -243,7 +244,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                         ),
                       ),
                     const SizedBox(height: 28),
-                    SectionTitle(title: 'Personal Information'),
+                    const SectionTitle(title: 'Personal Information'),
                     const SizedBox(height: 12),
                     AuthTextField(
                       controller: _firstNameCtrl,
@@ -276,7 +277,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                           .toList(),
                     ),
                     const SizedBox(height: 28),
-                    SectionTitle(title: 'Security'),
+                    const SectionTitle(title: 'Security'),
                     const SizedBox(height: 12),
                     AuthTextField(
                       controller: _newPassCtrl,
@@ -292,7 +293,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       },
                     ),
                     const SizedBox(height: 28),
-                    SectionTitle(title: 'Interests'),
+                    const SectionTitle(title: 'Interests'),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: _selectedHobby,
@@ -311,7 +312,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                           .toList(),
                     ),
                     const SizedBox(height: 20),
-                    SectionTitle(title: 'Preferred News Categories'),
+                    const SectionTitle(title: 'Preferred News Categories'),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,

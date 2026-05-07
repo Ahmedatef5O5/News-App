@@ -136,13 +136,12 @@ class AppTheme {
         ),
       ),
 
-      // ── Input Decoration ─────────────────────────────────────────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isLight
             ? AppColors.surfaceCard
             : Colors.white.withValues(alpha: 0.06),
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           fontFamily: 'Poppins',
           color: AppColors.ink300,
           fontSize: 14,

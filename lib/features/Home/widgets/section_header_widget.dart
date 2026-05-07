@@ -18,7 +18,7 @@ class SectionHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.fromLTRB(22, 20, 22, 12),
       child: Row(
@@ -35,7 +35,7 @@ class SectionHeaderWidget extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label,
-            style: tt.headlineMedium?.copyWith(fontSize: 18),
+            style: txtTheme.headlineMedium?.copyWith(fontSize: 18),
           ),
           const Spacer(),
           if (trailing != null)

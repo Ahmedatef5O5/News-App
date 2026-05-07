@@ -98,7 +98,10 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
               child: FilledButton(
                 onPressed: () async {
                   await context.read<ThemeCubit>().setTheme(_selected);
-                  if (mounted) Navigator.of(context).pop();
+                  if (mounted)
+                  {
+Navigator.of(context).pop();
+                  } 
                 },
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(

@@ -43,7 +43,10 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
         if (state is AuthAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Password updated successfully!'),
+              content: const Text(
+                'Password updated successfully!',
+                style: TextStyle(color: Colors.white),
+              ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
