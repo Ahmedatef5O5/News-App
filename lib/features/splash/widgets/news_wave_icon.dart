@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/features/splash/widgets/wave_icon_painter.dart';
-
 import '../../../core/theme/app_colors.dart';
 
 class NewsWaveIcon extends StatelessWidget {

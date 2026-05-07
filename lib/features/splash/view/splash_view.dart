@@ -141,6 +141,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
                           child: CustomPaint(
                             painter: DotGridPainter(
                               opacity: _ctrl.backgroundAnim.value,
+                              isDark: isDark,
                             ),
                           ),
                         ),

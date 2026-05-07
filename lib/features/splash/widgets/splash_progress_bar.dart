@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 
-/// Slim animated progress bar at the bottom of the splash.
-/// Fills from left to right as the splash plays — gives users
-/// a subconscious sense that "something is loading" without
-/// showing an ugly spinner.
 class SplashProgressBar extends StatelessWidget {
   const SplashProgressBar({
     super.key,
-    required this.progress, // 0.0 → 1.0
+    required this.progress,
     required this.opacity,
   });
 
@@ -17,6 +13,7 @@ class SplashProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Opacity(
       opacity: opacity.clamp(0.0, 1.0),
       child: Column(
@@ -29,7 +26,9 @@ class SplashProgressBar extends StatelessWidget {
               fontFamily: 'Poppins',
               fontSize: 11,
               fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.22),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.22)
+                  : AppColors.ink300,
               letterSpacing: 0.5,
             ),
           ),
@@ -40,7 +39,9 @@ class SplashProgressBar extends StatelessWidget {
             child: Container(
               width: 120,
               height: 2,
-              color: Colors.white.withValues(alpha: 0.10),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.10)
+                  : AppColors.ink100,
               child: FractionallySizedBox(
                 alignment: Alignment.centerLeft,
                 widthFactor: progress.clamp(0.0, 1.0),

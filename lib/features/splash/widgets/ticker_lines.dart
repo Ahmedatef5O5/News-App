@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/theme/app_colors.dart';
+
 class TickerLines extends StatelessWidget {
   const TickerLines({
     super.key,
@@ -22,6 +24,9 @@ class TickerLines extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final baseColor = isDark ? Colors.white : AppColors.primary;
+    final peakOpacity = isDark ? 0.9 : 0.25;
 
     return Stack(
       children: _lines.map((line) {
@@ -41,7 +46,7 @@ class TickerLines extends StatelessWidget {
           child: Transform.translate(
             offset: Offset(dx, 0),
             child: Opacity(
-              opacity: adjustedFade * 0.22,
+              opacity: adjustedFade * (isDark ? 0.22 : 0.6),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(3),
                 child: Container(
@@ -50,9 +55,9 @@ class TickerLines extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Colors.white.withValues(alpha: 0),
-                        Colors.white.withValues(alpha: 0.9),
-                        Colors.white.withValues(alpha: 0),
+                        baseColor.withValues(alpha: 0),
+                        baseColor.withValues(alpha: peakOpacity),
+                        baseColor.withValues(alpha: 0),
                       ],
                       stops: line.fromRight
                           ? const [0.0, 0.6, 1.0]

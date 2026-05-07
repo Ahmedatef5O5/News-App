@@ -225,16 +225,19 @@ class _LogoBadge extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.waves_rounded,
-            color: Colors.white,
-            size: 36,
+          child: Center(
+            child: Image.asset(
+              'assets/images/icons/icon_1024x1024.png',
+              width: 66,
+              height: 66,
+              fit: BoxFit.contain,
+            ),
           ),
         ),
         const SizedBox(height: 12),
-        Text(
+        const Text(
           AppConstants.appName,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 24,
             fontWeight: FontWeight.w800,
@@ -250,11 +253,11 @@ class _LogoBadge extends StatelessWidget {
 class _OrDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: EdgeInsets.symmetric(horizontal: 12),
           child: Text(
             'or',
             style: TextStyle(
@@ -265,7 +268,7 @@ class _OrDivider extends StatelessWidget {
             ),
           ),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider()),
       ],
     );
   }

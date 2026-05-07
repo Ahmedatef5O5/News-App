@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import '../../../core/theme/app_colors.dart';
 
 class DotGridPainter extends CustomPainter {
-  const DotGridPainter({required this.opacity});
   final double opacity;
+  final bool isDark;
+
+  const DotGridPainter({required this.opacity, required this.isDark});
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: opacity * 0.045)
+      ..color = (isDark ? Colors.white : AppColors.ink900)
+          .withValues(alpha: opacity * (isDark ? 0.045 : 0.03))
       ..strokeCap = StrokeCap.round;
 
     const spacing = 28.0;

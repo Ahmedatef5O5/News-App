@@ -56,7 +56,7 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
 
     if (widget.status == LoadStatus.failure) {
       return SizedBox(
-        height: 200,
+        height: 278,
         child: ErrorState(
           message: widget.error ?? 'Failed to load headlines',
           onRetry: widget.onRetry,
