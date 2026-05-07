@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
-import 'package:news_app/features/Home/services/home_services.dart';
+import 'package:news_app/features/home/services/home_services.dart';
 import '../constants/app_constants.dart';
 
 /// Repository sits between Cubit and Service.
