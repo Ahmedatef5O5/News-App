@@ -9,7 +9,25 @@
 <br/>
 <br/>
 
-# 📰 NewsWave
+<!-- # 📰 NewsWave -->
+<h1 style="
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  line-height:1;
+">
+ <!-- <img width="1024" height="1024" alt="icon_1024x1024" src="https://github.com/user-attachments/assets/d3c62407-3a37-484d-9424-cd6cc8db9f4b" /> -->
+  <img
+    src="https://github.com/user-attachments/assets/d3c62407-3a37-484d-9424-cd6cc8db9f4b"
+    alt="NewsWave App Icon"
+    width="25"
+    height="25"
+    style="border-radius:10px; display:block;"
+  />
+  <span style="display:block;">NewsWave</span>
+</h1>
+
 
 ### *Your world, curated — in real time.*
 
