@@ -1,14 +1,19 @@
 import 'dart:io';
+import 'package:news_app/core/supabase/auth_local_data_source.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/model/user_model.dart';
 import '../../features/profile/model/profile_model.dart';
 import 'auth_exception.dart';
 
 class AuthRemoteDataSource {
-  AuthRemoteDataSource({SupabaseClient? client})
-      : _client = client ?? Supabase.instance.client;
+  AuthRemoteDataSource({
+    SupabaseClient? client,
+    AuthLocalDataSource? localDataSource,
+  })  : _client = client ?? Supabase.instance.client,
+        _local = localDataSource ?? AuthLocalDataSource.instance;
 
   final SupabaseClient _client;
+  final AuthLocalDataSource _local;
 
   User? get currentUser => _client.auth.currentUser;
 
@@ -99,6 +104,10 @@ class AuthRemoteDataSource {
     }
   }
 
+  // ─── Session ──────────────────────────────────────────────────────────────
+
+  /// Returns the user from the in-memory Supabase session (no network call).
+
   Future<UserModel?> restoreSession() async {
     try {
       final session = _client.auth.currentSession;
@@ -117,7 +126,11 @@ class AuthRemoteDataSource {
           .eq('id', userId)
           .maybeSingle();
       if (data == null) return null;
-      return ProfileModel.fromMap(data);
+      final profile = ProfileModel.fromMap(data);
+
+      //  Write-through cache
+      await _local.cacheProfile(profile);
+      return profile;
     } catch (e) {
       throw mapSupabaseError(e);
     }
@@ -131,7 +144,9 @@ class AuthRemoteDataSource {
           .upsert(profile.toMap())
           .select()
           .single();
-      return ProfileModel.fromMap(data);
+      final saved = ProfileModel.fromMap(data);
+      await _local.cacheProfile(saved);
+      return saved;
     } catch (e) {
       throw mapSupabaseError(e);
     }

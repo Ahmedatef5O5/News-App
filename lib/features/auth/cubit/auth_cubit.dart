@@ -14,6 +14,8 @@ class AuthCubit extends Cubit<AuthUserState> {
 
   final AuthRepository _repo;
 
+  // Init (cold-start)
+
   Future<void> init() async {
     emit(const AuthLoading());
     try {
@@ -22,6 +24,7 @@ class AuthCubit extends Cubit<AuthUserState> {
         emit(const AuthUnauthenticated());
         return;
       }
+      // Attempt network fetch; falls back to cache inside the repository.
       await _loadProfileAndEmit(user);
     } catch (_) {
       emit(const AuthUnauthenticated());

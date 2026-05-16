@@ -12,6 +12,14 @@ abstract final class AppConstants {
 
   // ── Hive boxes ───────────────────────────────────────────────────────────
   static const String articlesBox = 'articles_box';
+
+  /// Box that stores the authenticated user's [ProfileModel].
+  static const String profileBox = 'profile_box';
+
+  // ─── Hive keys ────────────────────────────────────────────────────────────
+  /// Key under which the single [ProfileModel] is stored inside [profileBox].
+  static const String cachedProfileKey = 'cached_profile';
+
   static const String favKey = 'favorite_articles';
   static const String cachedHeadlinesKey = 'cached_headlines';
   static const String cachedRecommendedKey = 'cached_recommended';
