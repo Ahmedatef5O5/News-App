@@ -1,5 +1,6 @@
 import 'package:hive_flutter/adapters.dart';
 import 'package:news_app/core/constants/app_constants.dart';
+import '../../features/profile/model/profile_model.dart';
 import '../models/article_model.dart';
 
 /// Singleton Hive wrapper.
@@ -12,10 +13,23 @@ class LocalDatabaseHive {
 
   Box? _box;
 
+  // ─── Initialisation (call once in main()) ─────────────────────────────────
+
+  /// Registers all Hive adapters and opens the articles box.
+  ///
+  /// The [ProfileModel] adapter is also registered here so it is available
+  /// before [AuthLocalDataSource] opens the profile box.
   static Future<void> initHive() async {
     await Hive.initFlutter();
-    Hive.registerAdapter(ArticleAdapter());
-    Hive.registerAdapter(SourceAdapter());
+
+    // ── Articles (typeId 0 & 1) ───────────────────────────────────────────
+    if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(ArticleAdapter());
+    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(SourceAdapter());
+
+    // ── Profile (typeId 2) ────────────────────────────────────────────────
+    if (!Hive.isAdapterRegistered(2)) {
+      Hive.registerAdapter(ProfileModelAdapter());
+    }
   }
 
   Future<Box> _getBox() async {

@@ -1,15 +1,37 @@
-class ProfileModel {
+import 'package:hive/hive.dart';
+
+part 'profile_model.g.dart';
+
+@HiveType(typeId: 2)
+class ProfileModel extends HiveObject {
+  @HiveField(0)
   final String id;
+
+  @HiveField(1)
   final String? firstName;
+
+  @HiveField(2)
   final String? lastName;
+
+  @HiveField(3)
   final String? avatarUrl;
+
+  @HiveField(4)
   final String? phone;
+
+  @HiveField(5)
   final String? hobby;
+
+  @HiveField(6)
   final String? country;
+
+  @HiveField(7)
   final List<String> preferredCategories;
+
+  @HiveField(8)
   final bool isOnboarded;
 
-  const ProfileModel({
+  ProfileModel({
     required this.id,
     this.firstName,
     this.lastName,
