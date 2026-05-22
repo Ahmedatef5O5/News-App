@@ -10,9 +10,10 @@ import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/secrets/app_secrets.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/di/service_locator.dart';
 import 'package:news_app/core/theme/app_theme.dart';
 import 'package:news_app/features/auth/cubit/auth_cubit.dart';
-import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
+import 'package:news_app/features/favorites/cubit/favorite_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/model/theme_model.dart';
 
@@ -34,6 +35,9 @@ void main() async {
   );
 
   await LocalDatabaseHive.initHive();
+
+  // Register all dependencies before the widget tree is built.
+  await setupServiceLocator();
 
   Supabase.instance.client.auth.onAuthStateChange.listen((data) {
     final AuthChangeEvent event = data.event;
@@ -59,21 +63,23 @@ class NewsWave extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (_) => AuthCubit()..init(),
+        // ── Singletons pulled directly from the service locator ──────────
+
+        BlocProvider<AuthCubit>(
+          create: (_) => sl<AuthCubit>()..init(),
         ),
-        BlocProvider(
-          create: (_) => ThemeCubit()..init(),
+        BlocProvider<ThemeCubit>(
+          create: (_) => sl<ThemeCubit>()..init(),
         ),
-        BlocProvider(
-          create: (context) => FavoritesCubit(),
+        BlocProvider<FavoritesCubit>(
+          create: (context) => sl<FavoritesCubit>(),
         ),
-        BlocProvider(
-          create: (context) => CategoryCubit(),
+        BlocProvider<CategoryCubit>(
+          create: (context) => sl<CategoryCubit>(),
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
-        builder: (context, state) {
+        builder: (context, themeMode) {
           return MaterialApp(
             navigatorKey: navigatorKey,
             locale: DevicePreview.locale(context),
@@ -82,7 +88,7 @@ class NewsWave extends StatelessWidget {
             title: AppConstants.appName,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: state,
+            themeMode: themeMode,
             onGenerateRoute: AppRouter.onGenerateRoute,
             initialRoute: AppRoutes.splashRoute,
           );
