@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
+import 'package:news_app/core/di/service_locator.dart';
+import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import 'package:news_app/core/widgets/drawer/app_drawer.dart';
-import '../../../core/cubits/category_cubit.dart';
+import 'package:news_app/core/theme/model/theme_model.dart';
+import 'package:news_app/core/widgets/offline_banner.dart';
+import 'package:news_app/features/home/cubit/home_cubit.dart';
+import 'package:news_app/features/home/widgets/home_app_bar_widget.dart';
+import 'package:news_app/features/home/widgets/home_carousel_section.dart';
+import 'package:news_app/features/home/widgets/recommended_feed.dart';
+import 'package:news_app/features/home/widgets/section_header_widget.dart';
+import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import '../../../core/helpers/category_chips.dart';
 import '../../../core/pagination/widgets/load_more_footer.dart';
-import '../../../core/theme/model/theme_model.dart';
 import '../../../core/theme/theme_picker_dialog.dart';
-import '../cubit/home_cubit.dart';
-import '../widgets/home_app_bar_widget.dart';
-import '../widgets/home_carousel_section.dart';
+import '../../../core/widgets/drawer/app_drawer.dart';
 import '../widgets/page_info_badge.dart';
-import '../widgets/recommended_feed.dart';
-import '../widgets/section_header_widget.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -22,9 +24,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HomeCubit(
-        categoryCubit: context.read<CategoryCubit>(),
-      )..init(),
+      create: (_) => sl<HomeCubit>()..init(),
       child: const _HomeContent(),
     );
   }
@@ -45,7 +45,6 @@ class _HomeContentState extends State<_HomeContent> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!context.read<ThemeCubit>().hasChosen) {
         ThemePickerDialog.show(context);
@@ -75,18 +74,21 @@ class _HomeContentState extends State<_HomeContent> {
     return Scaffold(
       drawer: const AppDrawer(),
       body: BlocConsumer<HomeCubit, HomeState>(
+        // ── Rebuild only when fields that affect UI change ────────────────
         buildWhen: (prev, curr) =>
             prev.headlinesStatus != curr.headlinesStatus ||
-            prev.recommendedStatus != curr.recommendedStatus ||
+            prev.pageStatus != curr.pageStatus ||
             prev.selectedCategory != curr.selectedCategory ||
             prev.isRefreshing != curr.isRefreshing ||
             prev.pagination != curr.pagination ||
-            prev.recommended.length != curr.recommended.length,
+            prev.fromCache != curr.fromCache ||
+            prev.recommendedArticles.length != curr.recommendedArticles.length,
+        // ── Scroll back to "For You" when page changes ────────────────────
         listenWhen: (prev, curr) =>
             prev.pagination.currentPage != curr.pagination.currentPage &&
-            curr.recommendedStatus == PageLoadStatus.success,
+            curr.pageStatus == PageLoadStatus.success,
         listener: (_, state) {
-          if (state.recommendedStatus == PageLoadStatus.success &&
+          if (state.pageStatus == PageLoadStatus.success &&
               state.pagination.currentPage > 1) {
             _scrollToForYou();
           }
@@ -99,8 +101,15 @@ class _HomeContentState extends State<_HomeContent> {
             child: CustomScrollView(
               controller: _scrollController,
               slivers: [
+                // ── App bar ───────────────────────────────────────────────
                 const HomeAppBarWidget(),
 
+                // ── Offline banner ────────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: OfflineBanner(visible: state.fromCache),
+                ),
+
+                // ── Category filter chips ─────────────────────────────────
                 SliverToBoxAdapter(
                   child: CategoryChips(
                     selected: state.selectedCategory,
@@ -109,14 +118,17 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                 ),
 
+                // ── Breaking News header ──────────────────────────────────
                 SliverToBoxAdapter(
-                    child: SectionHeaderWidget(
-                  label: 'Breaking News',
-                  accentColor: AppColors.accent,
-                  onViewAll: () =>
-                      Navigator.of(context).pushNamed(AppRoutes.headlinesRoute),
-                )),
+                  child: SectionHeaderWidget(
+                    label: 'Breaking News',
+                    accentColor: AppColors.accent,
+                    onViewAll: () => Navigator.of(context)
+                        .pushNamed(AppRoutes.headlinesRoute),
+                  ),
+                ),
 
+                // ── Carousel ──────────────────────────────────────────────
                 SliverToBoxAdapter(
                   child: HomeCarouselSection(
                     status: state.headlinesStatus,
@@ -132,25 +144,28 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                 ),
 
+                // ── For You header ────────────────────────────────────────
                 SliverToBoxAdapter(
-                    child: SectionHeaderWidget(
-                  key: _forYouKey,
-                  label: 'For You',
-                  accentColor: AppColors.primary,
-                  trailing: state.showPaginationBar
-                      ? PageInfoBadge(pagination: state.pagination)
-                      : null,
-                  onViewAll: () {},
-                  // onViewAll: () => Navigator.of(context)
-                  // .pushNamed(AppRoutes.headlinesRoute),
-                )),
+                  child: SectionHeaderWidget(
+                    key: _forYouKey,
+                    label: 'For You',
+                    accentColor: AppColors.primary,
+                    trailing: state.showPaginationBar
+                        ? PageInfoBadge(pagination: state.pagination)
+                        : null,
+                    onViewAll: () {},
+                  ),
+                ),
 
+                // ── Recommended feed ──────────────────────────────────────
                 RecommendedFeed(state: state),
 
+                // ── Load-more footer ──────────────────────────────────────
                 SliverToBoxAdapter(
                   child: _buildLoadMoreFooter(context, state),
                 ),
 
+                // ── Pagination bar ────────────────────────────────────────
                 SliverToBoxAdapter(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
@@ -158,8 +173,8 @@ class _HomeContentState extends State<_HomeContent> {
                         ? PaginationBarWidget(
                             key: const ValueKey('pagination_bar'),
                             meta: state.pagination,
-                            isLoading: state.recommendedStatus ==
-                                PageLoadStatus.loadingPage,
+                            isLoading:
+                                state.pageStatus == PageLoadStatus.loadingPage,
                             onPageTap: (page) {
                               context.read<HomeCubit>().goToPage(page);
                               _scrollToForYou();
@@ -177,7 +192,6 @@ class _HomeContentState extends State<_HomeContent> {
                   ),
                 ),
 
-                // Bottom padding
                 const SliverToBoxAdapter(child: SizedBox(height: 24)),
               ],
             ),
@@ -189,16 +203,13 @@ class _HomeContentState extends State<_HomeContent> {
 
   Widget _buildLoadMoreFooter(BuildContext context, HomeState state) {
     final pag = state.pagination;
-    return switch (state.recommendedStatus) {
-      PageLoadStatus.loadingMore => const LoadMoreFooter(
-          status: LoadMoreStatus.loading,
-        ),
+    return switch (state.pageStatus) {
       PageLoadStatus.failure => LoadMoreFooter(
           status: LoadMoreStatus.error,
-          onRetry: () => context.read<HomeCubit>().retryRecommended(),
+          onRetry: () => context.read<HomeCubit>().goToPage(state.currentPage),
         ),
       PageLoadStatus.success
-          when pag.isLastPage && state.recommended.isNotEmpty =>
+          when pag.isLastPage && state.recommendedArticles.isNotEmpty =>
         const LoadMoreFooter(
           status: LoadMoreStatus.endOfList,
           isLastPage: true,
