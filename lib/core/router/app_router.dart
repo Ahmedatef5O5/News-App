@@ -8,13 +8,17 @@ import 'package:news_app/features/auth/views/sign_in_view.dart';
 import 'package:news_app/features/auth/views/update_password_view.dart';
 import 'package:news_app/features/favorites/views/favorites_view.dart';
 import 'package:news_app/features/profile/views/profile_settings_view.dart';
-import 'package:news_app/features/search/Search_cubit/search_cubit.dart';
 import 'package:news_app/features/search/views/search_view.dart';
+import '../../features/Headlines/cubit/headlines_cubit.dart';
 import '../../features/Headlines/views/headlines_view.dart';
+import '../../features/home/cubit/home_cubit.dart';
 import '../../features/home/views/article_details_view.dart';
 import '../../features/auth/views/sign_up_view.dart';
+import '../../features/search/cubit/search_cubit.dart';
 import '../../features/splash/view/splash_view.dart';
+import '../models/article_detail_args.dart';
 import '../models/article_model.dart';
+import '../di/service_locator.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -41,14 +45,30 @@ class AppRouter {
         );
 
       case AppRoutes.homeRoute:
+        // HomeCubit is a factory — fresh instance per navigation.
         return _fadeRoute(
-          const HomeView(),
+          BlocProvider<HomeCubit>(
+            create: (context) => sl<HomeCubit>()..init(),
+            child: const HomeView(),
+          ),
           settings,
         );
-      case AppRoutes.searchRoute:
+
+      case AppRoutes.headlinesRoute:
+        // HeadlinesCubit is a factory — fresh instance per navigation.
         return _slideRoute(
-          BlocProvider(
-            create: (_) => SearchCubit(),
+          BlocProvider<HeadlinesCubit>(
+            create: (_) => sl<HeadlinesCubit>(),
+            child: const HeadlinesView(),
+          ),
+          settings,
+        );
+
+      case AppRoutes.searchRoute:
+        // SearchCubit is a factory — fresh instance per navigation.
+        return _slideRoute(
+          BlocProvider<SearchCubit>(
+            create: (context) => sl<SearchCubit>(),
             child: const SearchView(),
           ),
           settings,
@@ -58,18 +78,26 @@ class AppRouter {
           const FavoritesView(),
           settings,
         );
-      case AppRoutes.headlinesRoute:
-        return _slideRoute(
-          const HeadlinesView(),
+
+      case AppRoutes.artcileDetailsRoute:
+        final args = settings.arguments;
+        final Article article;
+        final String? heroTag;
+
+        if (args is ArticleDetailArgs) {
+          article = args.article;
+          heroTag = args.heroTag;
+        } else {
+          // Fallback: bare Article (old call sites not yet updated)
+          article = args as Article;
+          heroTag = null;
+        }
+
+        return _sharedAxisRoute(
+          ArticleDetailView(article: article, heroTag: heroTag),
           settings,
         );
 
-      case AppRoutes.artcileDetailsRoute:
-        final article = settings.arguments as Article;
-        return _sharedAxisRoute(
-          ArticleDetailView(article: article),
-          settings,
-        );
       case AppRoutes.profileSettingsRoute:
         return _slideRoute(
           const ProfileSettingsView(),
