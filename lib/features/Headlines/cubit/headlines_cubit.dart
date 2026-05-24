@@ -1,48 +1,62 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../core/cubits/category_cubit.dart';
-import '../../../core/models/article_model.dart';
+import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/cubits/category_cubit.dart';
+import 'package:news_app/core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
+
 part 'headlines_state.dart';
 
 class HeadlinesCubit extends Cubit<HeadlinesState> {
-  final HomeRepository _repo;
-
-  final CategoryCubit categoryCubit;
-  late final StreamSubscription _categorySubscription;
-
-  HeadlinesCubit({required this.categoryCubit, HomeRepository? repository})
-      : _repo = repository ?? HomeRepository(),
+  HeadlinesCubit({
+    required this.categoryCubit,
+    required HomeRepository repository,
+  })  : _repo = repository,
         super(const HeadlinesState()) {
     _syncCategory(categoryCubit.state);
-
-    _categorySubscription = categoryCubit.stream.listen((category) {
-      _syncCategory(category);
-    });
+    _categorySubscription = categoryCubit.stream.listen(_syncCategory);
   }
 
+  final HomeRepository _repo;
+  final CategoryCubit categoryCubit;
+  late final StreamSubscription<NewsCategory> _categorySubscription;
+
+  // ── Category sync ──────────────────────────────────────────────────────────
+
   void _syncCategory(NewsCategory category) {
+    if (isClosed) return;
     emit(state.copyWith(
       selectedCategory: category,
       status: HeadlinesPageLoadStatus.loading,
       clearError: true,
     ));
     _fetchAndShowPage(
-        category: category == NewsCategory.general ? null : category.value,
-        page: 1);
+      category: category == NewsCategory.general ? null : category.value,
+      page: 1,
+    );
   }
+
+  // ── Pagination ─────────────────────────────────────────────────────────────
 
   Future<void> goToPage(int page) async {
     if (page == state.pagination.currentPage) return;
     if (page < 1 || page > state.pagination.totalPages) return;
-    _showPage(state.allArticles, page);
+    // Client-side slice — no network call needed.
+    _showPage(state.allArticles, page, fromCache: state.fromCache);
   }
 
   Future<void> goToNextPage() => goToPage(state.pagination.nextPage);
   Future<void> goToPreviousPage() => goToPage(state.pagination.previousPage);
+
+  Future<void> refresh() => _fetchAndShowPage(
+        category: state.selectedCategory == NewsCategory.general
+            ? null
+            : state.selectedCategory.value,
+        page: 1,
+        forceRefresh: true,
+      );
 
   Future<void> retry() => _fetchAndShowPage(
         category: state.selectedCategory == NewsCategory.general
@@ -51,23 +65,28 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
         page: 1,
       );
 
+  // ── Private ────────────────────────────────────────────────────────────────
+
   Future<void> _fetchAndShowPage({
     required String? category,
     required int page,
+    bool forceRefresh = false,
   }) async {
+    if (isClosed) return;
     emit(state.copyWith(
       status: HeadlinesPageLoadStatus.loading,
       clearError: true,
     ));
-
     try {
-      final articles = await _repo.getHeadlines(
+      final result = await _repo.getHeadlinesWithMeta(
         category: category,
         pageSize: AppConstants.maxApiResults,
-        forceRefresh: true,
+        forceRefresh: forceRefresh,
       );
-      _showPage(articles, page);
+      if (isClosed) return;
+      _showPage(result.articles, page, fromCache: result.fromCache);
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(
         status: HeadlinesPageLoadStatus.failure,
         error: e.toString(),
@@ -75,7 +94,11 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
     }
   }
 
-  void _showPage(List<Article> allArticles, int page) {
+  void _showPage(
+    List<Article> allArticles,
+    int page, {
+    bool fromCache = false,
+  }) {
     final pageSize = AppConstants.headlinesPageSize;
     final start = (page - 1) * pageSize;
     final end = (start + pageSize).clamp(0, allArticles.length);
@@ -87,6 +110,7 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
       allArticles: allArticles,
       pageArticles: slice,
       status: HeadlinesPageLoadStatus.success,
+      fromCache: fromCache, // ← drives OfflineBanner
       pagination: PaginationMeta(
         currentPage: page,
         totalResults: allArticles.length,
@@ -94,6 +118,8 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
       ),
     ));
   }
+
+  // ── Cleanup ────────────────────────────────────────────────────────────────
 
   @override
   Future<void> close() {

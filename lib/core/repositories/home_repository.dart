@@ -1,47 +1,87 @@
 import 'package:dio/dio.dart';
+
+import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
+import 'package:news_app/core/network/network_info.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/features/home/services/home_services.dart';
-import '../constants/app_constants.dart';
 
-/// Repository sits between Cubit and Service.
-/// Handles caching so the app works offline.
-
-/// Result from a paginated fetch — carries articles AND total count
-/// so the Cubit can build the PaginationMeta without knowing about Dio.
 class PageResult {
-  final List<Article> articles;
-  final int totalResults;
-  final bool fromCache;
-
   const PageResult({
     required this.articles,
     required this.totalResults,
     this.fromCache = false,
   });
+
+  final List<Article> articles;
+  final int totalResults;
+  final bool fromCache;
 }
 
 class HomeRepository {
+  HomeRepository({
+    required HomeServices services,
+    required LocalDatabaseHive db,
+    required NetworkInfo networkInfo,
+  })  : _services = services,
+        _db = db,
+        _network = networkInfo;
+
   final HomeServices _services;
   final LocalDatabaseHive _db;
+  final NetworkInfo _network;
 
-  HomeRepository({HomeServices? services, LocalDatabaseHive? db})
-      : _services = services ?? HomeServices(),
-        _db = db ?? LocalDatabaseHive.instance;
+  // ── Headlines (simple list) ────────────────────────────────────────────────
 
   Future<List<Article>> getHeadlines({
     String country = 'us',
     String? category,
-    int pageSize = AppConstants.headlinesPageSize, // ← NEW PARAM
+    int pageSize = AppConstants.headlinesPageSize,
+    bool forceRefresh = false,
+  }) async {
+    final result = await getHeadlinesWithMeta(
+      country: country,
+      category: category,
+      pageSize: pageSize,
+      forceRefresh: forceRefresh,
+    );
+    return result.articles;
+  }
+
+  Future<PageResult> getHeadlinesWithMeta({
+    String country = 'us',
+    String? category,
+    int pageSize = AppConstants.headlinesPageSize,
     bool forceRefresh = false,
   }) async {
     final cacheKey = _headlinesCacheKey(category);
 
-    if (!forceRefresh) {
+    // Offline — serve cache instantly, skip Dio entirely.
+    final online = await _network.isConnected;
+    if (!online) {
       final cached = await _getCachedArticles(cacheKey);
-      if (cached != null) return cached;
+      if (cached != null) {
+        return PageResult(
+          articles: cached,
+          totalResults: cached.length,
+          fromCache: true,
+        );
+      }
+      throw _offlineNoCache();
     }
 
+    // Online — try cache first (unless force-refresh requested).
+    if (!forceRefresh) {
+      final cached = await _getCachedArticles(cacheKey);
+      if (cached != null) {
+        return PageResult(
+          articles: cached,
+          totalResults: cached.length,
+        );
+      }
+    }
+
+    // Network call.
     try {
       final response = await _services.getTopHeadlines(
         country: country,
@@ -49,13 +89,25 @@ class HomeRepository {
         pageSize: pageSize,
       );
       await _cacheArticles(cacheKey, response.articles);
-      return response.articles;
+      return PageResult(
+        articles: response.articles,
+        totalResults: response.totalResults,
+      );
     } on DioException catch (e) {
+      // Last-resort fallback — server error despite being online.
       final cached = await _getCachedArticles(cacheKey);
-      if (cached != null) return cached;
-      throw _mapError(e);
+      if (cached != null) {
+        return PageResult(
+          articles: cached,
+          totalResults: cached.length,
+          fromCache: true,
+        );
+      }
+      throw _mapDioError(e);
     }
   }
+
+  // ── Recommended (paginated) ────────────────────────────────────────────────
 
   Future<PageResult> getRecommendedPage({
     String country = 'us',
@@ -64,7 +116,15 @@ class HomeRepository {
   }) async {
     final cacheKey = '${AppConstants.recommendedPageKeyPrefix}$page';
 
-    // Try cache first (only on non-forced requests)
+    // ① Offline — serve cache instantly.
+    final online = await _network.isConnected;
+    if (!online) {
+      final cached = await _getCachedPage(cacheKey);
+      if (cached != null) return cached;
+      throw _offlineNoCache();
+    }
+
+    // Online path.
     if (!forceRefresh) {
       final cached = await _getCachedPage(cacheKey);
       if (cached != null) return cached;
@@ -82,18 +142,21 @@ class HomeRepository {
       await _cachePage(cacheKey, result);
       return result;
     } on DioException catch (e) {
-      // Offline fallback
       final cached = await _getCachedPage(cacheKey);
       if (cached != null) return cached;
-      throw _mapError(e);
+      throw _mapDioError(e);
     }
   }
+
+  // ── Cache management ───────────────────────────────────────────────────────
 
   Future<void> clearRecommendedCache() async {
     for (int i = 1; i <= 10; i++) {
       await _db.delete('${AppConstants.recommendedPageKeyPrefix}$i');
     }
   }
+
+  // ── Private helpers ────────────────────────────────────────────────────────
 
   Future<void> _cacheArticles(String key, List<Article> articles) =>
       _db.put(key, articles);
@@ -109,7 +172,6 @@ class HomeRepository {
   }
 
   Future<void> _cachePage(String key, PageResult result) async {
-    // Store articles + totalResults together as a Map
     await _db.put('${key}_articles', result.articles);
     await _db.put('${key}_total', result.totalResults);
   }
@@ -129,11 +191,25 @@ class HomeRepository {
       ? '${AppConstants.cachedHeadlinesKey}_$category'
       : AppConstants.cachedHeadlinesKey;
 
-  String _mapError(DioException e) {
-    if (e.type == DioExceptionType.connectionError ||
-        e.type == DioExceptionType.connectionTimeout) {
-      return 'No internet connection. Showing cached news.';
+  String _offlineNoCache() =>
+      'You\'re offline and there\'s no cached news yet. '
+      'Please connect to the internet for your first load.';
+
+  String _mapDioError(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionError:
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.receiveTimeout:
+        return 'No internet connection. Showing cached news.';
+      case DioExceptionType.badResponse:
+        final code = e.response?.statusCode;
+        if (code == 401) {
+          return 'Invalid API key. Please check your configuration.';
+        }
+        if (code == 429) return 'Too many requests. Please wait a moment.';
+        return 'Server error ($code). Please try again later.';
+      default:
+        return e.message ?? 'Something went wrong. Please try again.';
     }
-    return e.message ?? 'Something went wrong. Please try again.';
   }
 }

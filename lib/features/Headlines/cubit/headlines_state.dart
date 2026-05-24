@@ -15,6 +15,10 @@ class HeadlinesState extends Equatable {
   final PaginationMeta pagination;
   final NewsCategory selectedCategory;
 
+  /// `true` when the articles came from local Hive cache (device is offline).
+  /// Used by [OfflineBanner].
+  final bool fromCache;
+
   const HeadlinesState({
     this.allArticles = const [],
     this.pageArticles = const [],
@@ -24,6 +28,7 @@ class HeadlinesState extends Equatable {
       pageSize: AppConstants.headlinesPageSize,
     ),
     this.selectedCategory = NewsCategory.general,
+    this.fromCache = false,
   });
 
   bool get showPagination =>
@@ -36,6 +41,7 @@ class HeadlinesState extends Equatable {
     String? error,
     PaginationMeta? pagination,
     NewsCategory? selectedCategory,
+    bool? fromCache,
     bool clearError = false,
   }) {
     return HeadlinesState(
@@ -45,10 +51,18 @@ class HeadlinesState extends Equatable {
       error: clearError ? null : (error ?? this.error),
       pagination: pagination ?? this.pagination,
       selectedCategory: selectedCategory ?? this.selectedCategory,
+      fromCache: fromCache ?? this.fromCache,
     );
   }
 
   @override
-  List<Object?> get props =>
-      [allArticles, pageArticles, status, error, pagination, selectedCategory];
+  List<Object?> get props => [
+        allArticles,
+        pageArticles,
+        status,
+        error,
+        pagination,
+        selectedCategory,
+        fromCache,
+      ];
 }

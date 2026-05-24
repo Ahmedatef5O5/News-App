@@ -1,18 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/cubits/category_cubit.dart';
+import 'package:news_app/core/di/service_locator.dart';
+import 'package:news_app/core/helpers/empty_state.dart';
+import 'package:news_app/core/helpers/error_state.dart';
+import 'package:news_app/core/helpers/shimmer_box.dart';
 import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import '../../../core/cubits/category_cubit.dart';
-import '../../../core/helpers/empty_state.dart';
-import '../../../core/helpers/error_state.dart';
-import '../../../core/helpers/shimmer_box.dart';
-import '../../../core/widgets/article_card_widget.dart';
-import '../../../core/widgets/custom_app_bar_icon.dart';
-import '../cubit/headlines_cubit.dart';
-import '../widgets/glass_category_row.dart';
+import 'package:news_app/core/widgets/article_card_widget.dart';
+import 'package:news_app/core/widgets/custom_app_bar_icon.dart';
+import 'package:news_app/core/widgets/offline_banner.dart';
+import 'package:news_app/features/Headlines/cubit/headlines_cubit.dart';
+import 'package:news_app/features/Headlines/widgets/glass_category_row.dart';
+
+import '../../../core/models/article_detail_args.dart';
 
 class HeadlinesView extends StatelessWidget {
   const HeadlinesView({super.key});
@@ -20,9 +25,7 @@ class HeadlinesView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HeadlinesCubit(
-        categoryCubit: context.read<CategoryCubit>(),
-      ),
+      create: (_) => sl<HeadlinesCubit>(),
       child: const _HeadlinesContent(),
     );
   }
@@ -69,6 +72,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
           return CustomScrollView(
             controller: _scrollController,
             slivers: [
+              // ── App bar ────────────────────────────────────────────────
               SliverAppBar(
                 pinned: true,
                 elevation: 0,
@@ -85,12 +89,11 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 ),
                 title: Text(
                   'Breaking News',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        // color: AppColors.accent,
-                        color: colors.primary,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
+                  style: theme.textTheme.headlineMedium?.copyWith(
+                    color: colors.primary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 actions: [
                   if (state.showPagination)
@@ -105,11 +108,11 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'Page ${state.pagination.currentPage} of ${state.pagination.totalPages}',
+                            'Page ${state.pagination.currentPage}'
+                            ' of ${state.pagination.totalPages}',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
-                              // color: AppColors.primary,
                               color: colors.primary,
                             ),
                           ),
@@ -118,6 +121,13 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                     ),
                 ],
               ),
+
+              // ── Offline banner ─────────────────────────────────────────
+              SliverToBoxAdapter(
+                child: OfflineBanner(visible: state.fromCache),
+              ),
+
+              // ── Category filter row ────────────────────────────────────
               SliverToBoxAdapter(
                 child: GlassCategoryRow(
                   selected: state.selectedCategory,
@@ -125,8 +135,13 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                       context.read<CategoryCubit>().selectCategory(cat),
                 ),
               ),
+
               const SliverToBoxAdapter(child: SizedBox(height: 8)),
+
+              // ── Feed ───────────────────────────────────────────────────
               _buildFeed(context, state),
+
+              // ── Pagination bar ─────────────────────────────────────────
               SliverToBoxAdapter(
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
@@ -146,6 +161,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                       : const SizedBox.shrink(key: ValueKey('no_bar')),
                 ),
               ),
+
               const SliverToBoxAdapter(child: SizedBox(height: 24)),
             ],
           );
@@ -155,54 +171,61 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
   }
 
   Widget _buildFeed(BuildContext context, HeadlinesState state) {
-    if (state.status == HeadlinesPageLoadStatus.loading) {
-      return SliverPadding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (_, __) => const ArticleCardSkeleton(),
-            childCount: AppConstants.headlinesPageSize,
+    switch (state.status) {
+      case HeadlinesPageLoadStatus.loading:
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (_, __) => const ArticleCardSkeleton(),
+              childCount: AppConstants.headlinesPageSize,
+            ),
           ),
-        ),
-      );
-    }
+        );
 
-    if (state.status == HeadlinesPageLoadStatus.failure) {
-      return SliverToBoxAdapter(
-        child: ErrorState(
-          message: state.error ?? 'Failed to load headlines',
-          onRetry: () => context.read<HeadlinesCubit>().retry(),
-        ),
-      );
-    }
+      case HeadlinesPageLoadStatus.failure:
+        return SliverToBoxAdapter(
+          child: ErrorState(
+            message: state.error ?? 'Failed to load headlines',
+            onRetry: () => context.read<HeadlinesCubit>().retry(),
+          ),
+        );
 
-    if (state.pageArticles.isEmpty) {
-      return const SliverToBoxAdapter(
-        child: EmptyState(
-          icon: Icons.newspaper_rounded,
-          title: 'No headlines found',
-          subtitle: 'Try another category',
-        ),
-      );
-    }
+      case HeadlinesPageLoadStatus.success:
+      case HeadlinesPageLoadStatus.idle:
+        if (state.pageArticles.isEmpty) {
+          return const SliverToBoxAdapter(
+            child: EmptyState(
+              icon: Icons.newspaper_rounded,
+              title: 'No headlines found',
+              subtitle: 'Try another category',
+            ),
+          );
+        }
 
-    return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (ctx, index) {
-            final article = state.pageArticles[index];
-            return ArticleCard(
-              article: article,
-              onTap: () => Navigator.of(ctx).pushNamed(
-                AppRoutes.artcileDetailsRoute,
-                arguments: article,
-              ),
-            );
-          },
-          childCount: state.pageArticles.length,
-        ),
-      ),
-    );
+        return SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (ctx, index) {
+                final article = state.pageArticles[index];
+                const heroContext = 'headlines';
+                final heroTag =
+                    'article-image-${article.uniqueId}-$heroContext';
+                return ArticleCard(
+                  article: article,
+                  heroContext: heroContext,
+                  onTap: () => Navigator.of(ctx).pushNamed(
+                    AppRoutes.artcileDetailsRoute,
+                    arguments:
+                        ArticleDetailArgs(article: article, heroTag: heroTag),
+                  ),
+                );
+              },
+              childCount: state.pageArticles.length,
+            ),
+          ),
+        );
+    }
   }
 }
