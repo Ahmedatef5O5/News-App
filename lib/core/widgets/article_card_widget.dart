@@ -1,24 +1,29 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/core/widgets/save_button_widget.dart';
 import 'package:news_app/core/widgets/share_button_widget.dart';
-import 'save_button_widget.dart';
 
 class ArticleCard extends StatelessWidget {
   const ArticleCard({
     super.key,
     required this.article,
     required this.onTap,
+    this.heroContext = 'list',
   });
 
   final Article article;
   final VoidCallback onTap;
+  final String heroContext;
+
+  String get heroTag => 'article-image-${article.uniqueId}-$heroContext';
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
 
     return GestureDetector(
       onTap: onTap,
@@ -39,42 +44,50 @@ class ArticleCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  bottomLeft: Radius.circular(20),
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: article.hasImage
-                      ? article.urlToImage!
-                      : AppConstants.placeholderImageUrl,
-                  width: 110,
-                  height: 110,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => Container(
-                    width: 110,
-                    height: 110,
-                    color: AppColors.shimmer,
+              // ── Thumbnail with Hero ──────────────────────────────────────
+              Hero(
+                tag: heroTag,
+                flightShuttleBuilder: _flightShuttleBuilder,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    bottomLeft: Radius.circular(20),
                   ),
-                  errorWidget: (_, __, ___) => Container(
+                  child: CachedNetworkImage(
+                    imageUrl: article.hasImage
+                        ? article.urlToImage!
+                        : AppConstants.placeholderImageUrl,
                     width: 110,
                     height: 110,
-                    color: AppColors.shimmer,
-                    child: const Icon(Icons.image_not_supported_outlined,
-                        color: AppColors.ink300),
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(
+                      width: 110,
+                      height: 110,
+                      color: AppColors.shimmer,
+                    ),
+                    errorWidget: (_, __, ___) => Container(
+                      width: 110,
+                      height: 110,
+                      color: AppColors.shimmer,
+                      child: const Icon(
+                        Icons.image_not_supported_outlined,
+                        color: AppColors.ink300,
+                      ),
+                    ),
                   ),
                 ),
               ),
+
+              // ── Text content ─────────────────────────────────────────────
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Source name
                       Text(
                         article.source?.name ?? 'Unknown Source',
-                        style: tt.labelSmall?.copyWith(
+                        style: txtTheme.labelSmall?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.3,
@@ -83,10 +96,9 @@ class ArticleCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      // Title
                       Text(
                         article.title ?? 'Untitled',
-                        style: tt.titleMedium?.copyWith(
+                        style: txtTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
                           height: 1.35,
@@ -95,13 +107,12 @@ class ArticleCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
-                      // Meta row
                       Row(
                         children: [
                           Expanded(
                             child: Text(
                               article.formattedDate,
-                              style: tt.bodySmall?.copyWith(fontSize: 11),
+                              style: txtTheme.bodySmall?.copyWith(fontSize: 11),
                               maxLines: 1,
                             ),
                           ),
@@ -118,6 +129,40 @@ class ArticleCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _flightShuttleBuilder(
+    BuildContext flightContext,
+    Animation<double> animation,
+    HeroFlightDirection direction,
+    BuildContext fromHeroContext,
+    BuildContext toHeroContext,
+  ) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (_, __) {
+        final t = direction == HeroFlightDirection.push
+            ? animation.value
+            : 1 - animation.value;
+        final radius = BorderRadius.lerp(
+          const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            bottomLeft: Radius.circular(20),
+          ),
+          BorderRadius.zero,
+          t,
+        )!;
+        return ClipRRect(
+          borderRadius: radius,
+          child: CachedNetworkImage(
+            imageUrl: article.hasImage
+                ? article.urlToImage!
+                : AppConstants.placeholderImageUrl,
+            fit: BoxFit.cover,
+          ),
+        );
+      },
     );
   }
 }
