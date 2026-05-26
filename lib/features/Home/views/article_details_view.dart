@@ -2,15 +2,21 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:news_app/core/browser/in_app_browser_view.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart';
-import '../../../core/widgets/save_button_widget.dart';
+import 'package:news_app/core/widgets/save_button_widget.dart';
 
 class ArticleDetailView extends StatefulWidget {
-  const ArticleDetailView({super.key, required this.article});
+  const ArticleDetailView({
+    super.key,
+    required this.article,
+    this.heroTag,
+  });
+
   final Article article;
+  final String? heroTag;
 
   @override
   State<ArticleDetailView> createState() => _ArticleDetailViewState();
@@ -19,35 +25,57 @@ class ArticleDetailView extends StatefulWidget {
 class _ArticleDetailViewState extends State<ArticleDetailView> {
   final ValueNotifier<double> _sheetExtent = ValueNotifier(0.48);
 
+  String get _heroTag =>
+      widget.heroTag ?? 'article-image-${widget.article.uniqueId}';
+
   @override
   void dispose() {
     _sheetExtent.dispose();
     super.dispose();
   }
 
-  Future<void> _openUrl() async {
+  void _openInAppBrowser() {
     if (!widget.article.hasUrl) return;
-    final uri = Uri.parse(widget.article.url!);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (_, __, ___) => InAppBrowserView(
+          url: widget.article.url!,
+          title: widget.article.title ?? 'Article',
+        ),
+        transitionsBuilder: (_, animation, __, child) {
+          final curved = CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeOutQuart,
+          );
+          return FadeTransition(
+            opacity: curved,
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, 0.06),
+                end: Offset.zero,
+              ).animate(curved),
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 380),
+      ),
+    );
   }
 
   Future<void> _share() async {
     final text = '${widget.article.title}\n\n${widget.article.url ?? ""}';
     await Clipboard.setData(ClipboardData(text: text));
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Link copied to clipboard'),
-          behavior: SnackBarBehavior.floating,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          margin: const EdgeInsets.all(16),
-          duration: const Duration(milliseconds: 1800),
-        ),
-      );
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Link copied to clipboard'),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(milliseconds: 1800),
+      ),
+    );
   }
 
   @override
@@ -65,7 +93,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
       ),
       body: Stack(
         children: [
-          // ── Hero background image ─────────────────────────────────────────
+          // ── Hero background image ──────────────────────────────────────
           ValueListenableBuilder<double>(
             valueListenable: _sheetExtent,
             builder: (_, extent, child) {
@@ -75,20 +103,24 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                 child: child,
               );
             },
-            child: CachedNetworkImage(
-              imageUrl: widget.article.hasImage
-                  ? widget.article.urlToImage!
-                  : AppConstants.placeholderImageUrl,
-              width: double.infinity,
-              height: size.height * 0.55,
-              fit: BoxFit.cover,
-              placeholder: (_, __) => Container(color: AppColors.surfaceDark),
-              errorWidget: (_, __, ___) =>
-                  Container(color: AppColors.surfaceDark),
+            child: Hero(
+              tag: _heroTag,
+              flightShuttleBuilder: _flightShuttleBuilder,
+              child: CachedNetworkImage(
+                imageUrl: widget.article.hasImage
+                    ? widget.article.urlToImage!
+                    : AppConstants.placeholderImageUrl,
+                width: double.infinity,
+                height: size.height * 0.55,
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(color: AppColors.surfaceDark),
+                errorWidget: (_, __, ___) =>
+                    Container(color: AppColors.surfaceDark),
+              ),
             ),
           ),
 
-          // ── Gradient on image ─────────────────────────────────────────────
+          // ── Gradient on image ──────────────────────────────────────────
           Positioned(
             top: 0,
             left: 0,
@@ -110,7 +142,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
             ),
           ),
 
-          // ── AppBar overlay ────────────────────────────────────────────────
+          // ── AppBar overlay ─────────────────────────────────────────────
           ValueListenableBuilder<double>(
             valueListenable: _sheetExtent,
             builder: (_, extent, __) {
@@ -147,6 +179,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
             },
           ),
 
+          // ── Draggable sheet ────────────────────────────────────────────
           NotificationListener<DraggableScrollableNotification>(
             onNotification: (n) {
               _sheetExtent.value = n.extent;
@@ -158,8 +191,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
               maxChildSize: 0.96,
               builder: (_, scrollController) {
                 final isDark = Theme.of(context).brightness == Brightness.dark;
-                final theme = Theme.of(context);
-                final colors = theme.colorScheme;
+                final colors = Theme.of(context).colorScheme;
 
                 return Container(
                   decoration: BoxDecoration(
@@ -180,7 +212,6 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             height: 4,
                             decoration: BoxDecoration(
                               color: isDark ? Colors.white24 : AppColors.ink100,
-                              // color: colors.onSurface.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
@@ -192,6 +223,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            // Source row
                             Row(
                               children: [
                                 CircleAvatar(
@@ -216,7 +248,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             ),
                             const SizedBox(height: 16),
 
-                            // ── Title / Category badge ────────────────────────
+                            // Category badge
                             Container(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 4),
@@ -234,7 +266,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             ),
                             const SizedBox(height: 12),
 
-                            // ── Headline ────────────────────────────────────
+                            // Headline
                             Text(
                               widget.article.title ?? '',
                               style: tt.headlineMedium?.copyWith(
@@ -245,7 +277,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
 
                             const SizedBox(height: 12),
 
-                            // ── Meta: author + date ─────────────────────────
+                            // Meta
                             Row(
                               children: [
                                 if (widget.article.shortAuthor != null) ...[
@@ -273,7 +305,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             const Divider(),
                             const SizedBox(height: 20),
 
-                            // ── Description ─────────────────────────────────
+                            // Description
                             Text(
                               widget.article.cleanDescription,
                               style: tt.bodyLarge?.copyWith(
@@ -282,16 +314,14 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                               ),
                             ),
 
-                            // ── Content ──────────────────────────────────────
+                            // Content
                             if (widget.article.cleanContent.isNotEmpty) ...[
                               const SizedBox(height: 16),
                               Text(
                                 widget.article.cleanContent,
                                 style: tt.bodyMedium?.copyWith(
-                                  // color: AppColors.ink500,
                                   color:
                                       colors.onSurface.withValues(alpha: 0.7),
-
                                   height: 1.7,
                                 ),
                               ),
@@ -299,12 +329,12 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
 
                             const SizedBox(height: 32),
 
-                            // ── Read Full Article CTA ─────────────────────────
+                            // Read Full Article CTA
                             if (widget.article.hasUrl)
                               SizedBox(
                                 width: double.infinity,
                                 child: FilledButton.icon(
-                                  onPressed: _openUrl,
+                                  onPressed: _openInAppBrowser,
                                   icon:
                                       const Icon(Icons.open_in_browser_rounded),
                                   label: const Text('Read Full Article'),
@@ -327,7 +357,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
 
                             const SizedBox(height: 12),
 
-                            // ── Share button ──────────────────────────────────
+                            // Share button
                             SizedBox(
                               width: double.infinity,
                               child: OutlinedButton.icon(
@@ -363,7 +393,39 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
       ),
     );
   }
+
+  Widget _flightShuttleBuilder(
+    BuildContext flightContext,
+    Animation<double> animation,
+    HeroFlightDirection direction,
+    BuildContext fromHeroContext,
+    BuildContext toHeroContext,
+  ) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (_, __) {
+        final t = direction == HeroFlightDirection.push
+            ? animation.value
+            : 1 - animation.value;
+        return ClipRRect(
+          borderRadius: BorderRadius.lerp(
+            BorderRadius.circular(24),
+            BorderRadius.zero,
+            t,
+          )!,
+          child: CachedNetworkImage(
+            imageUrl: widget.article.hasImage
+                ? widget.article.urlToImage!
+                : AppConstants.placeholderImageUrl,
+            fit: BoxFit.cover,
+          ),
+        );
+      },
+    );
+  }
 }
+
+// ── Glass button ───────────────────────────────────────────────────────────────
 
 class _GlassButton extends StatelessWidget {
   const _GlassButton({required this.icon, required this.onTap});
