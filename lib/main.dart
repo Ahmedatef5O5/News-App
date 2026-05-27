@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
+import 'package:news_app/core/network/connectivity_cubit.dart';
 import 'package:news_app/core/router/app_router.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/secrets/app_secrets.dart';
@@ -64,7 +65,9 @@ class NewsWave extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         // ── Singletons pulled directly from the service locator ──────────
-
+        BlocProvider<ConnectivityCubit>(
+          create: (_) => sl<ConnectivityCubit>(),
+        ),
         BlocProvider<AuthCubit>(
           create: (_) => sl<AuthCubit>()..init(),
         ),

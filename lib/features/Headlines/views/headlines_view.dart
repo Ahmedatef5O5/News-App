@@ -8,6 +8,7 @@ import 'package:news_app/core/di/service_locator.dart';
 import 'package:news_app/core/helpers/empty_state.dart';
 import 'package:news_app/core/helpers/error_state.dart';
 import 'package:news_app/core/helpers/shimmer_box.dart';
+import 'package:news_app/core/network/connectivity_cubit.dart';
 import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
@@ -124,7 +125,15 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
 
               // ── Offline banner ─────────────────────────────────────────
               SliverToBoxAdapter(
-                child: OfflineBanner(visible: state.fromCache),
+                child: BlocBuilder<ConnectivityCubit, bool>(
+                  builder: (_, isConnected) {
+                    return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: isConnected
+                            ? OfflineBanner(visible: state.fromCache)
+                            : const SizedBox.shrink());
+                  },
+                ),
               ),
 
               // ── Category filter row ────────────────────────────────────
