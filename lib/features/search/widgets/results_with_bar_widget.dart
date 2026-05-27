@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/models/article_detail_args.dart';
 import '../../../core/pagination/widgets/pagination_bar_widget.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/article_card_widget.dart';
-import '../Search_cubit/search_cubit.dart';
+import '../cubit/search_cubit.dart';
 
 class ResultsWithBar extends StatelessWidget {
   final SearchState state;
@@ -11,7 +12,6 @@ class ResultsWithBar extends StatelessWidget {
   final void Function(int) onPageTap;
   final VoidCallback onPrev;
   final VoidCallback onNext;
-
   const ResultsWithBar({
     super.key,
     required this.state,
@@ -61,11 +61,17 @@ class ResultsWithBar extends StatelessWidget {
             itemCount: state.results.length,
             itemBuilder: (ctx, index) {
               final article = state.results[index];
+              const heroContext = 'search';
+              final heroTag = 'article-image-${article.uniqueId}-$heroContext';
               return ArticleCard(
                 article: article,
+                heroContext: heroContext,
                 onTap: () => Navigator.of(ctx).pushNamed(
                   AppRoutes.artcileDetailsRoute,
-                  arguments: article,
+                  arguments: ArticleDetailArgs(
+                    article: article,
+                    heroTag: heroTag,
+                  ),
                 ),
               );
             },

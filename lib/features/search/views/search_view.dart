@@ -1,22 +1,38 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/di/service_locator.dart';
+import 'package:news_app/core/helpers/empty_state.dart';
+import 'package:news_app/core/helpers/error_state.dart';
+import 'package:news_app/core/helpers/shimmer_box.dart';
 import 'package:news_app/core/widgets/custom_app_bar_icon.dart';
-import '../../../core/helpers/empty_state.dart';
-import '../../../core/helpers/error_state.dart';
-import '../../../core/helpers/shimmer_box.dart';
-import '../Search_cubit/search_cubit.dart';
+import '../cubit/search_cubit.dart';
 import '../widgets/results_with_bar_widget.dart';
 import '../widgets/search_input_field_area.dart';
 
-class SearchView extends StatefulWidget {
+// This mirrors the HomeView / HeadlinesView pattern exactly.
+class SearchView extends StatelessWidget {
   const SearchView({super.key});
 
   @override
-  State<SearchView> createState() => _SearchViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider<SearchCubit>(
+      create: (_) => sl<SearchCubit>(),
+      child: const _SearchContent(),
+    );
+  }
 }
 
-class _SearchViewState extends State<SearchView> {
+// ── Content widget ─────────────────────────────────────────────────────────────
+
+class _SearchContent extends StatefulWidget {
+  const _SearchContent();
+
+  @override
+  State<_SearchContent> createState() => _SearchContentState();
+}
+
+class _SearchContentState extends State<_SearchContent> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focus = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -72,7 +88,10 @@ class _SearchViewState extends State<SearchView> {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
               child: SearchInputFieldArea(
-                  controller: _controller, focus: _focus, tt: txtTheme),
+                controller: _controller,
+                focus: _focus,
+                tt: txtTheme,
+              ),
             ),
             const SizedBox(height: 12),
             Expanded(
@@ -84,9 +103,9 @@ class _SearchViewState extends State<SearchView> {
                 listener: (_, __) => _scrollToTop(),
                 builder: (context, state) {
                   return switch (state.status) {
-                    SearchStatus.initial => _InitialHint(),
-                    SearchStatus.loading => _LoadingSkeleton(),
-                    SearchStatus.loadingPage => _LoadingSkeleton(),
+                    SearchStatus.initial => const _InitialHint(),
+                    SearchStatus.loading => const _LoadingSkeleton(),
+                    SearchStatus.loadingPage => const _LoadingSkeleton(),
                     SearchStatus.loadingMore => ResultsWithBar(
                         state: state,
                         scrollController: _scrollController,
@@ -104,7 +123,7 @@ class _SearchViewState extends State<SearchView> {
                         },
                       ),
                     SearchStatus.success => state.results.isEmpty
-                        ? _EmptyResults()
+                        ? const _EmptyResults()
                         : ResultsWithBar(
                             state: state,
                             scrollController: _scrollController,
@@ -136,7 +155,11 @@ class _SearchViewState extends State<SearchView> {
   }
 }
 
+// ── Private helper widgets ─────────────────────────────────────────────────────
+
 class _InitialHint extends StatelessWidget {
+  const _InitialHint();
+
   @override
   Widget build(BuildContext context) {
     return const EmptyState(
@@ -148,6 +171,8 @@ class _InitialHint extends StatelessWidget {
 }
 
 class _LoadingSkeleton extends StatelessWidget {
+  const _LoadingSkeleton();
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -159,6 +184,8 @@ class _LoadingSkeleton extends StatelessWidget {
 }
 
 class _EmptyResults extends StatelessWidget {
+  const _EmptyResults();
+
   @override
   Widget build(BuildContext context) {
     return const EmptyState(

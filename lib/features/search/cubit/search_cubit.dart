@@ -5,12 +5,11 @@ import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../services/search_services.dart';
-
 part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({SearchService? service})
-      : _service = service ?? SearchService(),
+  SearchCubit({required SearchService service})
+      : _service = service,
         super(const SearchState());
 
   final SearchService _service;
