@@ -146,6 +146,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
           ValueListenableBuilder<double>(
             valueListenable: _sheetExtent,
             builder: (_, extent, __) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
               final opacity = (1.0 - (extent - 0.45) * 5.0).clamp(0.0, 1.0);
               return Opacity(
                 opacity: opacity,
@@ -164,7 +165,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                           article: widget.article,
                           size: 42,
                           isGlass: true,
-                          iconColor: Colors.white,
+                          iconColor: isDark ? Colors.white : AppColors.ink700,
                         ),
                         const SizedBox(width: 8),
                         _GlassButton(
@@ -454,7 +455,7 @@ class _GlassButton extends StatelessWidget {
             child: Icon(
               icon,
               size: 20,
-              color: isDark ? Colors.white : AppColors.ink900,
+              color: isDark ? Colors.white : AppColors.ink700,
             ),
           ),
         ),

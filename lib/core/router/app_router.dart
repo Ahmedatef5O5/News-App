@@ -19,6 +19,7 @@ import '../../features/splash/view/splash_view.dart';
 import '../models/article_detail_args.dart';
 import '../models/article_model.dart';
 import '../di/service_locator.dart';
+import '../widgets/full_screen_image_viewer.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -52,6 +53,12 @@ class AppRouter {
             child: const HomeView(),
           ),
           settings,
+        );
+
+      case AppRoutes.fullScreenImage:
+        return MaterialPageRoute(
+          builder: (_) => const FullScreenImageViewer(),
+          settings: settings,
         );
 
       case AppRoutes.headlinesRoute:

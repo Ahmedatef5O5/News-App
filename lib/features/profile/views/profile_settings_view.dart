@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
@@ -187,21 +189,37 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                                   ),
                                 ],
                               ),
-                              child: ClipOval(
-                                child: profile?.avatarUrl != null
-                                    ? Image.network(
-                                        profile!.avatarUrl!,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) =>
-                                            InitialsAvatar(
-                                          initials: profile.initials,
+                              child: GestureDetector(
+                                onTap: () => Navigator.pushNamed(
+                                  context,
+                                  AppRoutes.fullScreenImage,
+                                  arguments: {
+                                    'url': profile!.avatarUrl!,
+                                    'tag': profile.avatarUrl!,
+                                    'isAsset': false,
+                                  },
+                                ),
+                                child: ClipOval(
+                                  child: profile?.avatarUrl != null
+                                      ? CachedNetworkImage(
+                                          imageUrl: profile!.avatarUrl!,
+                                          fit: BoxFit.cover,
+                                          placeholder: (_, __) =>
+                                              InitialsAvatar(
+                                            initials: profile.initials,
+                                            size: 100,
+                                          ),
+                                          errorWidget: (_, __, ___) =>
+                                              InitialsAvatar(
+                                            initials: profile.initials,
+                                            size: 100,
+                                          ),
+                                        )
+                                      : InitialsAvatar(
+                                          initials: profile?.initials ?? 'N',
                                           size: 100,
                                         ),
-                                      )
-                                    : InitialsAvatar(
-                                        initials: profile?.initials ?? 'N',
-                                        size: 100,
-                                      ),
+                                ),
                               ),
                             ),
                           ),

@@ -7,6 +7,7 @@ class AppRoutes {
   // onboarding
   static const String onboardingRoute = '/onboarding';
   static const String profileSettingsRoute = '/profile-settings';
+  static const String fullScreenImage = '/full-screen-image';
 
   static const String splashRoute = '/';
   static const String homeRoute = '/home';

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/core/widgets/drawer/initials_avatar.dart';
 import '../../router/app_routes.dart';
@@ -36,10 +37,13 @@ class AuthenticatedHeader extends StatelessWidget {
               ),
               child: ClipOval(
                 child: profile?.avatarUrl != null
-                    ? Image.network(
-                        profile!.avatarUrl as String,
+                    ? CachedNetworkImage(
+                        imageUrl: profile!.avatarUrl as String,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
+                        placeholder: (_, __) => InitialsAvatar(
+                          initials: profile?.initials ?? 'N',
+                        ),
+                        errorWidget: (_, __, ___) =>
                             InitialsAvatar(initials: profile?.initials ?? 'N'),
                       )
                     : InitialsAvatar(initials: profile?.initials ?? 'N'),
