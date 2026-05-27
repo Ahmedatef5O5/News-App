@@ -12,78 +12,96 @@ enum PageLoadStatus {
 }
 
 class HomeState extends Equatable {
-  /// HeadLines  status
+  // ── Headlines ──────────────────────────────────────────────────────────────
   final LoadStatus headlinesStatus;
   final List<Article> headlines;
   final String? headlinesError;
 
-  /// Recommended status
-  final PageLoadStatus recommendedStatus;
-  final List<Article> recommended;
-  final String? recommendedError;
+  // ── Recommended (paginated) ────────────────────────────────────────────────
+  final PageLoadStatus pageStatus;
+  final List<Article> recommendedArticles;
+  final String? pageError;
   final PaginationMeta pagination;
+  final int currentPage;
+  final int totalRecommended;
 
-  // global
+  // ── Global ─────────────────────────────────────────────────────────────────
   final NewsCategory selectedCategory;
   final bool isRefreshing;
+  final bool fromCache;
 
   const HomeState({
     this.headlinesStatus = LoadStatus.initial,
     this.headlines = const [],
     this.headlinesError,
-    this.recommendedStatus = PageLoadStatus.idle,
-    this.recommended = const [],
-    this.recommendedError,
+    this.pageStatus = PageLoadStatus.idle,
+    this.recommendedArticles = const [],
+    this.pageError,
     this.pagination = const PaginationMeta(),
+    this.currentPage = 1,
+    this.totalRecommended = 0,
     this.selectedCategory = NewsCategory.general,
     this.isRefreshing = false,
+    this.fromCache = false,
   });
 
+  // ── Convenience getters ────────────────────────────────────────────────────
+
   bool get isRecommendedLoading =>
-      recommendedStatus == PageLoadStatus.loadingInitial ||
-      recommendedStatus == PageLoadStatus.loadingMore ||
-      recommendedStatus == PageLoadStatus.loadingPage;
+      pageStatus == PageLoadStatus.loadingInitial ||
+      pageStatus == PageLoadStatus.loadingPage;
 
   bool get showPaginationBar =>
-      recommendedStatus == PageLoadStatus.success && recommended.isNotEmpty;
+      pageStatus == PageLoadStatus.success && recommendedArticles.isNotEmpty;
+
+  // ── copyWith ───────────────────────────────────────────────────────────────
 
   HomeState copyWith({
     LoadStatus? headlinesStatus,
     List<Article>? headlines,
     String? headlinesError,
-    PageLoadStatus? recommendedStatus,
-    List<Article>? recommended,
-    String? recommendedError,
+    PageLoadStatus? pageStatus,
+    List<Article>? recommendedArticles,
+    String? pageError,
     PaginationMeta? pagination,
+    int? currentPage,
+    int? totalRecommended,
     NewsCategory? selectedCategory,
     bool? isRefreshing,
-    bool clearRecommendedError = false,
+    bool? fromCache,
     bool clearHeadlinesError = false,
+    bool clearPageError = false,
   }) {
     return HomeState(
       headlinesStatus: headlinesStatus ?? this.headlinesStatus,
       headlines: headlines ?? this.headlines,
-      headlinesError: headlinesError ?? this.headlinesError,
-      recommendedStatus: recommendedStatus ?? this.recommendedStatus,
-      recommended: recommended ?? this.recommended,
-      recommendedError: recommendedError ?? this.recommendedError,
+      headlinesError:
+          clearHeadlinesError ? null : (headlinesError ?? this.headlinesError),
+      pageStatus: pageStatus ?? this.pageStatus,
+      recommendedArticles: recommendedArticles ?? this.recommendedArticles,
+      pageError: clearPageError ? null : (pageError ?? this.pageError),
       pagination: pagination ?? this.pagination,
+      currentPage: currentPage ?? this.currentPage,
+      totalRecommended: totalRecommended ?? this.totalRecommended,
       selectedCategory: selectedCategory ?? this.selectedCategory,
       isRefreshing: isRefreshing ?? this.isRefreshing,
+      fromCache: fromCache ?? this.fromCache,
     );
   }
 
-// to ensure if any change happend to rebuild state
   @override
   List<Object?> get props => [
         headlinesStatus,
-        recommendedStatus,
         headlines,
-        recommended,
         headlinesError,
-        recommendedError,
+        pageStatus,
+        recommendedArticles,
+        pageError,
         pagination,
+        currentPage,
+        totalRecommended,
         selectedCategory,
         isRefreshing,
+        fromCache,
       ];
 }

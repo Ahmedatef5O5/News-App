@@ -1,63 +1,69 @@
 import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
-import '../../../core/constants/app_constants.dart';
-import '../../../core/models/article_model.dart';
+import 'package:news_app/core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
+
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  final HomeRepository _repo;
-
-  final CategoryCubit categoryCubit;
-  late final StreamSubscription _categorySubscription;
-
-  HomeCubit({required this.categoryCubit, HomeRepository? repository})
-      : _repo = repository ?? HomeRepository(),
+  HomeCubit({
+    required this.categoryCubit,
+    required HomeRepository repository,
+  })  : _repo = repository,
         super(const HomeState()) {
     _syncCategory(categoryCubit.state);
-
-    _categorySubscription = categoryCubit.stream.listen((category) {
-      _syncCategory(category);
-    });
+    _categorySubscription = categoryCubit.stream.listen(_syncCategory);
   }
+
+  final HomeRepository _repo;
+  final CategoryCubit categoryCubit;
+  late final StreamSubscription<NewsCategory> _categorySubscription;
+  bool _initialized = false;
+
+  // ── Category sync ──────────────────────────────────────────────────────────
 
   void _syncCategory(NewsCategory category) {
     if (isClosed) return;
     emit(state.copyWith(
       selectedCategory: category,
       headlinesStatus: LoadStatus.loading,
+      clearHeadlinesError: true,
     ));
-
     fetchHeadlines(
-        category: category == NewsCategory.general ? null : category.value,
-        forceRefresh: true);
+      category: category == NewsCategory.general ? null : category.value,
+      forceRefresh: true,
+    );
   }
 
-  /// Fetches both sections on initial load.
-  bool _initialized = false;
+  // ── Init ───────────────────────────────────────────────────────────────────
+
   Future<void> init() async {
     if (_initialized || isClosed) return;
     _initialized = true;
     await Future.wait([
       fetchHeadlines(),
-      // fetchRecommended(),
       _loadPage(1, mode: PageLoadStatus.loadingInitial),
     ]);
   }
 
-  /// Pull-to-refresh — forces network calls.
+  // ── Pull-to-refresh ────────────────────────────────────────────────────────
+
   Future<void> refresh() async {
+    if (isClosed) return;
     emit(state.copyWith(isRefreshing: true));
     await _repo.clearRecommendedCache();
     await Future.wait([
       fetchHeadlines(forceRefresh: true),
       _loadPage(1, mode: PageLoadStatus.loadingInitial, forceRefresh: true),
     ]);
-    emit(state.copyWith(isRefreshing: false));
+    if (!isClosed) emit(state.copyWith(isRefreshing: false));
   }
+
+  // ── Headlines ──────────────────────────────────────────────────────────────
 
   Future<void> fetchHeadlines({
     String? category,
@@ -87,32 +93,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  Future<void> loadNextPage() async {
-    final pag = state.pagination;
-    if (!pag.hasNextPage) return;
-    if (state.recommendedStatus == PageLoadStatus.loadingMore) return;
-
-    final nextPage = pag.nextPage;
-    await _loadPage(nextPage, mode: PageLoadStatus.loadingMore);
-  }
-
-  Future<void> goToPage(int page) async {
-    if (page == state.pagination.currentPage) return;
-    if (page < 1 || page > state.pagination.totalPages) return;
-
-    await _loadPage(page, mode: PageLoadStatus.loadingPage);
-  }
-
-  Future<void> goToNextPage() => goToPage(state.pagination.nextPage);
-  Future<void> goToPreviousPage() => goToPage(state.pagination.previousPage);
-
-  Future<void> retryRecommended() async {
-    await _loadPage(
-      state.pagination.currentPage,
-      mode: PageLoadStatus.loadingInitial,
-      forceRefresh: true,
-    );
-  }
+  // ── Recommended pages ──────────────────────────────────────────────────────
 
   Future<void> _loadPage(
     int page, {
@@ -120,49 +101,41 @@ class HomeCubit extends Cubit<HomeState> {
     bool forceRefresh = false,
   }) async {
     if (isClosed) return;
-    emit(state.copyWith(
-      recommendedStatus: mode,
-      clearRecommendedError: true,
-    ));
-
+    emit(state.copyWith(pageStatus: mode, clearPageError: true));
     try {
       final result = await _repo.getRecommendedPage(
         page: page,
         forceRefresh: forceRefresh,
       );
       if (isClosed) return;
-
-      final newPagination = state.pagination.copyWith(
-        currentPage: page,
-        totalResults: result.totalResults,
-        pageSize: AppConstants.recommendedPageSize,
-      );
-
-      List<Article> updatedList;
-      if (mode == PageLoadStatus.loadingMore) {
-        // Append — deduplicate by uniqueId to prevent duplicates
-        final existingIds = state.recommended.map((a) => a.uniqueId).toSet();
-        final newArticles = result.articles
-            .where((a) => !existingIds.contains(a.uniqueId))
-            .toList();
-        updatedList = [...state.recommended, ...newArticles];
-      } else {
-        updatedList = result.articles;
-      }
-
       emit(state.copyWith(
-        recommendedStatus: PageLoadStatus.success,
-        recommended: updatedList,
-        pagination: newPagination,
+        pageStatus: PageLoadStatus.success,
+        recommendedArticles: result.articles,
+        totalRecommended: result.totalResults,
+        currentPage: page,
+        fromCache: result.fromCache, // ← drives OfflineBanner
+        pagination: PaginationMeta(
+          currentPage: page,
+          totalResults: result.totalResults,
+          pageSize: AppConstants.recommendedPageSize,
+        ),
       ));
     } catch (e) {
       if (isClosed) return;
       emit(state.copyWith(
-        recommendedStatus: PageLoadStatus.failure,
-        recommendedError: e.toString(),
+        pageStatus: PageLoadStatus.failure,
+        pageError: e.toString(),
       ));
     }
   }
+
+  Future<void> goToPage(int page) =>
+      _loadPage(page, mode: PageLoadStatus.loadingPage);
+
+  Future<void> goToNextPage() => goToPage(state.pagination.nextPage);
+  Future<void> goToPreviousPage() => goToPage(state.pagination.previousPage);
+
+  // ── Cleanup ────────────────────────────────────────────────────────────────
 
   @override
   Future<void> close() {

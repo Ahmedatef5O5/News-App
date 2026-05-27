@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/news_api_response.dart';
-import 'package:news_app/core/network/dio_client.dart';
 
 class HomeServices {
-  // implement DioClient singleton
-  final Dio _dio = DioClient.instance.dio;
+  final Dio _dio;
+
+  HomeServices({required Dio dio}) : _dio = dio;
 
   Future<NewsApiResponse> getTopHeadlines({
     String country = 'us',
