@@ -18,6 +18,7 @@ import '../../features/auth/data/auth_repository_impl.dart';
 import '../../features/favorites/services/favorite_services.dart';
 import '../../features/search/cubit/search_cubit.dart';
 import '../../features/search/services/search_services.dart';
+import '../network/connectivity_cubit.dart';
 import '../repositories/home_repository.dart';
 
 /// Global service locator instance.
@@ -43,6 +44,10 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  sl.registerLazySingleton<ConnectivityCubit>(
+    () => ConnectivityCubit(sl<NetworkInfo>()),
+  );
+
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSource.instance,
   );
@@ -58,6 +63,7 @@ Future<void> setupServiceLocator() async {
     () => AuthRepositoryImpl(
       dataSource: sl<AuthRemoteDataSource>(),
       localDataSource: sl<AuthLocalDataSource>(),
+      networkInfo: sl<NetworkInfo>(),
     ),
   );
 

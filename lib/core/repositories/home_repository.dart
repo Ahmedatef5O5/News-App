@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/network/network_info.dart';
@@ -119,14 +118,14 @@ class HomeRepository {
     // ① Offline — serve cache instantly.
     final online = await _network.isConnected;
     if (!online) {
-      final cached = await _getCachedPage(cacheKey);
+      final cached = await _getCachedPage(cacheKey, isOffline: true);
       if (cached != null) return cached;
       throw _offlineNoCache();
     }
 
     // Online path.
     if (!forceRefresh) {
-      final cached = await _getCachedPage(cacheKey);
+      final cached = await _getCachedPage(cacheKey, isOffline: false);
       if (cached != null) return cached;
     }
 
@@ -142,7 +141,7 @@ class HomeRepository {
       await _cachePage(cacheKey, result);
       return result;
     } on DioException catch (e) {
-      final cached = await _getCachedPage(cacheKey);
+      final cached = await _getCachedPage(cacheKey, isOffline: true);
       if (cached != null) return cached;
       throw _mapDioError(e);
     }
@@ -176,14 +175,15 @@ class HomeRepository {
     await _db.put('${key}_total', result.totalResults);
   }
 
-  Future<PageResult?> _getCachedPage(String key) async {
+  Future<PageResult?> _getCachedPage(String key,
+      {bool isOffline = false}) async {
     final articles = await _getCachedArticles('${key}_articles');
     final total = await _db.get<int>('${key}_total');
     if (articles == null || total == null) return null;
     return PageResult(
       articles: articles,
       totalResults: total,
-      fromCache: true,
+      fromCache: isOffline,
     );
   }
 

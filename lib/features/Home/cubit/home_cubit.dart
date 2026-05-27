@@ -6,7 +6,6 @@ import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/models/article_model.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
-
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
@@ -55,7 +54,7 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> refresh() async {
     if (isClosed) return;
     emit(state.copyWith(isRefreshing: true));
-    await _repo.clearRecommendedCache();
+    // await _repo.clearRecommendedCache();
     await Future.wait([
       fetchHeadlines(forceRefresh: true),
       _loadPage(1, mode: PageLoadStatus.loadingInitial, forceRefresh: true),

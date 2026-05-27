@@ -36,6 +36,19 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
         _checkAndNavigate();
       });
     });
+    Future.delayed(const Duration(seconds: 6), () {
+      if (!mounted) return;
+      if (_nextRoute == null) {
+        // Check if there's an existing session locally
+        final authState = context.read<AuthCubit>().state;
+        if (authState is AuthAuthenticated) {
+          _nextRoute = AppRoutes.homeRoute;
+        } else {
+          _nextRoute = AppRoutes.signInRoute;
+        }
+        _checkAndNavigate();
+      }
+    });
   }
 
   void _checkAndNavigate() {

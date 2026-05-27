@@ -1,4 +1,6 @@
 import 'dart:io';
+import '../../../core/di/service_locator.dart';
+import '../../../core/network/network_info.dart';
 import '../../../core/supabase/auth_local_data_source.dart';
 import '../../../core/supabase/auth_remote_data_source.dart';
 import '../../profile/model/profile_model.dart';
@@ -9,11 +11,14 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
     AuthRemoteDataSource? dataSource,
     AuthLocalDataSource? localDataSource,
+    NetworkInfo? networkInfo,
   })  : _ds = dataSource ?? AuthRemoteDataSource(),
-        _local = localDataSource ?? AuthLocalDataSource.instance;
+        _local = localDataSource ?? AuthLocalDataSource.instance,
+        _network = networkInfo ?? sl<NetworkInfo>();
 
   final AuthRemoteDataSource _ds;
   final AuthLocalDataSource _local;
+  final NetworkInfo _network;
 
   @override
   UserModel? get currentUser {
@@ -57,12 +62,16 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<ProfileModel?> getProfile(String userId) async {
+    if (!await _network.isConnected) {
+      return await _local.getCachedProfile();
+    }
+
     try {
       //  Network first
-      return _ds.getProfile(userId);
+      return await _ds.getProfile(userId);
     } catch (_) {
       //  Network failed → serve from cache
-      return _local.getCachedProfile();
+      return await _local.getCachedProfile();
     }
   }
 
@@ -71,7 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       // Network first (also writes through to cache inside remote ds)
 
-      return _ds.upsertProfile(profile);
+      return await _ds.upsertProfile(profile);
     } catch (_) {
       //  Network failed → persist locally and return the passed profile so
       //  the UI stays consistent.
