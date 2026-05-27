@@ -3,7 +3,9 @@ import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 
 class FavoritesService {
-  final _db = LocalDatabaseHive.instance;
+  final LocalDatabaseHive _db;
+
+  FavoritesService({required LocalDatabaseHive db}) : _db = db;
 
   Future<List<Article>> getFavorites() async {
     final raw = await _db.get<List<dynamic>>(AppConstants.favKey);

@@ -4,8 +4,8 @@ import '../services/favorite_services.dart';
 import 'favorite_state.dart';
 
 class FavoritesCubit extends Cubit<FavoritesState> {
-  FavoritesCubit({FavoritesService? service})
-      : _service = service ?? FavoritesService(),
+  FavoritesCubit({required FavoritesService service})
+      : _service = service,
         super(const FavoritesState()) {
     loadFavorites();
   }

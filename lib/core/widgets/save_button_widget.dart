@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
-import 'package:news_app/features/favorites/favorite_cubit/favorite_cubit.dart';
-import '../../features/favorites/favorite_cubit/favorite_state.dart';
+import 'package:news_app/features/favorites/cubit/favorite_cubit.dart';
+import '../../features/favorites/cubit/favorite_state.dart';
 
 class SaveButton extends StatelessWidget {
   const SaveButton({

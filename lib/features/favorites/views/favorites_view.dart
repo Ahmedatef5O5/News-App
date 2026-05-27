@@ -5,10 +5,11 @@ import 'package:news_app/core/router/app_routes.dart';
 import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
 import '../../../core/helpers/shimmer_box.dart';
+import '../../../core/models/article_detail_args.dart';
 import '../../../core/widgets/article_card_widget.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
-import '../favorite_cubit/favorite_cubit.dart';
-import '../favorite_cubit/favorite_state.dart';
+import '../cubit/favorite_cubit.dart';
+import '../cubit/favorite_state.dart';
 
 class FavoritesView extends StatelessWidget {
   const FavoritesView({super.key});
@@ -52,11 +53,16 @@ class FavoritesView extends StatelessWidget {
                     itemCount: state.articles.length,
                     itemBuilder: (ctx, index) {
                       final article = state.articles[index];
+                      const heroContext = 'favorites';
+                      final heroTag =
+                          'article-image-${article.uniqueId}-$heroContext';
                       return ArticleCard(
                         article: article,
+                        heroContext: heroContext,
                         onTap: () => Navigator.of(ctx).pushNamed(
                           AppRoutes.artcileDetailsRoute,
-                          arguments: article,
+                          arguments: ArticleDetailArgs(
+                              article: article, heroTag: heroTag),
                         ),
                       );
                     },
