@@ -50,7 +50,19 @@ class AppRouter {
         return _fadeRoute(
           BlocProvider<HomeCubit>(
             create: (context) => sl<HomeCubit>()..init(),
+            lazy: false,
             child: const HomeView(),
+          ),
+          settings,
+        );
+
+      case AppRoutes.headlinesRoute:
+        // HeadlinesCubit is a factory — fresh instance per navigation.
+        return _slideRoute(
+          BlocProvider<HeadlinesCubit>(
+            create: (_) => sl<HeadlinesCubit>(),
+            lazy: false,
+            child: const HeadlinesView(),
           ),
           settings,
         );
@@ -59,16 +71,6 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const FullScreenImageViewer(),
           settings: settings,
-        );
-
-      case AppRoutes.headlinesRoute:
-        // HeadlinesCubit is a factory — fresh instance per navigation.
-        return _slideRoute(
-          BlocProvider<HeadlinesCubit>(
-            create: (_) => sl<HeadlinesCubit>(),
-            child: const HeadlinesView(),
-          ),
-          settings,
         );
 
       case AppRoutes.searchRoute:

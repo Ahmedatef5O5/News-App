@@ -16,7 +16,8 @@ class RecommendedFeed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Initial skeleton
-    if (state.pageStatus == PageLoadStatus.loadingInitial) {
+    if (state.pageStatus == PageLoadStatus.loadingInitial ||
+        state.pageStatus == PageLoadStatus.idle) {
       return SliverPadding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         sliver: SliverList(

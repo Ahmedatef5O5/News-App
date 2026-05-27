@@ -127,11 +127,8 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
               SliverToBoxAdapter(
                 child: BlocBuilder<ConnectivityCubit, bool>(
                   builder: (_, isConnected) {
-                    return AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 300),
-                        child: isConnected
-                            ? OfflineBanner(visible: state.fromCache)
-                            : const SizedBox.shrink());
+                    return OfflineBanner(
+                        visible: !isConnected || state.fromCache);
                   },
                 ),
               ),
@@ -182,6 +179,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
   Widget _buildFeed(BuildContext context, HeadlinesState state) {
     switch (state.status) {
       case HeadlinesPageLoadStatus.loading:
+      case HeadlinesPageLoadStatus.idle:
         return SliverPadding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           sliver: SliverList(
@@ -201,7 +199,6 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
         );
 
       case HeadlinesPageLoadStatus.success:
-      case HeadlinesPageLoadStatus.idle:
         if (state.pageArticles.isEmpty) {
           return const SliverToBoxAdapter(
             child: EmptyState(

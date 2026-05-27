@@ -51,7 +51,8 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.status == LoadStatus.loading) {
+    if (widget.status == LoadStatus.loading ||
+        widget.status == LoadStatus.initial) {
       return SizedBox(
         height: 230,
         child: PageView.builder(
