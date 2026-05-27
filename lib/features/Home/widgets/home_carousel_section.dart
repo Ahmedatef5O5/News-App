@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/helpers/empty_state.dart';
+import 'package:news_app/core/helpers/error_state.dart';
+import 'package:news_app/core/helpers/shimmer_box.dart';
 import 'package:news_app/core/models/article_model.dart';
-import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/core/router/app_routes.dart';
+import 'package:news_app/features/home/cubit/home_cubit.dart';
 import 'package:news_app/features/home/widgets/headline_carousel_card.dart';
-import '../../../core/helpers/empty_state.dart';
-import '../../../core/helpers/error_state.dart';
-import '../../../core/helpers/shimmer_box.dart';
-import '../cubit/home_cubit.dart';
+import '../../../core/models/article_detail_args.dart';
 
 class HomeCarouselSection extends StatefulWidget {
   const HomeCarouselSection({
@@ -14,14 +15,14 @@ class HomeCarouselSection extends StatefulWidget {
     required this.articles,
     this.error,
     required this.onRetry,
-    required this.onTap,
+    this.onTap,
   });
 
   final LoadStatus status;
   final List<Article> articles;
   final String? error;
   final VoidCallback onRetry;
-  final void Function(Article) onTap;
+  final void Function(Article)? onTap;
 
   @override
   State<HomeCarouselSection> createState() => _HomeCarouselSectionState();
@@ -35,6 +36,17 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _navigateTo(BuildContext context, Article article, String heroTag) {
+    if (widget.onTap != null) {
+      widget.onTap!(article);
+      return;
+    }
+    Navigator.of(context).pushNamed(
+      AppRoutes.artcileDetailsRoute,
+      arguments: ArticleDetailArgs(article: article, heroTag: heroTag),
+    );
   }
 
   @override
@@ -82,10 +94,18 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
             controller: _pageController,
             itemCount: widget.articles.length,
             onPageChanged: (i) => setState(() => _currentIndex = i),
-            itemBuilder: (_, index) => HeadlineCarouselCard(
-              article: widget.articles[index],
-              onTap: () => widget.onTap(widget.articles[index]),
-            ),
+            itemBuilder: (ctx, index) {
+              final article = widget.articles[index];
+              final card = HeadlineCarouselCard(
+                article: article,
+                onTap: () => _navigateTo(
+                    ctx,
+                    article,
+                    // Use the card's own heroTag getter
+                    'article-image-${article.uniqueId}-carousel'),
+              );
+              return card;
+            },
           ),
         ),
         const SizedBox(height: 12),
@@ -98,18 +118,23 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
               final isActive = index == _currentIndex;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 280),
-                curve: Curves.easeOutCubic,
                 margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: isActive ? 20 : 6,
+                width: isActive ? 18 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: isActive ? AppColors.primary : AppColors.ink100,
+                  borderRadius: BorderRadius.circular(3),
+                  color: isActive
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withValues(alpha: 0.2),
                 ),
               );
             },
           ),
         ),
+        const SizedBox(height: 8),
       ],
     );
   }
