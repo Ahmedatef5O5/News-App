@@ -1,0 +1,600 @@
+{
+  "@@locale": "en",
+
+  "@@last_modified": "2026-06-15",
+
+  "@@author": "NewsWave Team",
+
+  "appName": "NewsWave",
+  "@appName": {
+    "description": "The application name displayed in titles and headers"
+  },
+
+  "appVersion": "v1.0.0",
+  "@appVersion": {
+    "description": "The application version shown in the drawer footer"
+  },
+
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Generic confirm button label"
+  },
+
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button label"
+  },
+
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button label (e.g. in ProfileSettingsView action button)"
+  },
+
+  "retry": "Retry",
+  "@retry": {
+    "description": "Generic retry button label"
+  },
+
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Button label on error/failure states"
+  },
+
+  "viewAll": "View All",
+  "@viewAll": {
+    "description": "Section header trailing button"
+  },
+
+  "pageOf": "Page {current} of {total}",
+  "@pageOf": {
+    "description": "Pagination badge text",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total":   { "type": "int" }
+    }
+  },
+
+  "pullDownToRefresh": "Pull down to refresh",
+  "@pullDownToRefresh": {
+    "description": "Subtitle on the empty-feed state"
+  },
+
+  "noDescriptionAvailable": "No description available.",
+  "@noDescriptionAvailable": {
+    "description": "Fallback when an article has no description"
+  },
+
+  "untitled": "Untitled",
+  "@untitled": {
+    "description": "Fallback article title when none is provided"
+  },
+
+  "unknownSource": "Unknown Source",
+  "@unknownSource": {
+    "description": "Fallback article source when none is provided"
+  },
+
+  "linkCopied": "Link copied to clipboard",
+  "@linkCopied": {
+    "description": "Snackbar text after copying an article link"
+  },
+
+  "articleSaved": "Article saved",
+  "@articleSaved": {
+    "description": "Snackbar text after saving an article"
+  },
+
+  "articleRemoved": "Removed from saved",
+  "@articleRemoved": {
+    "description": "Snackbar text after removing a saved article"
+  },
+
+  "somethingWentWrong": "Something went wrong",
+  "@somethingWentWrong": {
+    "description": "Generic error title used in ErrorState widget"
+  },
+
+  "failedToLoad": "Failed to load",
+  "@failedToLoad": {
+    "description": "Generic loading failure message used in pagination"
+  },
+
+  "noInternetCached": "No internet connection. Showing cached news.",
+  "@noInternetCached": {
+    "description": "Shown in the offline banner when cached news is available"
+  },
+
+  "offlineNoCacheYet": "You're offline and there's no cached news yet. Please connect to the internet for your first load.",
+  "@offlineNoCacheYet": {
+    "description": "Shown when the device is offline and no cached data exists"
+  },
+
+  "offlineShowingCached": "You're offline – showing cached news",
+  "@offlineShowingCached": {
+    "description": "OfflineBanner message text"
+  },
+
+  "tooManyRequests": "Too many requests. Please wait a moment.",
+  "@tooManyRequests": {
+    "description": "API rate-limit error message"
+  },
+
+  "serverError": "Server error ({code}). Please try again later.",
+  "@serverError": {
+    "description": "Generic server-side HTTP error message",
+    "placeholders": {
+      "code": { "type": "int" }
+    }
+  },
+
+  "noRouteFound": "No route defined for {routeName}",
+  "@noRouteFound": {
+    "description": "Shown when Navigator cannot find a route",
+    "placeholders": {
+      "routeName": { "type": "String" }
+    }
+  },
+
+  "pageFailedToLoad": "Page failed to load",
+  "@pageFailedToLoad": {
+    "description": "InAppBrowserView error page title"
+  },
+
+  "close": "Close",
+  "@close": {
+    "description": "Tooltip on the browser close button"
+  },
+
+  "copyLink": "Copy link",
+  "@copyLink": {
+    "description": "Tooltip on the browser copy-link button"
+  },
+
+  "back": "Back",
+  "@back": {
+    "description": "Tooltip on the browser back-navigation button"
+  },
+
+  "forward": "Forward",
+  "@forward": {
+    "description": "Tooltip on the browser forward-navigation button"
+  },
+
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Tooltip on the browser refresh button"
+  },
+
+  "backToArticle": "Back to article",
+  "@backToArticle": {
+    "description": "Tooltip on the browser 'back to article' button"
+  },
+
+  "navHome": "Home",
+  "@navHome": {
+    "description": "Drawer / bottom-nav Home label"
+  },
+
+  "navSavedArticles": "Saved Articles",
+  "@navSavedArticles": {
+    "description": "Drawer / bottom-nav Saved Articles label"
+  },
+
+  "navSearch": "Search",
+  "@navSearch": {
+    "description": "Drawer / bottom-nav Search label"
+  },
+
+  "drawerSectionMenu": "MENU",
+  "@drawerSectionMenu": {
+    "description": "Drawer section header for the main menu"
+  },
+
+  "drawerSectionCategories": "CATEGORIES",
+  "@drawerSectionCategories": {
+    "description": "Drawer section header for news categories"
+  },
+
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Theme switch label when dark mode is active"
+  },
+
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Theme switch label when light mode is active"
+  },
+
+  "signOut": "Sign Out",
+  "@signOut": {
+    "description": "Sign-out drawer item and dialog title"
+  },
+
+  "signOutConfirmTitle": "Sign Out",
+  "@signOutConfirmTitle": {
+    "description": "Confirmation dialog title for sign-out"
+  },
+
+  "signOutConfirmContent": "Are you sure you want to sign out?",
+  "@signOutConfirmContent": {
+    "description": "Confirmation dialog body for sign-out"
+  },
+
+  "newsWaveUser": "NewsWave User",
+  "@newsWaveUser": {
+    "description": "Fallback display name in the drawer when profile has no name"
+  },
+
+  "browsingAsGuest": "Browsing as Guest",
+  "@browsingAsGuest": {
+    "description": "Title shown in the drawer guest header"
+  },
+
+  "guestSubtitle": "Create an account for a personalised experience – save articles, sync preferences & more.",
+  "@guestSubtitle": {
+    "description": "Subtitle shown in the drawer guest header"
+  },
+
+  "signInCreateAccount": "Sign In / Create Account",
+  "@signInCreateAccount": {
+    "description": "CTA button in the drawer guest header"
+  },
+
+  "breakingNews": "Breaking News",
+  "@breakingNews": {
+    "description": "Section label and HeadlinesView app-bar title"
+  },
+
+  "forYou": "For You",
+  "@forYou": {
+    "description": "Section label for the recommended-articles feed"
+  },
+
+  "noArticlesFound": "No articles found",
+  "@noArticlesFound": {
+    "description": "Empty state title on the recommended feed"
+  },
+
+  "noSavedArticles": "No saved articles",
+  "@noSavedArticles": {
+    "description": "Empty state title on the FavoritesView"
+  },
+
+  "noSavedArticlesSubtitle": "Tap the bookmark icon on any article to save it for later.",
+  "@noSavedArticlesSubtitle": {
+    "description": "Empty state subtitle on the FavoritesView"
+  },
+
+  "failedToLoadSaved": "Failed to load saved articles",
+  "@failedToLoadSaved": {
+    "description": "Error message on the FavoritesView failure state"
+  },
+
+  "searchForNews": "Search for news",
+  "@searchForNews": {
+    "description": "Initial hint empty-state title in SearchView"
+  },
+
+  "searchHintSubtitle": "Find articles by title, topic, or keyword",
+  "@searchHintSubtitle": {
+    "description": "Initial hint empty-state subtitle in SearchView"
+  },
+
+  "noResultsFound": "No results found",
+  "@noResultsFound": {
+    "description": "Empty-results state title in SearchView"
+  },
+
+  "noResultsSubtitle": "Try different keywords or check your spelling.",
+  "@noResultsSubtitle": {
+    "description": "Empty-results state subtitle in SearchView"
+  },
+
+  "themeSectionTitle": "Appearance",
+  "@themeSectionTitle": {
+    "description": "Title of the theme-picker bottom sheet"
+  },
+
+  "themePickerSubtitle": "Pick how NewsWave looks for you. You can change this any time.",
+  "@themePickerSubtitle": {
+    "description": "Subtitle of the theme-picker bottom sheet"
+  },
+
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Theme option: Light"
+  },
+
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Theme option: Dark"
+  },
+
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "Theme option: System default"
+  },
+
+  "languageSectionTitle": "Language",
+  "@languageSectionTitle": {
+    "description": "Title of the language-picker bottom sheet and settings row"
+  },
+
+  "languagePickerSubtitle": "Choose your preferred language for the app.",
+  "@languagePickerSubtitle": {
+    "description": "Subtitle of the language-picker bottom sheet"
+  },
+
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Language option: English"
+  },
+
+  "languageArabic": "العربية",
+  "@languageArabic": {
+    "description": "Language option: Arabic (shown in its own script)"
+  },
+
+  "profileSettingsTitle": "Profile Settings",
+  "@profileSettingsTitle": {
+    "description": "AppBar title in ProfileSettingsView"
+  },
+
+  "sectionPersonalInfo": "Personal Information",
+  "@sectionPersonalInfo": {
+    "description": "Section header for personal-info fields"
+  },
+
+  "sectionSecurity": "Security",
+  "@sectionSecurity": {
+    "description": "Section header for password/security fields"
+  },
+
+  "sectionInterests": "Interests",
+  "@sectionInterests": {
+    "description": "Section header for hobby/interest fields"
+  },
+
+  "sectionPreferredCategories": "Preferred News Categories",
+  "@sectionPreferredCategories": {
+    "description": "Section header for the category multi-select"
+  },
+
+  "fieldFirstName": "First name",
+  "@fieldFirstName": {
+    "description": "Label for the first-name text field"
+  },
+
+  "fieldLastName": "Last name",
+  "@fieldLastName": {
+    "description": "Label for the last-name text field"
+  },
+
+  "fieldCountry": "Country",
+  "@fieldCountry": {
+    "description": "Label for the country dropdown"
+  },
+
+  "fieldHobby": "Hobby",
+  "@fieldHobby": {
+    "description": "Label for the hobby dropdown"
+  },
+
+  "fieldNewPassword": "New password (leave blank to keep current)",
+  "@fieldNewPassword": {
+    "description": "Label for the new-password field in ProfileSettings"
+  },
+
+  "hintSelectCountry": "Select country",
+  "@hintSelectCountry": {
+    "description": "Hint text for the country dropdown"
+  },
+
+  "hintSelectHobby": "Select hobby",
+  "@hintSelectHobby": {
+    "description": "Hint text for the hobby dropdown"
+  },
+
+  "profileUpdatedSuccess": "Profile updated successfully",
+  "@profileUpdatedSuccess": {
+    "description": "Snackbar shown after a successful profile update"
+  },
+
+  "authWelcomeBack": "Welcome back",
+  "@authWelcomeBack": {
+    "description": "Heading on the Sign-In screen"
+  },
+
+  "authFieldEmail": "Email address",
+  "@authFieldEmail": {
+    "description": "Label for email input fields across auth screens"
+  },
+
+  "authFieldPassword": "Password",
+  "@authFieldPassword": {
+    "description": "Label for the password field on Sign-In"
+  },
+
+  "authFieldConfirmPassword": "Confirm password",
+  "@authFieldConfirmPassword": {
+    "description": "Label for the confirm-password field on Sign-Up"
+  },
+
+  "authFieldConfirmNewPassword": "Confirm New Password",
+  "@authFieldConfirmNewPassword": {
+    "description": "Label for the confirm-new-password field in UpdatePassword"
+  },
+
+  "authForgotPassword": "Forgot password?",
+  "@authForgotPassword": {
+    "description": "Tappable label linking to ForgotPasswordView"
+  },
+
+  "authSignIn": "Sign In",
+  "@authSignIn": {
+    "description": "Primary button label and link text on Sign-In screen"
+  },
+
+  "authSignUp": "Sign Up",
+  "@authSignUp": {
+    "description": "Link/tab label to the Sign-Up screen"
+  },
+
+  "authCreateAccount": "Create Account",
+  "@authCreateAccount": {
+    "description": "Heading and primary button label on the Sign-Up screen"
+  },
+
+  "authAlreadyHaveAccount": "Already have an account? ",
+  "@authAlreadyHaveAccount": {
+    "description": "Suffix text linking back to Sign-In"
+  },
+
+  "authResetPassword": "Reset Password",
+  "@authResetPassword": {
+    "description": "AppBar title on ForgotPasswordView"
+  },
+
+  "authSendResetLink": "Send Reset Link",
+  "@authSendResetLink": {
+    "description": "Primary button on ForgotPasswordView"
+  },
+
+  "authEmailSentTitle": "Email Sent!",
+  "@authEmailSentTitle": {
+    "description": "Heading on the post-email-sent confirmation page"
+  },
+
+  "authEmailSentBody": "We sent a password reset link to\n{email}",
+  "@authEmailSentBody": {
+    "description": "Body text on the post-email-sent confirmation page",
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+
+  "authBackToSignIn": "Back to Sign In",
+  "@authBackToSignIn": {
+    "description": "Button on the post-email-sent page"
+  },
+
+  "authPasswordUpdatedSuccess": "Password updated successfully!",
+  "@authPasswordUpdatedSuccess": {
+    "description": "Snackbar after a successful password update"
+  },
+
+  "validationEmailRequired": "Please enter your email",
+  "@validationEmailRequired": {
+    "description": "Validation message when email field is empty"
+  },
+
+  "validationEmailInvalid": "Enter a valid email address",
+  "@validationEmailInvalid": {
+    "description": "Validation message when email format is wrong"
+  },
+
+  "validationEmailInvalidAlt": "Please enter a valid email address.",
+  "@validationEmailInvalidAlt": {
+    "description": "InvalidEmailException message"
+  },
+
+  "validationPasswordRequired": "Email is required",
+  "@validationPasswordRequired": {
+    "description": "Validation message when password field is empty on sign-up"
+  },
+
+  "validationPasswordTooShort": "Password must be at least 6 characters",
+  "@validationPasswordTooShort": {
+    "description": "Validation message when password is too short"
+  },
+
+  "validationPasswordsNoMatch": "Passwords do not match",
+  "@validationPasswordsNoMatch": {
+    "description": "Validation message when confirm-password doesn't match"
+  },
+
+  "errorInvalidCredentials": "Invalid email or password. Please try again.",
+  "@errorInvalidCredentials": {
+    "description": "Auth exception: wrong credentials"
+  },
+
+  "errorEmailAlreadyInUse": "An account with this email already exists.",
+  "@errorEmailAlreadyInUse": {
+    "description": "Auth exception: duplicate email"
+  },
+
+  "errorConnectionFailed": "Connection failed. Check your internet and try again.",
+  "@errorConnectionFailed": {
+    "description": "Auth exception: network error"
+  },
+
+  "errorSessionExpired": "Your session has expired. Please sign in again.",
+  "@errorSessionExpired": {
+    "description": "Auth exception: expired session"
+  },
+
+  "errorTooManyAttempts": "Too many attempts. Please wait a moment and try again.",
+  "@errorTooManyAttempts": {
+    "description": "Auth exception: rate limited"
+  },
+
+  "onboardingSkip": "Skip for now",
+  "@onboardingSkip": {
+    "description": "Skip button on the onboarding flow"
+  },
+
+  "onboardingContinue": "Continue",
+  "@onboardingContinue": {
+    "description": "Next-step button on onboarding pages 0 & 1"
+  },
+
+  "onboardingGetStarted": "Get Started",
+  "@onboardingGetStarted": {
+    "description": "Final-step button on the last onboarding page"
+  },
+
+  "onboardingHobbySubtitle": "Pick your favourite hobby or interest.",
+  "@onboardingHobbySubtitle": {
+    "description": "Subtitle on the hobby onboarding step"
+  },
+
+  "onboardingSelectCountryHint": "Select your country",
+  "@onboardingSelectCountryHint": {
+    "description": "Hint for the country dropdown on the onboarding step"
+  },
+
+  "categoryGeneral": "General",
+  "@categoryGeneral": {
+    "description": "News category: General"
+  },
+
+  "categoryBusiness": "Business",
+  "@categoryBusiness": {
+    "description": "News category: Business"
+  },
+
+  "categoryTechnology": "Technology",
+  "@categoryTechnology": {
+    "description": "News category: Technology"
+  },
+
+  "categorySports": "Sports",
+  "@categorySports": {
+    "description": "News category: Sports"
+  },
+
+  "categoryHealth": "Health",
+  "@categoryHealth": {
+    "description": "News category: Health"
+  },
+
+  "categoryEntertainment": "Entertainment",
+  "@categoryEntertainment": {
+    "description": "News category: Entertainment"
+  },
+
+  "categoryScience": "Science",
+  "@categoryScience": {
+    "description": "News category: Science"
+  }
+}

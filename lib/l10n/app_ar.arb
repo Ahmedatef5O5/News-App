@@ -1,0 +1,260 @@
+{
+  "@@locale": "ar",
+
+  "@@last_modified": "2026-06-15",
+
+  "@@author": "NewsWave Team",
+
+  "appName": "نيوز ويف",
+
+  "appVersion": "الإصدار 1.0.0",
+
+  "confirm": "تأكيد",
+
+  "cancel": "إلغاء",
+
+  "save": "حفظ",
+
+  "retry": "إعادة المحاولة",
+
+  "tryAgain": "حاول مجدداً",
+
+  "viewAll": "عرض الكل",
+
+  "pageOf": "الصفحة {current} من {total}",
+  "@pageOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total":   { "type": "int" }
+    }
+  },
+
+  "pullDownToRefresh": "اسحب للأسفل للتحديث",
+
+  "noDescriptionAvailable": "لا يوجد وصف متاح.",
+
+  "untitled": "بلا عنوان",
+
+  "unknownSource": "مصدر غير معروف",
+
+  "linkCopied": "تم نسخ الرابط إلى الحافظة",
+
+  "articleSaved": "تم حفظ المقال",
+
+  "articleRemoved": "تمت الإزالة من المحفوظات",
+
+  "somethingWentWrong": "حدث خطأ ما",
+
+  "failedToLoad": "فشل التحميل",
+
+  "noInternetCached": "لا يوجد اتصال بالإنترنت. يتم عرض الأخبار المحفوظة.",
+
+  "offlineNoCacheYet": "أنت غير متصل ولا توجد أخبار محفوظة بعد. يرجى الاتصال بالإنترنت للتحميل الأول.",
+
+  "offlineShowingCached": "أنت غير متصل – يتم عرض الأخبار المحفوظة",
+
+  "tooManyRequests": "طلبات كثيرة جداً. يرجى الانتظار لحظة.",
+
+  "serverError": "خطأ في الخادم ({code}). يرجى المحاولة لاحقاً.",
+  "@serverError": {
+    "placeholders": {
+      "code": { "type": "int" }
+    }
+  },
+
+  "noRouteFound": "لا يوجد مسار محدد لـ {routeName}",
+  "@noRouteFound": {
+    "placeholders": {
+      "routeName": { "type": "String" }
+    }
+  },
+
+  "pageFailedToLoad": "فشل تحميل الصفحة",
+
+  "close": "إغلاق",
+
+  "copyLink": "نسخ الرابط",
+
+  "back": "رجوع",
+
+  "forward": "للأمام",
+
+  "refresh": "تحديث",
+
+  "backToArticle": "العودة إلى المقال",
+
+  "navHome": "الرئيسية",
+
+  "navSavedArticles": "المقالات المحفوظة",
+
+  "navSearch": "بحث",
+
+  "drawerSectionMenu": "القائمة",
+
+  "drawerSectionCategories": "التصنيفات",
+
+  "darkMode": "الوضع الداكن",
+
+  "lightMode": "الوضع الفاتح",
+
+  "signOut": "تسجيل الخروج",
+
+  "signOutConfirmTitle": "تسجيل الخروج",
+
+  "signOutConfirmContent": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+
+  "newsWaveUser": "مستخدم نيوز ويف",
+
+  "browsingAsGuest": "تصفح كضيف",
+
+  "guestSubtitle": "أنشئ حساباً للحصول على تجربة مخصصة – احفظ المقالات وزامن تفضيلاتك والمزيد.",
+
+  "signInCreateAccount": "تسجيل الدخول / إنشاء حساب",
+
+  "breakingNews": "أخبار عاجلة",
+
+  "forYou": "لك",
+
+  "noArticlesFound": "لم يتم العثور على مقالات",
+
+  "noSavedArticles": "لا توجد مقالات محفوظة",
+
+  "noSavedArticlesSubtitle": "اضغط على أيقونة الإشارة المرجعية في أي مقال لحفظه لاحقاً.",
+
+  "failedToLoadSaved": "فشل تحميل المقالات المحفوظة",
+
+  "searchForNews": "البحث عن أخبار",
+
+  "searchHintSubtitle": "ابحث عن مقالات بالعنوان أو الموضوع أو الكلمة المفتاحية",
+
+  "noResultsFound": "لم يتم العثور على نتائج",
+
+  "noResultsSubtitle": "جرب كلمات مختلفة أو تحقق من التهجئة.",
+
+  "themeSectionTitle": "المظهر",
+
+  "themePickerSubtitle": "اختر كيف تبدو نيوز ويف. يمكنك تغيير ذلك في أي وقت.",
+
+  "themeLight": "فاتح",
+
+  "themeDark": "داكن",
+
+  "themeSystem": "النظام",
+
+  "languageSectionTitle": "اللغة",
+
+  "languagePickerSubtitle": "اختر اللغة المفضلة للتطبيق.",
+
+  "languageEnglish": "English",
+
+  "languageArabic": "العربية",
+
+  "profileSettingsTitle": "إعدادات الملف الشخصي",
+
+  "sectionPersonalInfo": "المعلومات الشخصية",
+
+  "sectionSecurity": "الأمان",
+
+  "sectionInterests": "الاهتمامات",
+
+  "sectionPreferredCategories": "تصنيفات الأخبار المفضلة",
+
+  "fieldFirstName": "الاسم الأول",
+
+  "fieldLastName": "اسم العائلة",
+
+  "fieldCountry": "الدولة",
+
+  "fieldHobby": "الهواية",
+
+  "fieldNewPassword": "كلمة مرور جديدة (اتركها فارغة للإبقاء على الحالية)",
+
+  "hintSelectCountry": "اختر الدولة",
+
+  "hintSelectHobby": "اختر الهواية",
+
+  "profileUpdatedSuccess": "تم تحديث الملف الشخصي بنجاح",
+
+  "authWelcomeBack": "مرحباً بعودتك",
+
+  "authFieldEmail": "البريد الإلكتروني",
+
+  "authFieldPassword": "كلمة المرور",
+
+  "authFieldConfirmPassword": "تأكيد كلمة المرور",
+
+  "authFieldConfirmNewPassword": "تأكيد كلمة المرور الجديدة",
+
+  "authForgotPassword": "نسيت كلمة المرور؟",
+
+  "authSignIn": "تسجيل الدخول",
+
+  "authSignUp": "إنشاء حساب",
+
+  "authCreateAccount": "إنشاء حساب",
+
+  "authAlreadyHaveAccount": "لديك حساب بالفعل؟ ",
+
+  "authResetPassword": "إعادة تعيين كلمة المرور",
+
+  "authSendResetLink": "إرسال رابط الإعادة",
+
+  "authEmailSentTitle": "تم إرسال البريد!",
+
+  "authEmailSentBody": "لقد أرسلنا رابط إعادة تعيين كلمة المرور إلى\n{email}",
+  "@authEmailSentBody": {
+    "placeholders": {
+      "email": { "type": "String" }
+    }
+  },
+
+  "authBackToSignIn": "العودة إلى تسجيل الدخول",
+
+  "authPasswordUpdatedSuccess": "تم تحديث كلمة المرور بنجاح!",
+
+  "validationEmailRequired": "يرجى إدخال بريدك الإلكتروني",
+
+  "validationEmailInvalid": "أدخل عنوان بريد إلكتروني صالح",
+
+  "validationEmailInvalidAlt": "يرجى إدخال عنوان بريد إلكتروني صالح.",
+
+  "validationPasswordRequired": "البريد الإلكتروني مطلوب",
+
+  "validationPasswordTooShort": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+
+  "validationPasswordsNoMatch": "كلمتا المرور غير متطابقتين",
+
+  "errorInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة. يرجى المحاولة مجدداً.",
+
+  "errorEmailAlreadyInUse": "يوجد حساب بهذا البريد الإلكتروني بالفعل.",
+
+  "errorConnectionFailed": "فشل الاتصال. تحقق من اتصالك بالإنترنت وحاول مجدداً.",
+
+  "errorSessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً.",
+
+  "errorTooManyAttempts": "محاولات كثيرة جداً. يرجى الانتظار لحظة والمحاولة مجدداً.",
+
+  "onboardingSkip": "تخطي الآن",
+
+  "onboardingContinue": "متابعة",
+
+  "onboardingGetStarted": "ابدأ الآن",
+
+  "onboardingHobbySubtitle": "اختر هوايتك أو اهتمامك المفضل.",
+
+  "onboardingSelectCountryHint": "اختر دولتك",
+
+  "categoryGeneral": "عام",
+
+  "categoryBusiness": "أعمال",
+
+  "categoryTechnology": "تكنولوجيا",
+
+  "categorySports": "رياضة",
+
+  "categoryHealth": "صحة",
+
+  "categoryEntertainment": "ترفيه",
+
+  "categoryScience": "علوم"
+}
