@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:news_app/core/locale/locale_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
@@ -71,7 +72,7 @@ Future<void> setupServiceLocator() async {
     () => HomeRepository(
       services: sl<HomeServices>(),
       db: sl<LocalDatabaseHive>(),
-      networkInfo: sl<NetworkInfo>(), // ← Phase 4 addition
+      networkInfo: sl<NetworkInfo>(),
     ),
   );
 
@@ -89,6 +90,10 @@ Future<void> setupServiceLocator() async {
 
   sl.registerLazySingleton<ThemeCubit>(
     () => ThemeCubit(),
+  );
+
+  sl.registerLazySingleton<LocaleCubit>(
+    () => LocaleCubit(),
   );
 
   sl.registerLazySingleton<AuthCubit>(

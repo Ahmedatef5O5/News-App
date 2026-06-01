@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
+import 'package:news_app/core/locale/locale_cubit.dart';
 import 'package:news_app/core/network/connectivity_cubit.dart';
 import 'package:news_app/core/router/app_router.dart';
 import 'package:news_app/core/router/app_routes.dart';
@@ -73,6 +74,10 @@ class NewsWave extends StatelessWidget {
         ),
         BlocProvider<ThemeCubit>(
           create: (_) => sl<ThemeCubit>()..init(),
+        ),
+
+        BlocProvider<LocaleCubit>(
+          create: (_) => sl<LocaleCubit>()..init(),
         ),
         BlocProvider<FavoritesCubit>(
           create: (context) => sl<FavoritesCubit>(),
