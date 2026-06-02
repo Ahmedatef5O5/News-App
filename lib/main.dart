@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/locale/locale_cubit.dart';
 import 'package:news_app/core/network/connectivity_cubit.dart';
@@ -88,17 +90,36 @@ class NewsWave extends StatelessWidget {
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {
-          return MaterialApp(
-            navigatorKey: navigatorKey,
-            locale: DevicePreview.locale(context),
-            builder: DevicePreview.appBuilder,
-            debugShowCheckedModeBanner: false,
-            title: AppConstants.appName,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: themeMode,
-            onGenerateRoute: AppRouter.onGenerateRoute,
-            initialRoute: AppRoutes.splashRoute,
+          return BlocBuilder<LocaleCubit, Locale>(
+            builder: (context, locale) {
+              return MaterialApp(
+                navigatorKey: navigatorKey,
+                debugShowCheckedModeBanner: false,
+                title: AppConstants.appName,
+                // ── Localisation ────────────────────────────────────────────
+                locale: locale,
+                supportedLocales: AppLocalizations.supportedLocales,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                theme: AppTheme.of(
+                  locale: locale,
+                  brightness: Brightness.light,
+                ),
+                darkTheme: AppTheme.of(
+                  locale: locale,
+                  brightness: Brightness.dark,
+                ),
+                themeMode: themeMode,
+                onGenerateRoute: AppRouter.onGenerateRoute,
+                initialRoute: AppRoutes.splashRoute,
+
+                builder: DevicePreview.appBuilder,
+              );
+            },
           );
         },
       ),
