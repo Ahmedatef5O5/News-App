@@ -3,10 +3,24 @@ import 'package:flutter/services.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 
 class AppTheme {
-  static ThemeData get light => _buildTheme(Brightness.light);
-  static ThemeData get dark => _buildTheme(Brightness.dark);
+  AppTheme._();
 
-  static ThemeData _buildTheme(Brightness brightness) {
+  static String fontFamily(Locale locale) =>
+      locale.languageCode == 'ar' ? 'Cairo' : 'Poppins';
+
+  static ThemeData of({
+    required Locale locale,
+    required Brightness brightness,
+  }) =>
+      _buildTheme(brightness, fontFamily(locale));
+
+  static ThemeData get light => _buildTheme(Brightness.light, 'Poppins');
+
+  static ThemeData get dark => _buildTheme(Brightness.dark, 'Poppins');
+
+  // ── Core builder ───────────────────────────────────────────────────────────
+
+  static ThemeData _buildTheme(Brightness brightness, String font) {
     final isLight = brightness == Brightness.light;
 
     return ThemeData(
@@ -25,7 +39,7 @@ class AppTheme {
           isLight ? AppColors.surfaceWarm : AppColors.surfaceDark,
       primaryColor: AppColors.primary,
 
-      /// AppBar
+      // ── AppBar ─────────────────────────────────────────────────────────────
       appBarTheme: AppBarTheme(
         backgroundColor:
             isLight ? AppColors.surfaceWarm : AppColors.surfaceDark,
@@ -35,7 +49,7 @@ class AppTheme {
         systemOverlayStyle:
             isLight ? SystemUiOverlayStyle.dark : SystemUiOverlayStyle.light,
         titleTextStyle: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: isLight ? AppColors.ink900 : Colors.white,
@@ -46,11 +60,11 @@ class AppTheme {
         ),
       ),
 
-      // ── Text Theme ──────────────────────────────────────────────────────
+      // ── Text Theme ─────────────────────────────────────────────────────────
       textTheme: TextTheme(
         // Headlines
         displayLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 32,
           fontWeight: FontWeight.w700,
           color: isLight ? AppColors.ink900 : Colors.white,
@@ -58,7 +72,7 @@ class AppTheme {
           height: 1.2,
         ),
         headlineLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 24,
           fontWeight: FontWeight.w700,
           color: isLight ? AppColors.ink900 : Colors.white,
@@ -66,7 +80,7 @@ class AppTheme {
           height: 1.25,
         ),
         headlineMedium: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: isLight ? AppColors.ink900 : Colors.white,
@@ -76,7 +90,7 @@ class AppTheme {
 
         // Title
         titleLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 17,
           fontWeight: FontWeight.w700,
           color: isLight ? AppColors.ink900 : Colors.white,
@@ -84,7 +98,7 @@ class AppTheme {
           height: 1.35,
         ),
         titleMedium: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 15,
           fontWeight: FontWeight.w600,
           color:
@@ -92,9 +106,10 @@ class AppTheme {
           letterSpacing: -0.1,
           height: 1.4,
         ),
+
         // Body
         bodyLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color:
@@ -102,7 +117,7 @@ class AppTheme {
           height: 1.6,
         ),
         bodyMedium: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color:
@@ -110,16 +125,17 @@ class AppTheme {
           height: 1.55,
         ),
         bodySmall: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color:
               isLight ? AppColors.ink300 : Colors.white.withValues(alpha: 0.5),
           height: 1.4,
         ),
+
         // Label
         labelLarge: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 13,
           fontWeight: FontWeight.w600,
           color:
@@ -127,7 +143,7 @@ class AppTheme {
           letterSpacing: 0.1,
         ),
         labelSmall: TextStyle(
-          fontFamily: 'Poppins',
+          fontFamily: font,
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color:
@@ -136,13 +152,14 @@ class AppTheme {
         ),
       ),
 
+      // ── Input Decoration ───────────────────────────────────────────────────
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isLight
             ? AppColors.surfaceCard
             : Colors.white.withValues(alpha: 0.06),
-        hintStyle: const TextStyle(
-          fontFamily: 'Poppins',
+        hintStyle: TextStyle(
+          fontFamily: font,
           color: AppColors.ink300,
           fontSize: 14,
           fontWeight: FontWeight.w400,
@@ -163,7 +180,7 @@ class AppTheme {
             const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       ),
 
-      // ── Card ─────────────────────────────────────────────────────────────
+      // ── Card ───────────────────────────────────────────────────────────────
       cardTheme: CardThemeData(
         color: isLight ? AppColors.surface : const Color(0xFF1A1F35),
         elevation: 0,
@@ -173,14 +190,14 @@ class AppTheme {
         margin: EdgeInsets.zero,
       ),
 
-      // ── Chip ─────────────────────────────────────────────────────────────
+      // ── Chip ───────────────────────────────────────────────────────────────
       chipTheme: ChipThemeData(
         backgroundColor: isLight
             ? AppColors.surfaceCard
             : Colors.white.withValues(alpha: 0.08),
         selectedColor: AppColors.primary,
-        labelStyle: const TextStyle(
-          fontFamily: 'Poppins',
+        labelStyle: TextStyle(
+          fontFamily: font,
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
@@ -191,7 +208,7 @@ class AppTheme {
         side: BorderSide.none,
       ),
 
-      // ── Divider ──────────────────────────────────────────────────────────
+      // ── Divider ────────────────────────────────────────────────────────────
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
         space: 1,
