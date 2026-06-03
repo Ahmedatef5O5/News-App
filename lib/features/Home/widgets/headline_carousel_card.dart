@@ -1,12 +1,11 @@
 import 'dart:ui';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/widgets/save_button_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class HeadlineCarouselCard extends StatelessWidget {
   final Article article;
@@ -76,9 +75,9 @@ class HeadlineCarouselCard extends StatelessWidget {
               ),
 
               // ── Save button (top-right) ──────────────────────────────────
-              Positioned(
+              PositionedDirectional(
                 top: 12,
-                right: 12,
+                end: 12,
                 child: ClipOval(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -98,9 +97,9 @@ class HeadlineCarouselCard extends StatelessWidget {
               ),
 
               // ── Source badge (top-left) ──────────────────────────────────
-              Positioned(
+              PositionedDirectional(
                 top: 12,
-                left: 12,
+                start: 12,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: BackdropFilter(
@@ -112,9 +111,8 @@ class HeadlineCarouselCard extends StatelessWidget {
                       ),
                       color: AppColors.primary.withValues(alpha: 0.85),
                       child: Text(
-                        article.source?.name ?? 'News',
+                        article.source?.name ?? context.l10n.unknownSource,
                         style: const TextStyle(
-                          fontFamily: 'Poppins',
                           color: Colors.white,
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
@@ -138,7 +136,7 @@ class HeadlineCarouselCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        article.title ?? 'Untitled',
+                        article.title ?? context.l10n.untitled,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: txtTheme.titleLarge?.copyWith(
@@ -161,7 +159,6 @@ class HeadlineCarouselCard extends StatelessWidget {
                             Text(
                               article.shortAuthor!,
                               style: const TextStyle(
-                                fontFamily: 'Poppins',
                                 color: Colors.white70,
                                 fontSize: 11,
                                 fontWeight: FontWeight.w500,
@@ -175,7 +172,6 @@ class HeadlineCarouselCard extends StatelessWidget {
                           Text(
                             article.formattedDate,
                             style: const TextStyle(
-                              fontFamily: 'Poppins',
                               color: Colors.white70,
                               fontSize: 11,
                               fontWeight: FontWeight.w400,

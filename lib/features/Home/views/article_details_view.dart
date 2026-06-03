@@ -7,6 +7,7 @@ import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/widgets/save_button_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class ArticleDetailView extends StatefulWidget {
   const ArticleDetailView({
@@ -69,7 +70,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Link copied to clipboard'),
+        content: Text(context.l10n.linkCopied),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
@@ -81,7 +82,8 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.sizeOf(context);
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -236,8 +238,9 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    widget.article.source?.name ?? 'Unknown',
-                                    style: tt.titleMedium?.copyWith(
+                                    widget.article.source?.name ??
+                                        l10n.unknownSource,
+                                    style: txtTheme.titleMedium?.copyWith(
                                       color: colors.onSurface,
                                       fontWeight: FontWeight.w700,
                                     ),
@@ -258,8 +261,9 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
-                                widget.article.source?.name ?? 'General',
-                                style: tt.labelSmall?.copyWith(
+                                widget.article.source?.name ??
+                                    l10n.categoryGeneral,
+                                style: txtTheme.labelSmall?.copyWith(
                                   color: AppColors.primary,
                                   fontWeight: FontWeight.w700,
                                 ),
@@ -270,7 +274,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             // Headline
                             Text(
                               widget.article.title ?? '',
-                              style: tt.headlineMedium?.copyWith(
+                              style: txtTheme.headlineMedium?.copyWith(
                                 fontSize: 20,
                                 height: 1.3,
                               ),
@@ -287,7 +291,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                   const SizedBox(width: 4),
                                   Text(
                                     widget.article.shortAuthor!,
-                                    style: tt.bodySmall
+                                    style: txtTheme.bodySmall
                                         ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
                                   const SizedBox(width: 16),
@@ -297,7 +301,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                 const SizedBox(width: 4),
                                 Text(
                                   widget.article.formattedDate,
-                                  style: tt.bodySmall,
+                                  style: txtTheme.bodySmall,
                                 ),
                               ],
                             ),
@@ -309,7 +313,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                             // Description
                             Text(
                               widget.article.cleanDescription,
-                              style: tt.bodyLarge?.copyWith(
+                              style: txtTheme.bodyLarge?.copyWith(
                                 color: colors.onSurface.withValues(alpha: 0.85),
                                 height: 1.7,
                               ),
@@ -320,7 +324,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                               const SizedBox(height: 16),
                               Text(
                                 widget.article.cleanContent,
-                                style: tt.bodyMedium?.copyWith(
+                                style: txtTheme.bodyMedium?.copyWith(
                                   color:
                                       colors.onSurface.withValues(alpha: 0.7),
                                   height: 1.7,
@@ -338,7 +342,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                   onPressed: _openInAppBrowser,
                                   icon:
                                       const Icon(Icons.open_in_browser_rounded),
-                                  label: const Text('Read Full Article'),
+                                  label: Text(l10n.backToArticle),
                                   style: FilledButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     foregroundColor: Colors.white,
@@ -348,7 +352,6 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                     textStyle: const TextStyle(
-                                      fontFamily: 'Poppins',
                                       fontSize: 15,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -364,7 +367,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                               child: OutlinedButton.icon(
                                 onPressed: _share,
                                 icon: const Icon(Icons.share_outlined),
-                                label: const Text('Share Article'),
+                                label: Text(l10n.linkCopied),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: colors.onSurface,
                                   side: BorderSide(color: colors.outline),
@@ -374,7 +377,6 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                   textStyle: const TextStyle(
-                                    fontFamily: 'Poppins',
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
                                   ),

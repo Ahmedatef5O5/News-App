@@ -1,11 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/widgets/save_button_widget.dart';
 import 'package:news_app/core/widgets/share_button_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class ArticleCard extends StatelessWidget {
   const ArticleCard({
@@ -24,7 +24,8 @@ class ArticleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
-
+    // RTL detection to mirror thumbnail corners so image always sits on "start" edge
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -49,9 +50,12 @@ class ArticleCard extends StatelessWidget {
                 tag: heroTag,
                 flightShuttleBuilder: _flightShuttleBuilder,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    bottomLeft: Radius.circular(20),
+                  borderRadius: BorderRadius.only(
+                    topLeft: isRtl ? Radius.zero : const Radius.circular(20),
+                    bottomLeft: isRtl ? Radius.zero : const Radius.circular(20),
+                    topRight: isRtl ? const Radius.circular(20) : Radius.zero,
+                    bottomRight:
+                        isRtl ? const Radius.circular(20) : Radius.zero,
                   ),
                   child: CachedNetworkImage(
                     imageUrl: article.hasImage
@@ -81,12 +85,12 @@ class ArticleCard extends StatelessWidget {
               // ── Text content ─────────────────────────────────────────────
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 12, 8, 12),
+                  padding: const EdgeInsetsDirectional.fromSTEB(12, 12, 8, 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        article.source?.name ?? 'Unknown Source',
+                        article.source?.name ?? context.l10n.unknownSource,
                         style: txtTheme.labelSmall?.copyWith(
                           color: AppColors.primary,
                           fontWeight: FontWeight.w600,
@@ -97,7 +101,7 @@ class ArticleCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        article.title ?? 'Untitled',
+                        article.title ?? context.l10n.untitled,
                         style: txtTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -145,11 +149,16 @@ class ArticleCard extends StatelessWidget {
         final t = direction == HeroFlightDirection.push
             ? animation.value
             : 1 - animation.value;
+        final isRtl = Directionality.of(flightContext) == TextDirection.rtl;
+
+        final startRadius = BorderRadius.only(
+          topLeft: isRtl ? Radius.zero : const Radius.circular(20),
+          bottomLeft: isRtl ? Radius.zero : const Radius.circular(20),
+          topRight: isRtl ? const Radius.circular(20) : Radius.zero,
+          bottomRight: isRtl ? const Radius.circular(20) : Radius.zero,
+        );
         final radius = BorderRadius.lerp(
-          const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-          ),
+          startRadius,
           BorderRadius.zero,
           t,
         )!;
