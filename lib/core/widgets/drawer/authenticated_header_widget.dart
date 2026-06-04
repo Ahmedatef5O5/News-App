@@ -1,20 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:news_app/core/widgets/drawer/initials_avatar.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 
 class AuthenticatedHeader extends StatelessWidget {
+  final dynamic profile;
+  final String email;
+  final TextTheme txtTheme;
+
   const AuthenticatedHeader({
     super.key,
     required this.profile,
     required this.email,
-    required this.tt,
+    required this.txtTheme,
   });
-
-  final dynamic profile;
-  final String email;
-  final TextTheme tt;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class AuthenticatedHeader extends StatelessWidget {
         Navigator.of(context).pushNamed(AppRoutes.profileSettingsRoute);
       },
       child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+        padding: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 16),
         child: Row(
           children: [
             // Avatar
@@ -55,15 +56,17 @@ class AuthenticatedHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    profile?.displayName ?? 'NewsWave User',
-                    style: tt.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                    profile?.displayName ?? context.l10n.newsWaveUser,
+                    style: txtTheme.titleSmall
+                        ?.copyWith(fontWeight: FontWeight.w700),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     email,
-                    style: tt.bodySmall?.copyWith(color: AppColors.ink300),
+                    style:
+                        txtTheme.bodySmall?.copyWith(color: AppColors.ink300),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

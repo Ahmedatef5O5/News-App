@@ -7,6 +7,7 @@ import 'package:news_app/core/widgets/drawer/authenticated_header_widget.dart';
 import 'package:news_app/core/widgets/drawer/category_item.dart';
 import 'package:news_app/core/widgets/drawer/drawer_item.dart';
 import 'package:news_app/core/widgets/drawer/guest_header_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../features/auth/cubit/auth_cubit.dart';
 import '../../../features/auth/cubit/auth_state.dart';
 import '../../theme/model/theme_model.dart';
@@ -17,7 +18,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
-
+    final l10n = context.l10n;
     return Drawer(
       width: MediaQuery.sizeOf(context).width * 0.82,
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -37,7 +38,7 @@ class AppDrawer extends StatelessWidget {
                           return AuthenticatedHeader(
                               profile: state.profile,
                               email: state.user.email,
-                              tt: txtTheme);
+                              txtTheme: txtTheme);
                         }
                         return GuestHeader(txtTheme: txtTheme);
                       },
@@ -48,7 +49,7 @@ class AppDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'MENU',
+                        l10n.drawerSectionMenu,
                         style: txtTheme.labelSmall?.copyWith(
                           letterSpacing: 1.5,
                           color: AppColors.ink300,
@@ -59,13 +60,13 @@ class AppDrawer extends StatelessWidget {
                     const SizedBox(height: 8),
                     DrawerItem(
                       icon: Icons.home_rounded,
-                      label: 'Home',
+                      label: l10n.navHome,
                       isActive: true,
                       onTap: () => Navigator.of(context).pop(),
                     ),
                     DrawerItem(
                       icon: Icons.bookmark_rounded,
-                      label: 'Saved Articles',
+                      label: l10n.navSavedArticles,
                       onTap: () {
                         Navigator.of(context).pop();
                         Navigator.of(context)
@@ -74,7 +75,7 @@ class AppDrawer extends StatelessWidget {
                     ),
                     DrawerItem(
                       icon: Icons.search_rounded,
-                      label: 'Search',
+                      label: l10n.navSearch,
                       onTap: () {
                         Navigator.of(context).pop();
                         Navigator.of(context).pushNamed(AppRoutes.searchRoute);
@@ -86,7 +87,7 @@ class AppDrawer extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'CATEGORIES',
+                        l10n.drawerSectionCategories,
                         style: txtTheme.labelSmall?.copyWith(
                           letterSpacing: 1.5,
                           color: AppColors.ink300,
@@ -118,7 +119,7 @@ class AppDrawer extends StatelessWidget {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                isDark ? 'Dark Mode' : 'Light Mode',
+                                isDark ? l10n.darkMode : l10n.lightMode,
                                 style: txtTheme.bodyMedium?.copyWith(
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -140,7 +141,7 @@ class AppDrawer extends StatelessWidget {
                         if (state is AuthAuthenticated) {
                           return DrawerItem(
                             icon: Icons.logout_rounded,
-                            label: 'Sign Out',
+                            label: l10n.signOut,
                             iconColor: AppColors.error,
                             labelColor: AppColors.error,
                             onTap: () => _confirmSignOut(context),
@@ -150,9 +151,10 @@ class AppDrawer extends StatelessWidget {
                       },
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 12),
                       child: Text(
-                        '${AppConstants.appName} v1.0.0',
+                        '${AppConstants.appName} ${context.l10n.appVersion}',
                         style: txtTheme.labelSmall
                             ?.copyWith(color: AppColors.ink300),
                       ),
@@ -168,20 +170,21 @@ class AppDrawer extends StatelessWidget {
   }
 
   Future<void> _confirmSignOut(BuildContext context) async {
+    final l10n = context.l10n;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(l10n.signOutConfirmTitle),
+        content: Text(l10n.signOutConfirmContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Sign Out'),
+            child: Text(l10n.signOut),
           ),
         ],
       ),

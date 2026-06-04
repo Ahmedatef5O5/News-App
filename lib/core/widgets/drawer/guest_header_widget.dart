@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
+
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
 
@@ -8,8 +10,9 @@ class GuestHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+      margin: const EdgeInsetsDirectional.fromSTEB(16, 20, 16, 8),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -42,7 +45,7 @@ class GuestHeader extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                'Browsing as Guest',
+                l10n.browsingAsGuest,
                 style:
                     txtTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
               ),
@@ -50,7 +53,7 @@ class GuestHeader extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Create an account for a personalised experience – save articles, sync preferences & more.',
+            l10n.guestSubtitle,
             style: txtTheme.bodySmall?.copyWith(color: AppColors.ink500),
           ),
           const SizedBox(height: 14),
@@ -66,12 +69,11 @@ class GuestHeader extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 textStyle: const TextStyle(
-                  fontFamily: 'Poppins',
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
                 ),
               ),
-              child: const Text('Sign In / Create Account'),
+              child: Text(l10n.signInCreateAccount),
             ),
           ),
         ],

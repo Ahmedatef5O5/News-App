@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
@@ -21,7 +22,7 @@ class HomeAppBarWidget extends StatelessWidget {
         builder: (ctx) => GestureDetector(
           onTap: () => Scaffold.of(ctx).openDrawer(),
           child: Container(
-            margin: const EdgeInsets.only(left: 18, right: 8),
+            margin: const EdgeInsetsDirectional.only(start: 18, end: 8),
             width: 34,
             height: 34,
             decoration: BoxDecoration(
@@ -44,7 +45,7 @@ class HomeAppBarWidget extends StatelessWidget {
         ),
       ),
       title: Text(
-        'NewsWave',
+        context.l10n.appName,
         style: txtTheme.headlineMedium?.copyWith(
           color: AppColors.primary,
           fontSize: 20,
