@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
 import '../../auth/cubit/auth_cubit.dart';
@@ -90,15 +91,16 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Profile updated successfully',
-                  style: TextStyle(color: Colors.white)),
+              content: Text(l10n.profileUpdatedSuccess,
+                  style: const TextStyle(color: Colors.white)),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
@@ -126,13 +128,13 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
           leadingWidth: 42,
           automaticallyImplyLeading: false,
           leading: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsetsDirectional.only(start: 8.0),
             child: CustomAppBarIcon(
               icon: CupertinoIcons.chevron_back,
               onTap: () => Navigator.of(context).maybePop(),
             ),
           ),
-          title: const Text('Profile Settings'),
+          title: Text(l10n.profileSettingsTitle),
           actions: [
             BlocBuilder<AuthCubit, AuthUserState>(
               builder: (context, state) => TextButton(
@@ -141,13 +143,14 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CupertinoActivityIndicator(
+                          radius: 6,
+                        ),
                       )
-                    : const Text(
-                        'Save',
-                        style: TextStyle(
+                    : Text(
+                        l10n.save,
+                        style: const TextStyle(
                           color: AppColors.primary,
-                          fontFamily: 'Poppins',
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -223,9 +226,9 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                               ),
                             ),
                           ),
-                          Positioned(
+                          PositionedDirectional(
                             bottom: 0,
-                            right: 0,
+                            end: 0,
                             child: GestureDetector(
                               onTap: _pickAvatar,
                               child: Container(
@@ -256,24 +259,24 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       Center(
                         child: Text(
                           user.email,
-                          style: tt.bodySmall?.copyWith(
+                          style: txtTheme.bodySmall?.copyWith(
                             color: AppColors.ink300,
                           ),
                         ),
                       ),
                     const SizedBox(height: 28),
-                    const SectionTitle(title: 'Personal Information'),
+                    SectionTitle(title: l10n.sectionPersonalInfo),
                     const SizedBox(height: 12),
                     AuthTextField(
                       controller: _firstNameCtrl,
-                      label: 'First name',
+                      label: l10n.fieldFirstName,
                       icon: Icons.person_outline_rounded,
                       textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 12),
                     AuthTextField(
                       controller: _lastNameCtrl,
-                      label: 'Last name',
+                      label: l10n.fieldLastName,
                       icon: Icons.person_outline_rounded,
                       textInputAction: TextInputAction.next,
                     ),
@@ -283,54 +286,52 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       isExpanded: true,
                       onChanged: (c) => setState(() => _selectedCountry = c),
                       decoration: _dropdownDecoration(
-                          context, 'Country', Icons.public_rounded),
-                      hint: const Text('Select country'),
+                          context, l10n.fieldCountry, Icons.public_rounded),
+                      hint: Text(l10n.hintSelectCountry),
                       items: CountriesList.all
                           .map((c) => DropdownMenuItem(
                                 value: c,
                                 child: Text(c,
-                                    style: const TextStyle(
-                                        fontFamily: 'Poppins', fontSize: 13)),
+                                    style: const TextStyle(fontSize: 13)),
                               ))
                           .toList(),
                     ),
                     const SizedBox(height: 28),
-                    const SectionTitle(title: 'Security'),
+                    SectionTitle(title: l10n.sectionSecurity),
                     const SizedBox(height: 12),
                     AuthTextField(
                       controller: _newPassCtrl,
-                      label: 'New password (leave blank to keep current)',
+                      label: l10n.fieldNewPassword,
                       icon: Icons.lock_outline_rounded,
                       obscure: true,
                       textInputAction: TextInputAction.done,
                       validator: (v) {
                         if (v != null && v.isNotEmpty && v.length < 6) {
-                          return 'Password must be at least 6 characters';
+                          return l10n.validationPasswordTooShort;
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 28),
-                    const SectionTitle(title: 'Interests'),
+                    SectionTitle(title: l10n.sectionInterests),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: _selectedHobby,
                       isExpanded: true,
                       onChanged: (h) => setState(() => _selectedHobby = h),
-                      decoration: _dropdownDecoration(
-                          context, 'Hobby', Icons.favorite_outline_rounded),
-                      hint: const Text('Select hobby'),
+                      decoration: _dropdownDecoration(context, l10n.fieldHobby,
+                          Icons.favorite_outline_rounded),
+                      hint: Text(l10n.hintSelectHobby),
                       items: HobbyList.suggestions
                           .map((h) => DropdownMenuItem(
                                 value: h,
                                 child: Text(h,
-                                    style: const TextStyle(
-                                        fontFamily: 'Poppins', fontSize: 13)),
+                                    style: const TextStyle(fontSize: 13)),
                               ))
                           .toList(),
                     ),
                     const SizedBox(height: 20),
-                    const SectionTitle(title: 'Preferred News Categories'),
+                    SectionTitle(title: l10n.sectionPreferredCategories),
                     const SizedBox(height: 12),
                     Wrap(
                       spacing: 8,
@@ -364,7 +365,6 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                             child: Text(
                               cat.label,
                               style: TextStyle(
-                                fontFamily: 'Poppins',
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: isSelected
