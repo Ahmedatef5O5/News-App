@@ -8,6 +8,10 @@ import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/locale/language_picker_dialog.dart';
+import '../../../core/locale/locale_cubit.dart';
+import '../../../core/theme/model/theme_model.dart';
+import '../../../core/theme/theme_picker_dialog.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
 import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
@@ -15,6 +19,7 @@ import '../../auth/widgets/auth_text_field.dart';
 import '../model/profile_model.dart';
 import '../widgets/initials_avatar.dart';
 import '../widgets/section_title.dart';
+import '../widgets/settings_row_widget.dart';
 
 class ProfileSettingsView extends StatefulWidget {
   const ProfileSettingsView({super.key});
@@ -83,7 +88,6 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
       ),
     );
 
-    // Update password if filled
     if (_newPassCtrl.text.isNotEmpty) {
       cubit.updatePassword(_newPassCtrl.text);
     }
@@ -376,6 +380,25 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                         );
                       }).toList(),
                     ),
+                    const SizedBox(height: 28),
+                    SectionTitle(title: l10n.themeSectionTitle),
+                    const SizedBox(height: 12),
+                    SettingsRowWidget(
+                      icon: Icons.palette_outlined,
+                      label: _themeModeLabel(
+                          context.watch<ThemeCubit>().state, l10n),
+                      onTap: () => ThemePickerDialog.show(context),
+                    ),
+                    const SizedBox(height: 12),
+                    BlocBuilder<LocaleCubit, Locale>(
+                      builder: (context, locale) => SettingsRowWidget(
+                        icon: Icons.translate_rounded,
+                        label: locale.languageCode == 'ar'
+                            ? l10n.languageArabic
+                            : l10n.languageEnglish,
+                        onTap: () => LanguagePickerDialog.show(context),
+                      ),
+                    ),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -385,6 +408,14 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
         ),
       ),
     );
+  }
+
+  String _themeModeLabel(ThemeMode mode, dynamic l10n) {
+    return switch (mode) {
+      ThemeMode.light => l10n.themeLight as String,
+      ThemeMode.dark => l10n.themeDark as String,
+      ThemeMode.system => l10n.themeSystem as String,
+    };
   }
 
   InputDecoration _dropdownDecoration(
