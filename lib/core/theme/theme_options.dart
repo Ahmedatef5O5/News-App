@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 
 class ThemeOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final ThemeMode mode;
+  final ThemeMode selected;
+  final VoidCallback onTap;
+
   const ThemeOption({
     super.key,
     required this.icon,
@@ -10,12 +16,6 @@ class ThemeOption extends StatelessWidget {
     required this.selected,
     required this.onTap,
   });
-
-  final IconData icon;
-  final String label;
-  final ThemeMode mode;
-  final ThemeMode selected;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,6 @@ class ThemeOption extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: isSelected ? Colors.white : AppColors.ink700,

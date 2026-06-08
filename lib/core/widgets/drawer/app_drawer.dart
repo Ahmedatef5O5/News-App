@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/locale/locale_model.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/widgets/drawer/authenticated_header_widget.dart';
@@ -136,6 +137,44 @@ class AppDrawer extends StatelessWidget {
                         },
                       ),
                     ),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 4),
+                        child: BlocBuilder<LocaleCubit, Locale>(
+                          builder: (context, locale) {
+                            final isArabic = locale.languageCode == 'ar';
+                            return InkWell(
+                              onTap: () => LanguagePickerDialog.show(context),
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: Row(children: [
+                                  const Icon(
+                                    Icons.translate_rounded,
+                                    size: 20,
+                                    color: AppColors.primary,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    isArabic
+                                        ? l10n.languageArabic
+                                        : l10n.languageEnglish,
+                                    style: txtTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  const Icon(
+                                    Icons.chevron_right_rounded,
+                                    size: 20,
+                                    color: AppColors.ink300,
+                                  ),
+                                ]),
+                              ),
+                            );
+                          },
+                        )),
                     BlocBuilder<AuthCubit, AuthUserState>(
                       builder: (context, state) {
                         if (state is AuthAuthenticated) {

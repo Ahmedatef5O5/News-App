@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/theme/model/theme_model.dart';
 import 'package:news_app/core/theme/theme_options.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class ThemePickerDialog {
   ThemePickerDialog._();
@@ -31,11 +32,18 @@ class _ThemePickerContent extends StatefulWidget {
 }
 
 class _ThemePickerContentState extends State<_ThemePickerContent> {
-  ThemeMode _selected = ThemeMode.system;
+  // ThemeMode _selected = ThemeMode.system;
+  late ThemeMode _selected;
+  @override
+  void initState() {
+    super.initState();
+    _selected = context.read<ThemeCubit>().state;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return SafeArea(
       child: Padding(
@@ -54,13 +62,13 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
             ),
             const SizedBox(height: 24),
             Text(
-              '🎨 Choose Your Theme',
-              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              '🎨 ${l10n.themeSectionTitle}',
+              style: txtTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-              'Pick how NewsWave looks for you. You can change this any time.',
-              style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+              l10n.themePickerSubtitle,
+              style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -68,7 +76,7 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
               children: [
                 ThemeOption(
                   icon: Icons.light_mode_rounded,
-                  label: 'Light',
+                  label: l10n.themeLight,
                   mode: ThemeMode.light,
                   selected: _selected,
                   onTap: () => setState(() => _selected = ThemeMode.light),
@@ -76,7 +84,7 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
                 const SizedBox(width: 12),
                 ThemeOption(
                   icon: Icons.dark_mode_rounded,
-                  label: 'Dark',
+                  label: l10n.themeDark,
                   mode: ThemeMode.dark,
                   selected: _selected,
                   onTap: () => setState(() => _selected = ThemeMode.dark),
@@ -84,7 +92,7 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
                 const SizedBox(width: 12),
                 ThemeOption(
                   icon: Icons.brightness_auto_rounded,
-                  label: 'System',
+                  label: l10n.themeSystem,
                   mode: ThemeMode.system,
                   selected: _selected,
                   onTap: () => setState(() => _selected = ThemeMode.system),
@@ -98,20 +106,18 @@ class _ThemePickerContentState extends State<_ThemePickerContent> {
               child: FilledButton(
                 onPressed: () async {
                   await context.read<ThemeCubit>().setTheme(_selected);
-                  if (mounted)
-                  {
-Navigator.of(context).pop();
-                  } 
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                  }
                 },
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: const Text(
-                  'Confirm',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
+                child: Text(
+                  l10n.confirm,
+                  style: const TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
