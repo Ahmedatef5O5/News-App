@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:news_app/core/helpers/category_localization_x.dart';
 import 'package:news_app/features/Headlines/widgets/category_cat_meta.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -86,7 +87,7 @@ class GlassCategoryCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  meta.category.label,
+                  meta.category.localizedName(context),
                   textAlign: TextAlign.center,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

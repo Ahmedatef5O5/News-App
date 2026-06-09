@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/constants/app_constants.dart';
+import 'package:news_app/core/helpers/category_localization_x.dart';
 
 class CategoryChips extends StatelessWidget {
   const CategoryChips({
@@ -30,7 +31,7 @@ class CategoryChips extends StatelessWidget {
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOutCubic,
               child: FilterChip(
-                label: Text(cat.label),
+                label: Text(cat.localizedName(context)),
                 selected: isSelected,
                 onSelected: (_) => onSelected(cat),
                 labelStyle: TextStyle(
