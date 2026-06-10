@@ -6,11 +6,11 @@ import 'package:news_app/core/helpers/empty_state.dart';
 import 'package:news_app/core/helpers/error_state.dart';
 import 'package:news_app/core/helpers/shimmer_box.dart';
 import 'package:news_app/core/widgets/custom_app_bar_icon.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/search_cubit.dart';
 import '../widgets/results_with_bar_widget.dart';
 import '../widgets/search_input_field_area.dart';
 
-// This mirrors the HomeView / HeadlinesView pattern exactly.
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
 
@@ -22,8 +22,6 @@ class SearchView extends StatelessWidget {
     );
   }
 }
-
-// ── Content widget ─────────────────────────────────────────────────────────────
 
 class _SearchContent extends StatefulWidget {
   const _SearchContent();
@@ -64,6 +62,8 @@ class _SearchContentState extends State<_SearchContent> {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final l10n = context.l10n;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -71,13 +71,15 @@ class _SearchContentState extends State<_SearchContent> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           leading: Padding(
-            padding: const EdgeInsets.only(left: 8.0),
+            padding: const EdgeInsetsDirectional.only(start: 8.0),
             child: CustomAppBarIcon(
-              icon: CupertinoIcons.chevron_back,
+              icon: isRtl
+                  ? CupertinoIcons.chevron_forward
+                  : CupertinoIcons.chevron_back,
               onTap: () => Navigator.of(context).maybePop(),
             ),
           ),
-          title: const Text('Search'),
+          title: Text(l10n.searchForNews),
           centerTitle: false,
           leadingWidth: 42,
           elevation: 0,
@@ -90,7 +92,7 @@ class _SearchContentState extends State<_SearchContent> {
               child: SearchInputFieldArea(
                 controller: _controller,
                 focus: _focus,
-                tt: txtTheme,
+                txtTheme: txtTheme,
               ),
             ),
             const SizedBox(height: 12),
@@ -141,7 +143,7 @@ class _SearchContentState extends State<_SearchContent> {
                             },
                           ),
                     SearchStatus.failure => ErrorState(
-                        message: state.error ?? 'Search failed',
+                        message: state.error ?? l10n.searchFailed,
                         onRetry: () => context.read<SearchCubit>().retry(),
                       ),
                   };
@@ -162,10 +164,12 @@ class _InitialHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EmptyState(
+    final l10n = context.l10n;
+
+    return EmptyState(
       icon: Icons.search_rounded,
-      title: 'Search for news',
-      subtitle: 'Find articles by title, topic, or keyword',
+      title: l10n.searchForNews,
+      subtitle: l10n.searchHintSubtitle,
     );
   }
 }
@@ -188,10 +192,12 @@ class _EmptyResults extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const EmptyState(
+    final l10n = context.l10n;
+
+    return EmptyState(
       icon: Icons.article_outlined,
-      title: 'No results found',
-      subtitle: 'Try different keywords or check your spelling.',
+      title: l10n.noResultsFound,
+      subtitle: l10n.noResultsSubtitle,
     );
   }
 }

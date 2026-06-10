@@ -289,6 +289,11 @@
   "@noResultsSubtitle": {
     "description": "Empty-results state subtitle in SearchView"
   },
+ 
+  "searchFailed": "Search failed",
+  "@searchFailed": {
+  "description": "Error message shown when search request fails in SearchView"
+  },
 
   "themeSectionTitle": "Appearance",
   "@themeSectionTitle": {
