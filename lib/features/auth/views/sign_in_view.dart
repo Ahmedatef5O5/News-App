@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_primary_button.dart';
@@ -44,6 +45,7 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
@@ -87,7 +89,7 @@ class _SignInViewState extends State<SignInView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Welcome back',
+                        l10n.authWelcomeBack,
                         style: txtTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.5,
@@ -103,7 +105,7 @@ class _SignInViewState extends State<SignInView> {
                       const SizedBox(height: 28),
                       AuthTextField(
                         controller: _emailCtrl,
-                        label: 'Email address',
+                        label: l10n.authFieldEmail,
                         icon: Icons.mail_outline_rounded,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
@@ -111,11 +113,11 @@ class _SignInViewState extends State<SignInView> {
                         onFieldSubmitted: (_) => _passFocus.requestFocus(),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Please enter your email';
+                            return l10n.validationEmailRequired;
                           }
                           if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,}$')
                               .hasMatch(v.trim())) {
-                            return 'Enter a valid email address';
+                            return l10n.validationEmailInvalid;
                           }
                           return null;
                         },
@@ -123,7 +125,7 @@ class _SignInViewState extends State<SignInView> {
                       const SizedBox(height: 16),
                       AuthTextField(
                         controller: _passCtrl,
-                        label: 'Password',
+                        label: l10n.authFieldPassword,
                         icon: Icons.lock_outline_rounded,
                         obscure: true,
                         textInputAction: TextInputAction.done,
@@ -131,14 +133,14 @@ class _SignInViewState extends State<SignInView> {
                         onFieldSubmitted: (_) => _submit(),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Please enter your password';
+                            return l10n.validationPasswordRequired;
                           }
                           return null;
                         },
                       ),
                       const SizedBox(height: 8),
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: AlignmentDirectional.centerEnd,
                         child: TextButton(
                           onPressed: () => Navigator.of(context)
                               .pushNamed(AppRoutes.forgotPasswordRoute),
@@ -147,7 +149,7 @@ class _SignInViewState extends State<SignInView> {
                             minimumSize: const Size(0, 36),
                           ),
                           child: Text(
-                            'Forgot password?',
+                            l10n.authForgotPassword,
                             style: txtTheme.labelMedium?.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w600,
@@ -158,7 +160,7 @@ class _SignInViewState extends State<SignInView> {
                       const SizedBox(height: 8),
                       BlocBuilder<AuthCubit, AuthUserState>(
                         builder: (context, state) => AuthPrimaryButton(
-                          label: 'Sign In',
+                          label: l10n.authSignIn,
                           isLoading: state is AuthLoading,
                           onPressed: _submit,
                         ),
@@ -176,7 +178,8 @@ class _SignInViewState extends State<SignInView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    l10n.authAlreadyHaveAccount
+                        .replaceFirst('Already', "Don't"),
                     style:
                         txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                   ),
@@ -184,7 +187,7 @@ class _SignInViewState extends State<SignInView> {
                     onTap: () =>
                         Navigator.of(context).pushNamed(AppRoutes.signUpRoute),
                     child: Text(
-                      'Sign Up',
+                      l10n.authSignUp,
                       style: txtTheme.bodyMedium?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
@@ -238,7 +241,6 @@ class _LogoBadge extends StatelessWidget {
         const Text(
           AppConstants.appName,
           style: TextStyle(
-            fontFamily: 'Poppins',
             fontSize: 24,
             fontWeight: FontWeight.w800,
             color: AppColors.primary,
@@ -261,7 +263,6 @@ class _OrDivider extends StatelessWidget {
           child: Text(
             'or',
             style: TextStyle(
-              fontFamily: 'Poppins',
               fontSize: 12,
               color: AppColors.ink300,
               fontWeight: FontWeight.w500,
@@ -297,7 +298,6 @@ class _GuestButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           textStyle: const TextStyle(
-            fontFamily: 'Poppins',
             fontSize: 14,
             fontWeight: FontWeight.w600,
           ),

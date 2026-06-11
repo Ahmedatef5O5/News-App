@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_primary_button.dart';
@@ -58,7 +59,8 @@ class _SignUpViewState extends State<SignUpView> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
@@ -100,8 +102,8 @@ class _SignUpViewState extends State<SignUpView> {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Create Account',
-                    style: tt.titleLarge?.copyWith(
+                    l10n.authCreateAccount,
+                    style: txtTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.w700,
                       letterSpacing: -0.5,
                     ),
@@ -117,29 +119,30 @@ class _SignUpViewState extends State<SignUpView> {
                     children: [
                       Text(
                         'Join ${AppConstants.appName}',
-                        style: tt.titleMedium?.copyWith(
+                        style: txtTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Your personalised news experience awaits',
-                        style: tt.bodySmall?.copyWith(color: AppColors.ink300),
+                        style: txtTheme.bodySmall
+                            ?.copyWith(color: AppColors.ink300),
                       ),
                       const SizedBox(height: 24),
                       AuthTextField(
                         controller: _emailCtrl,
-                        label: 'Email address',
+                        label: l10n.authFieldEmail,
                         icon: Icons.mail_outline_rounded,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Email is required';
+                            return l10n.validationEmailRequired;
                           }
                           if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,}$')
                               .hasMatch(v.trim())) {
-                            return 'Enter a valid email address';
+                            return l10n.validationEmailInvalid;
                           }
                           return null;
                         },
@@ -147,13 +150,13 @@ class _SignUpViewState extends State<SignUpView> {
                       const SizedBox(height: 16),
                       AuthTextField(
                         controller: _passCtrl,
-                        label: 'Password',
+                        label: l10n.authFieldPassword,
                         icon: Icons.lock_outline_rounded,
                         obscure: true,
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return l10n.validationPasswordTooShort;
                           }
                           return null;
                         },
@@ -161,13 +164,13 @@ class _SignUpViewState extends State<SignUpView> {
                       const SizedBox(height: 16),
                       AuthTextField(
                         controller: _confirmPassCtrl,
-                        label: 'Confirm password',
+                        label: l10n.authFieldConfirmPassword,
                         icon: Icons.lock_outline_rounded,
                         obscure: true,
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v != _passCtrl.text) {
-                            return 'Passwords do not match';
+                            return l10n.validationPasswordsNoMatch;
                           }
                           return null;
                         },
@@ -206,12 +209,12 @@ class _SignUpViewState extends State<SignUpView> {
                               padding: const EdgeInsets.only(top: 2),
                               child: RichText(
                                 text: TextSpan(
-                                  style: tt.bodySmall?.copyWith(
+                                  style: txtTheme.bodySmall?.copyWith(
                                     color: AppColors.ink500,
                                   ),
                                   children: [
                                     const TextSpan(text: 'I agree to the '),
-                                    TextSpan(
+                                    const TextSpan(
                                       text: 'Terms of Service',
                                       style: TextStyle(
                                         color: AppColors.primary,
@@ -219,7 +222,7 @@ class _SignUpViewState extends State<SignUpView> {
                                       ),
                                     ),
                                     const TextSpan(text: ' and '),
-                                    TextSpan(
+                                    const TextSpan(
                                       text: 'Privacy Policy',
                                       style: TextStyle(
                                         color: AppColors.primary,
@@ -236,7 +239,7 @@ class _SignUpViewState extends State<SignUpView> {
                       const SizedBox(height: 20),
                       BlocBuilder<AuthCubit, AuthUserState>(
                         builder: (context, state) => AuthPrimaryButton(
-                          label: 'Create Account',
+                          label: l10n.authCreateAccount,
                           isLoading: state is AuthLoading,
                           onPressed: _submit,
                         ),
@@ -250,14 +253,15 @@ class _SignUpViewState extends State<SignUpView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Already have an account? ',
-                    style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+                    l10n.authAlreadyHaveAccount,
+                    style:
+                        txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                   ),
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Text(
                       'Sign In',
-                      style: tt.bodyMedium?.copyWith(
+                      style: txtTheme.bodyMedium?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
                       ),

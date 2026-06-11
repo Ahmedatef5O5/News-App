@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_primary_button.dart';
@@ -32,7 +33,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
@@ -96,8 +98,8 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               ),
               const SizedBox(height: 28),
               Text(
-                'Reset Password',
-                style: tt.headlineSmall?.copyWith(
+                l10n.authResetPassword,
+                style: txtTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
                 ),
@@ -105,7 +107,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               const SizedBox(height: 8),
               Text(
                 "Enter your email and we'll send you a link to reset your password.",
-                style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+                style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 36),
@@ -116,18 +118,18 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                     children: [
                       AuthTextField(
                         controller: _emailCtrl,
-                        label: 'Email address',
+                        label: l10n.authFieldEmail,
                         icon: Icons.mail_outline_rounded,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _submit(),
                         validator: (v) {
                           if (v == null || v.isEmpty) {
-                            return 'Please enter your email';
+                            return l10n.validationEmailRequired;
                           }
                           if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,}$')
                               .hasMatch(v.trim())) {
-                            return 'Enter a valid email address';
+                            return l10n.validationEmailInvalid;
                           }
                           return null;
                         },
@@ -135,7 +137,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
                       const SizedBox(height: 20),
                       BlocBuilder<AuthCubit, AuthUserState>(
                         builder: (context, state) => AuthPrimaryButton(
-                          label: 'Send Reset Link',
+                          label: l10n.authSendResetLink,
                           isLoading: state is AuthLoading,
                           onPressed: _submit,
                         ),
@@ -152,6 +154,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
   }
 
   void _showSuccessSheet(BuildContext context, String email) {
+    final l10n = context.l10n;
     showModalBottomSheet(
       context: context,
       isDismissible: false,
@@ -176,14 +179,14 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Email Sent!',
+              l10n.authEmailSentTitle,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              'We sent a password reset link to\n$email',
+              l10n.authEmailSentBody(email),
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
@@ -196,15 +199,15 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               height: 50,
               child: FilledButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // close sheet
-                  Navigator.of(context).pop(); // go back to sign in
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 },
                 style: FilledButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                child: const Text('Back to Sign In'),
+                child: Text(l10n.authBackToSignIn),
               ),
             ),
             const SizedBox(height: 8),
