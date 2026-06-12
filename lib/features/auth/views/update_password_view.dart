@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/auth_primary_button.dart';
@@ -36,16 +37,17 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(
-                'Password updated successfully!',
-                style: TextStyle(color: Colors.white),
+              content: Text(
+                l10n.authPasswordUpdatedSuccess,
+                style: const TextStyle(color: Colors.white),
               ),
               backgroundColor: AppColors.success,
               behavior: SnackBarBehavior.floating,
@@ -108,7 +110,7 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
               const SizedBox(height: 28),
               Text(
                 'Set New Password',
-                style: tt.headlineSmall?.copyWith(
+                style: txtTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.5,
                 ),
@@ -116,7 +118,7 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
               const SizedBox(height: 8),
               Text(
                 "Your identity has been verified. Please enter your new password below.",
-                style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+                style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 36),
@@ -127,13 +129,13 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
                     children: [
                       AuthTextField(
                         controller: _passCtrl,
-                        label: 'New Password',
+                        label: l10n.fieldNewPassword,
                         icon: Icons.lock_outline_rounded,
                         obscure: true,
                         textInputAction: TextInputAction.next,
                         validator: (v) {
                           if (v == null || v.length < 6) {
-                            return 'Password must be at least 6 characters';
+                            return l10n.validationPasswordTooShort;
                           }
                           return null;
                         },
@@ -141,14 +143,14 @@ class _UpdatePasswordViewState extends State<UpdatePasswordView> {
                       const SizedBox(height: 16),
                       AuthTextField(
                         controller: _confirmPassCtrl,
-                        label: 'Confirm New Password',
+                        label: l10n.authFieldConfirmNewPassword,
                         icon: Icons.lock_reset_rounded,
                         obscure: true,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _submit(),
                         validator: (v) {
                           if (v != _passCtrl.text) {
-                            return 'Passwords do not match';
+                            return l10n.validationPasswordsNoMatch;
                           }
                           return null;
                         },

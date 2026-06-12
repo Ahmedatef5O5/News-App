@@ -49,81 +49,85 @@ class _AuthTextFieldState extends State<AuthTextField> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
 
-    return TextFormField(
-      controller: widget.controller,
-      obscureText: _obscureText,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction,
-      focusNode: widget.focusNode,
-      validator: widget.validator,
-      readOnly: widget.readOnly,
-      onTap: widget.onTap,
-      onFieldSubmitted: widget.onFieldSubmitted,
-      style: TextStyle(
-        fontFamily: 'Poppins',
-        fontSize: 14,
-        color: isDark ? Colors.white : AppColors.ink900,
-        fontWeight: FontWeight.w500,
-      ),
-      decoration: InputDecoration(
-        labelText: widget.label,
-        hintText: widget.hint,
-        prefixIcon: Icon(widget.icon, size: 20, color: AppColors.ink300),
-        suffixIcon: widget.obscure
-            ? IconButton(
-                icon: Icon(
-                  _obscureText
-                      ? Icons.visibility_off_rounded
-                      : Icons.visibility_rounded,
-                  size: 20,
-                  color: AppColors.ink300,
-                ),
-                onPressed: () => setState(() => _obscureText = !_obscureText),
-              )
-            : widget.suffixIcon,
-        labelStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13,
-          color: AppColors.ink300,
+    return Directionality(
+      textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      child: TextFormField(
+        controller: widget.controller,
+        obscureText: _obscureText,
+        keyboardType: widget.keyboardType,
+        textInputAction: widget.textInputAction,
+        focusNode: widget.focusNode,
+        validator: widget.validator,
+        readOnly: widget.readOnly,
+        onTap: widget.onTap,
+        onFieldSubmitted: widget.onFieldSubmitted,
+        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+        style: TextStyle(
+          fontSize: 14,
+          color: isDark ? Colors.white : AppColors.ink900,
           fontWeight: FontWeight.w500,
         ),
-        hintStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 13,
-          color: AppColors.ink300.withValues(alpha: 0.7),
-        ),
-        filled: true,
-        fillColor: isDark
-            ? Colors.white.withValues(alpha: 0.06)
-            : Colors.white.withValues(alpha: 0.7),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color:
-                isDark ? Colors.white.withValues(alpha: 0.1) : AppColors.ink100,
+        decoration: InputDecoration(
+          labelText: widget.label,
+          hintText: widget.hint,
+          prefixIcon: Icon(widget.icon, size: 20, color: AppColors.ink300),
+          suffixIcon: widget.obscure
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    size: 20,
+                    color: AppColors.ink300,
+                  ),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                )
+              : widget.suffixIcon,
+          labelStyle: const TextStyle(
+            fontSize: 13,
+            color: AppColors.ink300,
+            fontWeight: FontWeight.w500,
           ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color:
-                isDark ? Colors.white.withValues(alpha: 0.1) : AppColors.ink100,
+          hintStyle: TextStyle(
+            fontSize: 13,
+            color: AppColors.ink300.withValues(alpha: 0.7),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.error, width: 2),
+          filled: true,
+          fillColor: isDark
+              ? Colors.white.withValues(alpha: 0.06)
+              : Colors.white.withValues(alpha: 0.7),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : AppColors.ink100,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : AppColors.ink100,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.error),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+            borderSide: const BorderSide(color: AppColors.error, width: 2),
+          ),
         ),
       ),
     );

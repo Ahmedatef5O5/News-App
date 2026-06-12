@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../profile/model/profile_model.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -85,6 +86,8 @@ class _OnboardingViewState extends State<OnboardingView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
         if (state is AuthAuthenticated && !state.needsOnboarding) {
@@ -116,10 +119,9 @@ class _OnboardingViewState extends State<OnboardingView> {
               child: TextButton(
                 onPressed: _skip,
                 child: Text(
-                  'Skip for now',
-                  style: TextStyle(
+                  l10n.onboardingSkip,
+                  style: const TextStyle(
                     color: AppColors.ink300,
-                    fontFamily: 'Poppins',
                     fontSize: 13,
                   ),
                 ),
@@ -160,7 +162,9 @@ class _OnboardingViewState extends State<OnboardingView> {
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
               child: BlocBuilder<AuthCubit, AuthUserState>(
                 builder: (context, state) => AuthPrimaryButton(
-                  label: _page == 2 ? 'Get Started' : 'Continue',
+                  label: _page == 2
+                      ? l10n.onboardingGetStarted
+                      : l10n.onboardingContinue,
                   isLoading: state is AuthLoading,
                   onPressed: _next,
                 ),
