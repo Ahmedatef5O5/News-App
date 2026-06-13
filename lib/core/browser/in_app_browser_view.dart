@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class InAppBrowserView extends StatefulWidget {
@@ -100,7 +101,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Link copied to clipboard'),
+        content: Text(context.l10n.linkCopied),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         margin: const EdgeInsets.all(16),
@@ -151,6 +152,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
   }
 
   PreferredSizeWidget _buildAppBar(bool isDark, ColorScheme colors) {
+    final l10n = context.l10n;
     return AppBar(
       backgroundColor: colors.surface,
       elevation: 0,
@@ -159,7 +161,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
       titleSpacing: 0,
       leading: IconButton(
         icon: const Icon(Icons.close_rounded),
-        tooltip: 'Close',
+        tooltip: l10n.close,
         onPressed: () => Navigator.pop(context),
       ),
       title: Column(
@@ -170,7 +172,6 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              fontFamily: 'Poppins',
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -186,7 +187,6 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
                 style: TextStyle(
                   fontSize: 11,
                   color: colors.onSurface.withValues(alpha: 0.5),
-                  fontFamily: 'Poppins',
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -208,7 +208,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
           ),
         IconButton(
           icon: const Icon(Icons.copy_rounded, size: 20),
-          tooltip: 'Copy link',
+          tooltip: l10n.copyLink,
           onPressed: _copyLink,
         ),
         const SizedBox(width: 4),
@@ -217,6 +217,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
   }
 
   Widget _buildBottomBar(bool isDark, ColorScheme colors) {
+    final l10n = context.l10n;
     return ClipRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
@@ -239,7 +240,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
               _NavIcon(
                 icon: Icons.arrow_back_ios_new_rounded,
                 enabled: _canGoBack,
-                tooltip: 'Back',
+                tooltip: l10n.back,
                 onTap: () async {
                   if (await _controller.canGoBack()) _controller.goBack();
                 },
@@ -247,7 +248,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
               _NavIcon(
                 icon: Icons.arrow_forward_ios_rounded,
                 enabled: _canGoForward,
-                tooltip: 'Forward',
+                tooltip: l10n.forward,
                 onTap: () async {
                   if (await _controller.canGoForward()) _controller.goForward();
                 },
@@ -255,13 +256,13 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
               _NavIcon(
                 icon: Icons.refresh_rounded,
                 enabled: true,
-                tooltip: 'Refresh',
+                tooltip: l10n.refresh,
                 onTap: () => _controller.reload(),
               ),
               _NavIcon(
                 icon: Icons.home_rounded,
                 enabled: true,
-                tooltip: 'Back to article',
+                tooltip: l10n.backToArticle,
                 onTap: () => Navigator.pop(context),
               ),
             ],
@@ -312,7 +313,8 @@ class _ErrorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -329,14 +331,14 @@ class _ErrorPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Page failed to load',
-              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              l10n.pageFailedToLoad,
+              style: txtTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
               Uri.tryParse(url)?.host ?? url,
-              style: tt.bodySmall?.copyWith(
+              style: txtTheme.bodySmall?.copyWith(
                 color: Theme.of(context)
                     .colorScheme
                     .onSurface
@@ -350,7 +352,7 @@ class _ErrorPage extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
+              label: Text(l10n.tryAgain),
             ),
           ],
         ),
