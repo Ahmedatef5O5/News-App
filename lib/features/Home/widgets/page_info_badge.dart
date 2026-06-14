@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -8,7 +9,8 @@ class PageInfoBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -16,8 +18,11 @@ class PageInfoBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
-        'Page ${pagination.currentPage} of ${pagination.totalPages}',
-        style: tt.labelSmall?.copyWith(
+        l10n.pageOf(
+          pagination.currentPage,
+          pagination.totalPages,
+        ),
+        style: txtTheme.labelSmall?.copyWith(
           color: AppColors.primary,
           fontWeight: FontWeight.w700,
         ),

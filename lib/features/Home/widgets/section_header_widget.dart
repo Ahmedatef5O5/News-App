@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class SectionHeaderWidget extends StatelessWidget {
   final String label;
@@ -43,7 +44,7 @@ class SectionHeaderWidget extends StatelessWidget {
           else if (onViewAll != null)
             TextButton(
               onPressed: onViewAll,
-              child: const Text('View all'),
+              child: Text(context.l10n.viewAll),
             ),
         ],
       ),

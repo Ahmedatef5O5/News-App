@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/helpers/empty_state.dart';
 import '../../../core/helpers/error_state.dart';
@@ -15,7 +16,8 @@ class RecommendedFeed extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initial skeleton
+    final l10n = context.l10n;
+
     if (state.pageStatus == PageLoadStatus.loadingInitial ||
         state.pageStatus == PageLoadStatus.idle) {
       return SliverPadding(
@@ -47,7 +49,7 @@ class RecommendedFeed extends StatelessWidget {
         state.recommendedArticles.isEmpty) {
       return SliverToBoxAdapter(
         child: ErrorState(
-          message: state.pageError ?? 'Failed to load',
+          message: state.pageError ?? l10n.failedToLoad,
           onRetry: () => context.read<HomeCubit>().goToPage(state.currentPage),
         ),
       );
@@ -55,11 +57,11 @@ class RecommendedFeed extends StatelessWidget {
 
     // Empty state
     if (state.recommendedArticles.isEmpty) {
-      return const SliverToBoxAdapter(
+      return SliverToBoxAdapter(
         child: EmptyState(
           icon: Icons.article_outlined,
-          title: 'No articles found',
-          subtitle: 'Pull down to refresh',
+          title: l10n.noArticlesFound,
+          subtitle: l10n.pullDownToRefresh,
         ),
       );
     }

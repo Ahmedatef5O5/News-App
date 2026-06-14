@@ -96,6 +96,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final l10n = context.l10n;
 
     return BlocListener<AuthCubit, AuthUserState>(
@@ -134,7 +135,9 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
           leading: Padding(
             padding: const EdgeInsetsDirectional.only(start: 8.0),
             child: CustomAppBarIcon(
-              icon: CupertinoIcons.chevron_back,
+              icon: isRtl
+                  ? CupertinoIcons.chevron_forward
+                  : CupertinoIcons.chevron_back,
               onTap: () => Navigator.of(context).maybePop(),
             ),
           ),
@@ -421,8 +424,10 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
   InputDecoration _dropdownDecoration(
       BuildContext context, String label, IconData icon) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return InputDecoration(
-      labelText: label,
+      labelText: isRtl ? null : label,
+      hintText: isRtl ? label : null,
       prefixIcon: Icon(icon, size: 20, color: AppColors.ink300),
       filled: true,
       fillColor: isDark

@@ -13,6 +13,7 @@ import 'package:news_app/features/home/widgets/home_carousel_section.dart';
 import 'package:news_app/features/home/widgets/recommended_feed.dart';
 import 'package:news_app/features/home/widgets/section_header_widget.dart';
 import 'package:news_app/core/pagination/widgets/pagination_bar_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/helpers/category_chips.dart';
 import '../../../core/pagination/widgets/load_more_footer.dart';
 import '../../../core/theme/theme_picker_dialog.dart';
@@ -72,6 +73,7 @@ class _HomeContentState extends State<_HomeContent> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Scaffold(
       drawer: const AppDrawer(),
       body: BlocConsumer<HomeCubit, HomeState>(
@@ -127,7 +129,7 @@ class _HomeContentState extends State<_HomeContent> {
                 // ── Breaking News header ──────────────────────────────────
                 SliverToBoxAdapter(
                   child: SectionHeaderWidget(
-                    label: 'Breaking News',
+                    label: l10n.breakingNews,
                     accentColor: AppColors.accent,
                     onViewAll: () => Navigator.of(context)
                         .pushNamed(AppRoutes.headlinesRoute),
@@ -154,7 +156,7 @@ class _HomeContentState extends State<_HomeContent> {
                 SliverToBoxAdapter(
                   child: SectionHeaderWidget(
                     key: _forYouKey,
-                    label: 'For You',
+                    label: l10n.forYou,
                     accentColor: AppColors.primary,
                     trailing: state.showPaginationBar
                         ? PageInfoBadge(pagination: state.pagination)

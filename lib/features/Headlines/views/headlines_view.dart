@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/di/service_locator.dart';
@@ -17,7 +16,7 @@ import 'package:news_app/core/widgets/custom_app_bar_icon.dart';
 import 'package:news_app/core/widgets/offline_banner.dart';
 import 'package:news_app/features/Headlines/cubit/headlines_cubit.dart';
 import 'package:news_app/features/Headlines/widgets/glass_category_row.dart';
-
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/models/article_detail_args.dart';
 
 class HeadlinesView extends StatelessWidget {
@@ -62,6 +61,8 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final l10n = context.l10n;
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return Scaffold(
       backgroundColor: colors.surface,
@@ -82,14 +83,16 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 leadingWidth: 42,
                 automaticallyImplyLeading: false,
                 leading: Padding(
-                  padding: const EdgeInsets.only(left: 8.0),
+                  padding: const EdgeInsetsDirectional.only(start: 8.0),
                   child: CustomAppBarIcon(
-                    icon: CupertinoIcons.chevron_back,
+                    icon: isRtl
+                        ? CupertinoIcons.chevron_forward
+                        : CupertinoIcons.chevron_back,
                     onTap: () => Navigator.of(context).maybePop(),
                   ),
                 ),
                 title: Text(
-                  'Breaking News',
+                  l10n.breakingNews,
                   style: theme.textTheme.headlineMedium?.copyWith(
                     color: colors.primary,
                     fontSize: 20,
@@ -99,7 +102,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                 actions: [
                   if (state.showPagination)
                     Padding(
-                      padding: const EdgeInsets.only(right: 16),
+                      padding: const EdgeInsetsDirectional.only(end: 16),
                       child: Center(
                         child: Container(
                           padding: const EdgeInsets.symmetric(
@@ -109,8 +112,10 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'Page ${state.pagination.currentPage}'
-                            ' of ${state.pagination.totalPages}',
+                            l10n.pageOf(
+                              state.pagination.currentPage,
+                              state.pagination.totalPages,
+                            ),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -177,6 +182,7 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
   }
 
   Widget _buildFeed(BuildContext context, HeadlinesState state) {
+    final l10n = context.l10n;
     switch (state.status) {
       case HeadlinesPageLoadStatus.loading:
       case HeadlinesPageLoadStatus.idle:
@@ -193,18 +199,18 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
       case HeadlinesPageLoadStatus.failure:
         return SliverToBoxAdapter(
           child: ErrorState(
-            message: state.error ?? 'Failed to load headlines',
+            message: state.error ?? l10n.somethingWentWrong,
             onRetry: () => context.read<HeadlinesCubit>().retry(),
           ),
         );
 
       case HeadlinesPageLoadStatus.success:
         if (state.pageArticles.isEmpty) {
-          return const SliverToBoxAdapter(
+          return SliverToBoxAdapter(
             child: EmptyState(
               icon: Icons.newspaper_rounded,
-              title: 'No headlines found',
-              subtitle: 'Try another category',
+              title: l10n.noArticlesFound,
+              subtitle: l10n.tryAgain,
             ),
           );
         }
