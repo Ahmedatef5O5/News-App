@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app/core/locale/locale_cubit.dart';
+import 'package:news_app/features/auth/cubit/auth_listener_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
@@ -22,7 +23,6 @@ import '../../features/search/services/search_services.dart';
 import '../network/connectivity_cubit.dart';
 import '../repositories/home_repository.dart';
 
-/// Global service locator instance.
 final sl = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
@@ -48,6 +48,8 @@ Future<void> setupServiceLocator() async {
   sl.registerLazySingleton<ConnectivityCubit>(
     () => ConnectivityCubit(sl<NetworkInfo>()),
   );
+
+  sl.registerLazySingleton<AuthListenerCubit>(() => AuthListenerCubit());
 
   sl.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSource.instance,

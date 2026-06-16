@@ -17,6 +17,7 @@ import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/di/service_locator.dart';
 import 'package:news_app/core/theme/app_theme.dart';
 import 'package:news_app/features/auth/cubit/auth_cubit.dart';
+import 'package:news_app/features/auth/cubit/auth_listener_cubit.dart';
 import 'package:news_app/features/favorites/cubit/favorite_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/theme/model/theme_model.dart';
@@ -43,17 +44,6 @@ void main() async {
   // Register all dependencies before the widget tree is built.
   await setupServiceLocator();
 
-  Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-    final AuthChangeEvent event = data.event;
-
-    if (event == AuthChangeEvent.passwordRecovery) {
-      navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        AppRoutes.upadatePasswordRoute,
-        (route) => false,
-      );
-    }
-  });
-
   runApp(
     DevicePreview(
         enabled: !kReleaseMode, builder: (context) => const NewsWave()),
@@ -71,6 +61,9 @@ class NewsWave extends StatelessWidget {
         BlocProvider<ConnectivityCubit>(
           create: (_) => sl<ConnectivityCubit>(),
         ),
+
+        BlocProvider<AuthListenerCubit>(create: (_) => sl<AuthListenerCubit>()),
+
         BlocProvider<AuthCubit>(
           create: (_) => sl<AuthCubit>()..init(),
         ),
