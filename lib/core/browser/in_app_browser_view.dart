@@ -30,6 +30,8 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
   bool _canGoBack = false;
   bool _canGoForward = false;
   String _currentTitle = '';
+  String _currentUrl = '';
+  String _currentHost = '';
 
   @override
   void initState() {
@@ -61,9 +63,12 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
           },
           onPageFinished: (url) {
             if (!mounted) return;
-            setState(() => _isLoading = false);
+            setState(() {
+              _isLoading = false;
+              _currentUrl = url;
+              _currentHost = Uri.tryParse(url)?.host ?? '';
+            });
             _refreshNavState();
-            // Pull the real page title from the DOM
             _controller
                 .runJavaScriptReturningResult('document.title')
                 .then((result) {
@@ -96,7 +101,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
   }
 
   Future<void> _copyLink() async {
-    final url = await _controller.currentUrl() ?? widget.url;
+    final url = _currentUrl.isNotEmpty ? _currentUrl : widget.url;
     await Clipboard.setData(ClipboardData(text: url));
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -176,23 +181,15 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          FutureBuilder<String?>(
-            future: _controller.currentUrl(),
-            builder: (_, snap) {
-              final host = snap.hasData
-                  ? Uri.tryParse(snap.data!)?.host ?? ''
-                  : Uri.tryParse(widget.url)?.host ?? '';
-              return Text(
-                host,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: colors.onSurface.withValues(alpha: 0.5),
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              );
-            },
-          ),
+          Text(
+            _currentHost,
+            style: TextStyle(
+              fontSize: 11,
+              color: colors.onSurface.withValues(alpha: 0.5),
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          )
         ],
       ),
       actions: [
