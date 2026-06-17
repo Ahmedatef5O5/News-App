@@ -21,11 +21,12 @@ class FavoritesState extends Equatable {
     FavStatus? status,
     List<Article>? articles,
     String? error,
+    bool clearError = false,
   }) {
     return FavoritesState(
       status: status ?? this.status,
       articles: articles ?? this.articles,
-      error: error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 
