@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/pagination/helpers/nav_button.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../theme/app_colors.dart';
 import '../model/pagination_meta.dart';
 import 'page_number_widget.dart';
@@ -22,12 +23,13 @@ class PaginationBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (meta.totalPages <= 1) return const SizedBox.shrink();
+    final l10n = context.l10n;
 
     return AnimatedOpacity(
       opacity: isLoading ? 0.5 : 1,
       duration: const Duration(milliseconds: 200),
       child: Container(
-        margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        margin: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 16),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -46,7 +48,7 @@ class PaginationBarWidget extends StatelessWidget {
             NavButton(
               icon: Icons.chevron_left_rounded,
               onTap: meta.hasPreviousPage && !isLoading ? onPrevious : null,
-              label: 'Prev',
+              label: l10n.back,
             ),
             const SizedBox(
               width: 8,
@@ -75,7 +77,7 @@ class PaginationBarWidget extends StatelessWidget {
             NavButton(
               icon: Icons.chevron_right_rounded,
               onTap: meta.hasNextPage && !isLoading ? onNext : null,
-              label: 'Next',
+              label: l10n.forward,
               iconAfter: true,
             ),
           ],

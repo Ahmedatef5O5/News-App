@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../theme/app_colors.dart';
 
 class ErrorState extends StatelessWidget {
@@ -13,7 +14,9 @@ class ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -29,14 +32,15 @@ class ErrorState extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                'Something went wrong',
-                style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                l10n.somethingWentWrong,
+                style:
+                    txtTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 message,
-                style: tt.bodyMedium,
+                style: txtTheme.bodyMedium,
                 textAlign: TextAlign.center,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
@@ -45,7 +49,7 @@ class ErrorState extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Try Again'),
+                label: Text(l10n.tryAgain),
               ),
             ],
           ),

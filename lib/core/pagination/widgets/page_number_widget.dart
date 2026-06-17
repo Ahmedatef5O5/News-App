@@ -3,6 +3,11 @@ import 'package:news_app/core/widgets/custom_loading_indicator.dart';
 import '../../theme/app_colors.dart';
 
 class PageNumber extends StatelessWidget {
+  final int page;
+  final bool isActive;
+  final bool isLoading;
+  final VoidCallback? onTap;
+
   const PageNumber({
     super.key,
     required this.page,
@@ -10,11 +15,6 @@ class PageNumber extends StatelessWidget {
     required this.isLoading,
     required this.onTap,
   });
-
-  final int page;
-  final bool isActive;
-  final bool isLoading;
-  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,6 @@ class PageNumber extends StatelessWidget {
               : AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 200),
                   style: TextStyle(
-                    fontFamily: 'Poppins',
                     fontSize: 13,
                     fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                     color: isActive ? Colors.white : AppColors.ink500,

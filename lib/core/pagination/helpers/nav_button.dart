@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 
 class NavButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback? onTap;
+  final String label;
+  final bool iconAfter;
+
   const NavButton({
     super.key,
     required this.icon,
@@ -10,46 +15,24 @@ class NavButton extends StatelessWidget {
     this.iconAfter = false,
   });
 
-  final IconData icon;
-  final VoidCallback? onTap;
-  final String label;
-  final bool iconAfter;
-
   @override
   Widget build(BuildContext context) {
     final isDisabled = onTap == null;
     final color = isDisabled ? AppColors.ink100 : AppColors.ink700;
 
-    Widget content = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: iconAfter
-          ? [
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-              const SizedBox(width: 2),
-              Icon(icon, size: 18, color: color),
-            ]
-          : [
-              Icon(icon, size: 18, color: color),
-              const SizedBox(width: 2),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: color,
-                ),
-              ),
-            ],
+    final iconWidget = Icon(icon, size: 18, color: color);
+    final labelWidget = Text(
+      label,
+      style: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+        color: color,
+      ),
     );
+
+    final children = iconAfter
+        ? [labelWidget, const SizedBox(width: 2), iconWidget]
+        : [iconWidget, const SizedBox(width: 2), labelWidget];
 
     return GestureDetector(
       onTap: onTap,
@@ -61,7 +44,7 @@ class NavButton extends StatelessWidget {
               : AppColors.surfaceCard,
           borderRadius: BorderRadius.circular(10),
         ),
-        child: content,
+        child: Row(mainAxisSize: MainAxisSize.min, children: children),
       ),
     );
   }

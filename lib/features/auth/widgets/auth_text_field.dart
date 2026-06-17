@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AuthTextField extends StatefulWidget {
+  final TextEditingController controller;
+  final String label;
+  final IconData icon;
+  final bool obscure;
+  final TextInputType? keyboardType;
+  final TextInputAction? textInputAction;
+  final String? Function(String?)? validator;
+  final void Function(String)? onFieldSubmitted;
+  final FocusNode? focusNode;
+  final String? hint;
+  final Widget? suffixIcon;
+  final bool readOnly;
+  final VoidCallback? onTap;
+
   const AuthTextField({
     super.key,
     required this.controller,
@@ -18,20 +32,6 @@ class AuthTextField extends StatefulWidget {
     this.readOnly = false,
     this.onTap,
   });
-
-  final TextEditingController controller;
-  final String label;
-  final IconData icon;
-  final bool obscure;
-  final TextInputType? keyboardType;
-  final TextInputAction? textInputAction;
-  final String? Function(String?)? validator;
-  final void Function(String)? onFieldSubmitted;
-  final FocusNode? focusNode;
-  final String? hint;
-  final Widget? suffixIcon;
-  final bool readOnly;
-  final VoidCallback? onTap;
 
   @override
   State<AuthTextField> createState() => _AuthTextFieldState();

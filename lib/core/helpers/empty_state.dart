@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 
 class EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final VoidCallback? action;
+  final String? actionLabel;
+
   const EmptyState({
     super.key,
     required this.icon,
@@ -11,15 +17,10 @@ class EmptyState extends StatelessWidget {
     this.actionLabel,
   });
 
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final VoidCallback? action;
-  final String? actionLabel;
-
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(40),
@@ -38,14 +39,14 @@ class EmptyState extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               title,
-              style: tt.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+              style: txtTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
               Text(
                 subtitle!,
-                style: tt.bodyMedium,
+                style: txtTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ],

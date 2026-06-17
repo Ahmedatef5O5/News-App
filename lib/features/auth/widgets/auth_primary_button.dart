@@ -1,17 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 
 class AuthPrimaryButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
   const AuthPrimaryButton({
     super.key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
   });
-
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +33,14 @@ class AuthPrimaryButton extends StatelessWidget {
             ? const SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
+                child: CupertinoActivityIndicator(
+                  radius: 4.5,
                   color: Colors.white,
                 ),
               )
             : Text(
                 label,
                 style: const TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
                   letterSpacing: 0.3,

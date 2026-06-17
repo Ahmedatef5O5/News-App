@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/widgets/custom_loading_indicator.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../theme/app_colors.dart';
 
 enum LoadMoreStatus { idle, loading, error, endOfList }
@@ -14,7 +15,8 @@ class LoadMoreFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
 
     return switch (status) {
       LoadMoreStatus.loading => const Padding(
@@ -41,15 +43,15 @@ class LoadMoreFooter extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Failed to load',
-                style: tt.bodySmall?.copyWith(color: AppColors.ink300),
+                l10n.failedToLoad,
+                style: txtTheme.bodySmall?.copyWith(color: AppColors.ink300),
               ),
               const SizedBox(width: 12),
               GestureDetector(
                 onTap: onRetry,
                 child: Text(
-                  'Retry',
-                  style: tt.bodySmall?.copyWith(
+                  l10n.retry,
+                  style: txtTheme.bodySmall?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w700,
                   ),
@@ -70,8 +72,9 @@ class LoadMoreFooter extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                "You're all caught up",
-                style: tt.bodySmall?.copyWith(
+                l10n.noArticlesFound,
+                // "You're all caught up",
+                style: txtTheme.bodySmall?.copyWith(
                   color: AppColors.ink300,
                   fontWeight: FontWeight.w500,
                 ),
