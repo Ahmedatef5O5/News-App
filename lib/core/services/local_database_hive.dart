@@ -3,9 +3,6 @@ import 'package:news_app/core/constants/app_constants.dart';
 import '../../features/profile/model/profile_model.dart';
 import '../models/article_model.dart';
 
-/// Singleton Hive wrapper.
-/// Opens box once and reuses it — no repeated openBox() calls.
-
 class LocalDatabaseHive {
 // singleton Pattern
   LocalDatabaseHive._();
@@ -16,9 +13,7 @@ class LocalDatabaseHive {
   // ─── Initialisation (call once in main()) ─────────────────────────────────
 
   /// Registers all Hive adapters and opens the articles box.
-  ///
-  /// The [ProfileModel] adapter is also registered here so it is available
-  /// before [AuthLocalDataSource] opens the profile box.
+
   static Future<void> initHive() async {
     await Hive.initFlutter();
 
