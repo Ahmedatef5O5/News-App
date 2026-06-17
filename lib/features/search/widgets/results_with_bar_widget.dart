@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/models/article_detail_args.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/pagination/widgets/pagination_bar_widget.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_colors.dart';
@@ -23,19 +24,20 @@ class ResultsWithBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
     final pag = state.pagination;
+    final l10n = context.l10n;
 
     return Column(
       children: [
-        // Results count + page info
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
           child: Row(
             children: [
               Text(
-                '${pag.totalResults} results',
-                style: tt.bodySmall?.copyWith(
+                l10n.resultsCount(pag.totalResults),
+                // '${pag.totalResults} results',
+                style: txtTheme.bodySmall?.copyWith(
                   color: AppColors.ink300,
                   fontWeight: FontWeight.w500,
                 ),
@@ -43,8 +45,8 @@ class ResultsWithBar extends StatelessWidget {
               const Spacer(),
               if (pag.totalPages > 1)
                 Text(
-                  'Page ${pag.currentPage} of ${pag.totalPages}',
-                  style: tt.bodySmall?.copyWith(
+                  l10n.pageOf(pag.currentPage, pag.totalPages),
+                  style: txtTheme.bodySmall?.copyWith(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w600,
                   ),

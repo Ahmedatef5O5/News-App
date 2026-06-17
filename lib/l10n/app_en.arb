@@ -280,6 +280,11 @@
     "description": "Initial hint empty-state subtitle in SearchView"
   },
 
+  "resultsCount": "{count} results",
+  "@resultsCount": {
+    "description": "number of results shown in SearchView"
+  },
+
   "noResultsFound": "No results found",
   "@noResultsFound": {
     "description": "Empty-results state title in SearchView"
