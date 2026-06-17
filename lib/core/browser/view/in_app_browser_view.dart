@@ -1,6 +1,9 @@
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:news_app/core/browser/widgets/error_page_widget.dart';
+import 'package:news_app/core/browser/widgets/nav_icon_widget.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -115,8 +118,6 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
     );
   }
 
-  // ─── Build ────────────────────────────────────────────────────────────────
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -124,21 +125,18 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
 
     return Scaffold(
       backgroundColor: colors.surface,
-      appBar: _buildAppBar(isDark, colors),
+      appBar: appBarBrowser(isDark, colors),
       body: Stack(
         children: [
-          // ── WebView ───────────────────────────────────────────────────────
           if (!_hasError)
             WebViewWidget(controller: _controller)
           else
-            _ErrorPage(
+            ErrorPage(
                 url: widget.url,
                 onRetry: () {
                   setState(() => _hasError = false);
                   _controller.loadRequest(Uri.parse(widget.url));
                 }),
-
-          // ── Progress bar (slides away when done) ──────────────────────────
           AnimatedOpacity(
             opacity: _isLoading ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 300),
@@ -151,12 +149,11 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
           ),
         ],
       ),
-      // ── Glass bottom navigation bar ───────────────────────────────────────
-      bottomNavigationBar: _buildBottomBar(isDark, colors),
+      bottomNavigationBar: bottomBarBrowser(isDark, colors),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(bool isDark, ColorScheme colors) {
+  PreferredSizeWidget appBarBrowser(bool isDark, ColorScheme colors) {
     final l10n = context.l10n;
     return AppBar(
       backgroundColor: colors.surface,
@@ -193,14 +190,13 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
         ],
       ),
       actions: [
-        // Loading spinner / done indicator
         if (_isLoading)
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 8),
             child: SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CupertinoActivityIndicator(radius: 5),
             ),
           ),
         IconButton(
@@ -213,7 +209,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
     );
   }
 
-  Widget _buildBottomBar(bool isDark, ColorScheme colors) {
+  Widget bottomBarBrowser(bool isDark, ColorScheme colors) {
     final l10n = context.l10n;
     return ClipRect(
       child: BackdropFilter(
@@ -234,7 +230,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _NavIcon(
+              NavIcon(
                 icon: Icons.arrow_back_ios_new_rounded,
                 enabled: _canGoBack,
                 tooltip: l10n.back,
@@ -242,7 +238,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
                   if (await _controller.canGoBack()) _controller.goBack();
                 },
               ),
-              _NavIcon(
+              NavIcon(
                 icon: Icons.arrow_forward_ios_rounded,
                 enabled: _canGoForward,
                 tooltip: l10n.forward,
@@ -250,13 +246,13 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
                   if (await _controller.canGoForward()) _controller.goForward();
                 },
               ),
-              _NavIcon(
+              NavIcon(
                 icon: Icons.refresh_rounded,
                 enabled: true,
                 tooltip: l10n.refresh,
                 onTap: () => _controller.reload(),
               ),
-              _NavIcon(
+              NavIcon(
                 icon: Icons.home_rounded,
                 enabled: true,
                 tooltip: l10n.backToArticle,
@@ -264,94 +260,6 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// ─── Bottom nav icon ──────────────────────────────────────────────────────────
-
-class _NavIcon extends StatelessWidget {
-  const _NavIcon({
-    required this.icon,
-    required this.enabled,
-    required this.onTap,
-    required this.tooltip,
-  });
-
-  final IconData icon;
-  final bool enabled;
-  final VoidCallback onTap;
-  final String tooltip;
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: tooltip,
-      child: IconButton(
-        icon: Icon(icon),
-        onPressed: enabled ? onTap : null,
-        color: enabled
-            ? Theme.of(context).colorScheme.onSurface
-            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.25),
-        iconSize: 22,
-      ),
-    );
-  }
-}
-
-// ─── Error page ───────────────────────────────────────────────────────────────
-
-class _ErrorPage extends StatelessWidget {
-  const _ErrorPage({required this.url, required this.onRetry});
-  final String url;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final txtTheme = Theme.of(context).textTheme;
-    final l10n = context.l10n;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.wifi_off_rounded,
-              size: 64,
-              color: Theme.of(context)
-                  .colorScheme
-                  .onSurface
-                  .withValues(alpha: 0.3),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              l10n.pageFailedToLoad,
-              style: txtTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              Uri.tryParse(url)?.host ?? url,
-              style: txtTheme.bodySmall?.copyWith(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.5),
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 28),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh_rounded),
-              label: Text(l10n.tryAgain),
-            ),
-          ],
         ),
       ),
     );
