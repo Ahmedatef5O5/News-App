@@ -66,13 +66,16 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
     context.read<AuthCubit>().uploadAvatar(File(picked.path));
   }
 
-  void _save() {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _save() async {
     final cubit = context.read<AuthCubit>();
     final userId = cubit.currentUser?.id;
-    if (userId == null) return;
 
-    cubit.updateProfile(
+    if (userId == null) return;
+    if (cubit.state is AuthLoading) return;
+
+    if (!_formKey.currentState!.validate()) return;
+
+    await cubit.updateProfile(
       ProfileModel(
         id: userId,
         firstName: _firstNameCtrl.text.trim().isEmpty
@@ -88,9 +91,10 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
         isOnboarded: true,
       ),
     );
+    if (!mounted) return;
 
     if (_newPassCtrl.text.isNotEmpty) {
-      cubit.updatePassword(_newPassCtrl.text);
+      await cubit.updatePassword(_newPassCtrl.text);
     }
   }
 
