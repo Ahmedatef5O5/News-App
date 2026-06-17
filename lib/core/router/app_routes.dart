@@ -2,7 +2,7 @@ class AppRoutes {
   static const String signInRoute = '/sign-in';
   static const String signUpRoute = '/sign-up';
   static const String forgotPasswordRoute = '/forgot-password';
-  static const String upadatePasswordRoute = '/update-password-view';
+  static const String updatePasswordRoute = '/update-password-view';
 
   // onboarding
   static const String onboardingRoute = '/onboarding';

@@ -37,7 +37,7 @@ class AppRouter {
       case AppRoutes.forgotPasswordRoute:
         return _fadeRoute(const ForgotPasswordView(), settings);
 
-      case AppRoutes.upadatePasswordRoute:
+      case AppRoutes.updatePasswordRoute:
         return _fadeRoute(const UpdatePasswordView(), settings);
 
       case AppRoutes.onboardingRoute:

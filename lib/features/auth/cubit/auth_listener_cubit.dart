@@ -14,7 +14,7 @@ class AuthListenerCubit extends Cubit<void> {
   void _onAuth(AuthState data) {
     if (data.event == AuthChangeEvent.passwordRecovery) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          AppRoutes.upadatePasswordRoute, (route) => false);
+          AppRoutes.updatePasswordRoute, (route) => false);
     }
   }
 
