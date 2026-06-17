@@ -1,9 +1,11 @@
+import 'package:equatable/equatable.dart';
 import 'package:hive/hive.dart';
 
 part 'profile_model.g.dart';
 
 @HiveType(typeId: 2)
-class ProfileModel extends HiveObject {
+// ignore: must_be_immutable
+class ProfileModel extends HiveObject with EquatableMixin {
   @HiveField(0)
   final String id;
 
@@ -115,11 +117,17 @@ class ProfileModel extends HiveObject {
   }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) || (other is ProfileModel && other.id == id);
-
-  @override
-  int get hashCode => id.hashCode;
+  List<Object?> get props => [
+        id,
+        firstName,
+        lastName,
+        avatarUrl,
+        phone,
+        hobby,
+        country,
+        preferredCategories,
+        isOnboarded,
+      ];
 }
 
 abstract final class CountriesList {
