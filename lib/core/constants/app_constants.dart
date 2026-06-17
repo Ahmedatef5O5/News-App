@@ -34,6 +34,7 @@ abstract final class AppConstants {
   static const int infiniteScrollThreshold = 3;
 
   // ── Cache ─────────────────────────────────────────────────────────────────
+  static const int maxCachablePages = 10;
   static const String recommendedPageKeyPrefix = 'rec_page_';
 
   // ── Search Debounce ──────────────────────────────────────────────────────

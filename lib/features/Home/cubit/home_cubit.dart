@@ -27,6 +27,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   void _syncCategory(NewsCategory category) {
     if (isClosed) return;
+    if (!_initialized) return;
     emit(state.copyWith(
       selectedCategory: category,
       headlinesStatus: LoadStatus.loading,
@@ -54,7 +55,6 @@ class HomeCubit extends Cubit<HomeState> {
   Future<void> refresh() async {
     if (isClosed) return;
     emit(state.copyWith(isRefreshing: true));
-    // await _repo.clearRecommendedCache();
     await Future.wait([
       fetchHeadlines(forceRefresh: true),
       _loadPage(1, mode: PageLoadStatus.loadingInitial, forceRefresh: true),
@@ -112,7 +112,7 @@ class HomeCubit extends Cubit<HomeState> {
         recommendedArticles: result.articles,
         totalRecommended: result.totalResults,
         currentPage: page,
-        fromCache: result.fromCache, // ← drives OfflineBanner
+        fromCache: result.fromCache,
         pagination: PaginationMeta(
           currentPage: page,
           totalResults: result.totalResults,

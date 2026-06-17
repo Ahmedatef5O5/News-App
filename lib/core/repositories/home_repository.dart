@@ -150,9 +150,11 @@ class HomeRepository {
   // ── Cache management ───────────────────────────────────────────────────────
 
   Future<void> clearRecommendedCache() async {
-    for (int i = 1; i <= 10; i++) {
-      await _db.delete('${AppConstants.recommendedPageKeyPrefix}$i');
-    }
+    await Future.wait(List.generate(
+        AppConstants.maxCachablePages,
+        (i) => _db.delete(
+              '${AppConstants.recommendedPageKeyPrefix}${i + 1}',
+            )));
   }
 
   // ── Private helpers ────────────────────────────────────────────────────────
