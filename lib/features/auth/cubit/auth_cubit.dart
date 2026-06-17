@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/features/auth/cubit/auth_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../profile/model/profile_model.dart';
 import '../data/auth_repository.dart';
@@ -13,12 +14,21 @@ class AuthCubit extends Cubit<AuthUserState> {
         super(const AuthInitial());
 
   final AuthRepository _repo;
+  static const _guestKey = 'is_guest';
 
   // Init (cold-start)
 
   Future<void> init() async {
     emit(const AuthLoading());
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final isGuest = prefs.getBool(_guestKey) ?? false;
+      // Restore Guest FIRST
+      if (isGuest) {
+        emit(const AuthGuest());
+        return;
+      }
+// Restore authenticated session
       final user = await _repo.restoreSession();
       if (user == null) {
         emit(const AuthUnauthenticated());
@@ -34,10 +44,19 @@ class AuthCubit extends Cubit<AuthUserState> {
   // ─── Guest Mode ───────────────────────────────────────────────────────────
 
   /// User chose "Continue as Guest".
-  void continueAsGuest() => emit(const AuthGuest());
+
+  void continueAsGuest() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_guestKey, true);
+    emit(const AuthGuest());
+  }
 
   /// Exits guest mode back to unauthenticated (shows sign-in).
-  void exitGuestMode() => emit(const AuthUnauthenticated());
+  void exitGuestMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_guestKey);
+    emit(const AuthUnauthenticated());
+  }
 
   // ─── Sign Up ──────────────────────────────────────────────────────────────
 
@@ -48,6 +67,9 @@ class AuthCubit extends Cubit<AuthUserState> {
   }) async {
     emit(const AuthLoading());
     try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_guestKey);
+
       final user = await _repo.signUp(
         email: email,
         password: password,
@@ -69,7 +91,11 @@ class AuthCubit extends Cubit<AuthUserState> {
     required String password,
   }) async {
     emit(const AuthLoading());
+
     try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_guestKey);
+
       final user = await _repo.signIn(email: email, password: password);
       await _loadProfileAndEmit(user);
     } on AuthException catch (e) {
@@ -84,6 +110,9 @@ class AuthCubit extends Cubit<AuthUserState> {
   Future<void> signOut() async {
     emit(const AuthLoading());
     try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_guestKey);
+
       await _repo.signOut();
       emit(const AuthUnauthenticated());
     } on AuthException catch (e) {

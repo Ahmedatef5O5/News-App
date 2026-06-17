@@ -152,7 +152,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                         width: 18,
                         height: 18,
                         child: CupertinoActivityIndicator(
-                          radius: 6,
+                          radius: 8,
                         ),
                       )
                     : Text(

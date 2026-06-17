@@ -30,12 +30,13 @@ class AuthPrimaryButton extends StatelessWidget {
           elevation: 0,
         ),
         child: isLoading
-            ? const SizedBox(
+            ? SizedBox(
                 width: 22,
                 height: 22,
                 child: CupertinoActivityIndicator(
-                  radius: 4.5,
-                  color: Colors.white,
+                  radius: 11,
+                  animating: true,
+                  color: Colors.grey.shade600,
                 ),
               )
             : Text(

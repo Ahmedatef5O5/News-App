@@ -24,6 +24,7 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
 
   bool _isAnimationDone = false;
   String? _nextRoute;
+  bool _authResolved = false;
 
   @override
   void initState() {
@@ -37,16 +38,10 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
       });
     });
     Future.delayed(const Duration(seconds: 6), () {
-      if (!mounted) return;
-      if (_nextRoute == null) {
-        final authState = context.read<AuthCubit>().state;
-        if (authState is AuthAuthenticated) {
-          _nextRoute = AppRoutes.homeRoute;
-        } else {
-          _nextRoute = AppRoutes.signInRoute;
-        }
-        _checkAndNavigate();
-      }
+      if (!mounted || _nextRoute != null || _authResolved) return;
+      // fallback only
+      _nextRoute = AppRoutes.signInRoute;
+      _checkAndNavigate();
     });
   }
 
@@ -82,13 +77,17 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
 
     return BlocListener<AuthCubit, AuthUserState>(
       listener: (context, state) {
-        if (state is AuthAuthenticated) {
-          _nextRoute = state.needsOnboarding
+        _authResolved = true;
+
+        _nextRoute = switch (state) {
+          AuthAuthenticated() => state.needsOnboarding
               ? AppRoutes.onboardingRoute
-              : AppRoutes.homeRoute;
-        } else if (state is AuthUnauthenticated || state is AuthError) {
-          _nextRoute = AppRoutes.signInRoute;
-        }
+              : AppRoutes.homeRoute,
+          AuthGuest() => AppRoutes.homeRoute,
+          AuthUnauthenticated() || AuthError() => AppRoutes.signInRoute,
+          _ => null,
+        };
+
         _checkAndNavigate();
       },
       child: AnimatedBuilder(

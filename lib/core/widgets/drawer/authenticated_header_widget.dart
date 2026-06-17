@@ -80,7 +80,7 @@ class AuthenticatedHeader extends StatelessWidget {
               ),
             ),
             const Icon(Icons.chevron_right_rounded,
-                color: AppColors.ink300, size: 20),
+                color: AppColors.ink300, size: 26),
           ],
         ),
       ),

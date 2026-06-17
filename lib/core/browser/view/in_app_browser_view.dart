@@ -196,7 +196,7 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
             child: SizedBox(
               width: 18,
               height: 18,
-              child: CupertinoActivityIndicator(radius: 5),
+              child: CupertinoActivityIndicator(radius: 8),
             ),
           ),
         IconButton(
