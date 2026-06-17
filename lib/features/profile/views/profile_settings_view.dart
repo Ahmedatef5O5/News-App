@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:news_app/core/router/app_routes.dart';
@@ -181,7 +182,21 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       child: Stack(
                         children: [
                           GestureDetector(
-                            onTap: _pickAvatar,
+                            onTap: profile?.avatarUrl != null
+                                ? () => Navigator.pushNamed(
+                                      context,
+                                      AppRoutes.fullScreenImage,
+                                      arguments: {
+                                        'url': profile!.avatarUrl!,
+                                        'tag': profile.avatarUrl!,
+                                        'isAsset': false,
+                                      },
+                                    )
+                                : null,
+                            onLongPress: () {
+                              HapticFeedback.mediumImpact();
+                              _pickAvatar();
+                            },
                             child: Container(
                               width: 100,
                               height: 100,
@@ -199,37 +214,25 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                                   ),
                                 ],
                               ),
-                              child: GestureDetector(
-                                onTap: () => Navigator.pushNamed(
-                                  context,
-                                  AppRoutes.fullScreenImage,
-                                  arguments: {
-                                    'url': profile!.avatarUrl!,
-                                    'tag': profile.avatarUrl!,
-                                    'isAsset': false,
-                                  },
-                                ),
-                                child: ClipOval(
-                                  child: profile?.avatarUrl != null
-                                      ? CachedNetworkImage(
-                                          imageUrl: profile!.avatarUrl!,
-                                          fit: BoxFit.cover,
-                                          placeholder: (_, __) =>
-                                              InitialsAvatar(
-                                            initials: profile.initials,
-                                            size: 100,
-                                          ),
-                                          errorWidget: (_, __, ___) =>
-                                              InitialsAvatar(
-                                            initials: profile.initials,
-                                            size: 100,
-                                          ),
-                                        )
-                                      : InitialsAvatar(
-                                          initials: profile?.initials ?? 'N',
+                              child: ClipOval(
+                                child: profile?.avatarUrl != null
+                                    ? CachedNetworkImage(
+                                        imageUrl: profile!.avatarUrl!,
+                                        fit: BoxFit.cover,
+                                        placeholder: (_, __) => InitialsAvatar(
+                                          initials: profile.initials,
                                           size: 100,
                                         ),
-                                ),
+                                        errorWidget: (_, __, ___) =>
+                                            InitialsAvatar(
+                                          initials: profile.initials,
+                                          size: 100,
+                                        ),
+                                      )
+                                    : InitialsAvatar(
+                                        initials: profile?.initials ?? 'N',
+                                        size: 100,
+                                      ),
                               ),
                             ),
                           ),
