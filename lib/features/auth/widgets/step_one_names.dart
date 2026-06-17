@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/features/auth/widgets/auth_text_field.dart';
 import 'package:news_app/features/auth/widgets/glass_card_widget.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../profile/model/profile_model.dart';
 
 class StepOneNames extends StatelessWidget {
+  final GlobalKey<FormState> formKey;
+  final TextEditingController firstNameCtrl;
+  final TextEditingController lastNameCtrl;
+  final String? selectedCountry;
+  final void Function(String?) onCountryChanged;
+
   const StepOneNames({
     super.key,
     required this.formKey,
@@ -14,15 +21,10 @@ class StepOneNames extends StatelessWidget {
     required this.onCountryChanged,
   });
 
-  final GlobalKey<FormState> formKey;
-  final TextEditingController firstNameCtrl;
-  final TextEditingController lastNameCtrl;
-  final String? selectedCountry;
-  final void Function(String?) onCountryChanged;
-
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Form(
@@ -47,21 +49,22 @@ class StepOneNames extends StatelessWidget {
                 children: [
                   AuthTextField(
                     controller: firstNameCtrl,
-                    label: 'First name',
+                    label: l10n.fieldFirstName,
                     icon: Icons.person_outline_rounded,
                     textInputAction: TextInputAction.next,
                     validator: (v) => v == null || v.isEmpty
-                        ? 'First name is required'
+                        ? '${l10n.fieldFirstName} is required'
                         : null,
                   ),
                   const SizedBox(height: 16),
                   AuthTextField(
                     controller: lastNameCtrl,
-                    label: 'Last name',
+                    label: l10n.fieldLastName,
                     icon: Icons.person_outline_rounded,
                     textInputAction: TextInputAction.done,
-                    validator: (v) =>
-                        v == null || v.isEmpty ? 'Last name is required' : null,
+                    validator: (v) => v == null || v.isEmpty
+                        ? '${l10n.fieldLastName} is required'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
@@ -69,7 +72,7 @@ class StepOneNames extends StatelessWidget {
                     isExpanded: true,
                     onChanged: onCountryChanged,
                     decoration: InputDecoration(
-                      labelText: 'Country',
+                      labelText: l10n.fieldCountry,
                       prefixIcon: const Icon(
                         Icons.public_rounded,
                         size: 20,
@@ -95,13 +98,12 @@ class StepOneNames extends StatelessWidget {
                             color: AppColors.primary, width: 2),
                       ),
                     ),
-                    hint: const Text('Select your country'),
+                    hint: Text(l10n.onboardingSelectCountryHint),
                     items: CountriesList.all
                         .map((c) => DropdownMenuItem(
                               value: c,
                               child: Text(c,
                                   style: const TextStyle(
-                                    fontFamily: 'Poppins',
                                     fontSize: 13,
                                   )),
                             ))

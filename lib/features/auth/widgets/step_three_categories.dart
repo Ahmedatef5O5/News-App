@@ -3,14 +3,15 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 
 class StepThreeCategories extends StatelessWidget {
-  const StepThreeCategories(
-      {super.key, required this.selected, required this.onToggle});
   final Set<String> selected;
   final void Function(String) onToggle;
 
+  const StepThreeCategories(
+      {super.key, required this.selected, required this.onToggle});
+
   @override
   Widget build(BuildContext context) {
-    final tt = Theme.of(context).textTheme;
+    final txtTheme = Theme.of(context).textTheme;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -19,12 +20,13 @@ class StepThreeCategories extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             '📰 Pick your news topics',
-            style: tt.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+            style:
+                txtTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(
             'Select all that interest you (you can change this later).',
-            style: tt.bodyMedium?.copyWith(color: AppColors.ink300),
+            style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
           ),
           const SizedBox(height: 24),
           Wrap(
@@ -57,7 +59,6 @@ class StepThreeCategories extends StatelessWidget {
                       Text(
                         cat.label,
                         style: TextStyle(
-                          fontFamily: 'Poppins',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: isSelected ? Colors.white : AppColors.ink700,

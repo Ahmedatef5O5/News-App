@@ -9,6 +9,7 @@ import 'package:news_app/features/auth/views/update_password_view.dart';
 import 'package:news_app/features/favorites/views/favorites_view.dart';
 import 'package:news_app/features/profile/views/profile_settings_view.dart';
 import 'package:news_app/features/search/views/search_view.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../features/Headlines/cubit/headlines_cubit.dart';
 import '../../features/Headlines/views/headlines_view.dart';
 import '../../features/home/cubit/home_cubit.dart';
@@ -116,7 +117,10 @@ class AppRouter {
       default:
         return MaterialPageRoute(
           builder: (context) => Scaffold(
-            body: Center(child: Text('No route defined for ${settings.name}')),
+            body: Center(
+                child: Text(
+              context.l10n.noRouteFound(settings.name ?? 'unknown'),
+            )),
           ),
         );
     }
@@ -144,7 +148,7 @@ class AppRouter {
         );
         return SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(1, 0),
+            begin: const Offset(0.06, 0),
             end: Offset.zero,
           ).animate(curved),
           child: child,
