@@ -17,32 +17,40 @@ class ShareButton extends StatelessWidget {
     return GestureDetector(
       onTap: () async {
         final text = '${article.title}\n\n${article.url ?? ""}';
-        await SharePlus.instance.share(
+
+        final result = await SharePlus.instance.share(
           ShareParams(
             text: text,
             subject: article.title,
           ),
         );
-        if (context.mounted) {
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(
-                  l10n.copyLink,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                  ),
+
+        if (!context.mounted) return;
+
+        final message = switch (result.status) {
+          ShareResultStatus.success => l10n.shareSuccess,
+          ShareResultStatus.dismissed => l10n.shareCancelled,
+          _ => l10n.shareFailed,
+        };
+
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                message,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w500,
                 ),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                margin: const EdgeInsets.all(16),
-                duration: const Duration(milliseconds: 1800),
               ),
-            );
-        }
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              margin: const EdgeInsets.all(16),
+              duration: const Duration(milliseconds: 1800),
+            ),
+          );
       },
       child: Container(
         width: 32,

@@ -39,6 +39,12 @@
 
   "linkCopied": "تم نسخ الرابط إلى الحافظة",
 
+  "shareSuccess": "تمت المشاركة بنجاح",
+
+  "shareCancelled": "تم إلغاء المشاركة",
+  
+  "shareFailed": "فشلت المشاركة",
+
   "articleSaved": "تم حفظ المقال",
 
   "articleRemoved": "تمت الإزالة من المحفوظات",

@@ -78,6 +78,21 @@
   "@linkCopied": {
     "description": "Snackbar text after copying an article link"
   },
+  
+ "shareSuccess": "Shared successfully",
+  "@shareSuccess": {
+    "description": "Snackbar message shown when content is shared successfully"
+  },
+
+  "shareCancelled": "Sharing cancelled",
+  "@shareCancelled": {
+    "description": "Snackbar message shown when user cancels the share action"
+  },
+
+  "shareFailed": "Sharing failed",
+  "@shareFailed": {
+    "description": "Snackbar message shown when sharing fails"
+  },
 
   "articleSaved": "Article saved",
   "@articleSaved": {
