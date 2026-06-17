@@ -13,11 +13,11 @@ import '../../../core/locale/locale_cubit.dart';
 import '../../../core/theme/model/theme_model.dart';
 import '../../../core/theme/theme_picker_dialog.dart';
 import '../../../core/widgets/custom_app_bar_icon.dart';
+import '../../../core/widgets/initials_avatar.dart';
 import '../../auth/cubit/auth_cubit.dart';
 import '../../auth/cubit/auth_state.dart';
 import '../../auth/widgets/auth_text_field.dart';
 import '../model/profile_model.dart';
-import '../widgets/initials_avatar.dart';
 import '../widgets/section_title.dart';
 import '../widgets/settings_row_widget.dart';
 

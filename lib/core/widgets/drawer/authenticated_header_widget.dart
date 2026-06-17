@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:news_app/core/widgets/drawer/initials_avatar.dart';
+import 'package:news_app/core/widgets/initials_avatar.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../router/app_routes.dart';
 import '../../theme/app_colors.dart';
@@ -43,11 +43,17 @@ class AuthenticatedHeader extends StatelessWidget {
                         fit: BoxFit.cover,
                         placeholder: (_, __) => InitialsAvatar(
                           initials: profile?.initials ?? 'N',
+                          size: 100,
                         ),
-                        errorWidget: (_, __, ___) =>
-                            InitialsAvatar(initials: profile?.initials ?? 'N'),
+                        errorWidget: (_, __, ___) => InitialsAvatar(
+                          initials: profile?.initials ?? 'N',
+                          size: 100,
+                        ),
                       )
-                    : InitialsAvatar(initials: profile?.initials ?? 'N'),
+                    : InitialsAvatar(
+                        initials: profile?.initials ?? 'N',
+                        size: 100,
+                      ),
               ),
             ),
             const SizedBox(width: 12),
