@@ -5,16 +5,16 @@ import 'package:news_app/features/Headlines/widgets/category_cat_meta.dart';
 import '../../../core/theme/app_colors.dart';
 
 class GlassCategoryCard extends StatelessWidget {
+  final CatMeta meta;
+  final bool isActive;
+  final VoidCallback onTap;
+
   const GlassCategoryCard({
     super.key,
     required this.meta,
     required this.isActive,
     required this.onTap,
   });
-
-  final CatMeta meta;
-  final bool isActive;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +31,14 @@ class GlassCategoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
             gradient: isActive
                 ? LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                    begin: AlignmentDirectional.topStart,
+                    end: AlignmentDirectional.bottomEnd,
                     colors: [
                       meta.color,
                       meta.color.withValues(alpha: 0.75),
                     ],
                   )
                 : null,
-            // color: isActive ? null : Colors.white,
             color: isActive ? null : surfaceColor,
             border: Border.all(
               color: isActive

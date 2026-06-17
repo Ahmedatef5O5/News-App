@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/article_model.dart';
 import '../theme/app_colors.dart';
 
 class ShareButton extends StatelessWidget {
+  final Article article;
   const ShareButton({
     super.key,
     required this.article,
   });
 
-  final Article article;
-
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return GestureDetector(
       onTap: () async {
         final text = '${article.title}\n\n${article.url ?? ""}';
@@ -27,10 +28,9 @@ class ShareButton extends StatelessWidget {
             ..clearSnackBars()
             ..showSnackBar(
               SnackBar(
-                content: const Text(
-                  'Link copied to clipboard',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
+                content: Text(
+                  l10n.copyLink,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w500,
                   ),
                 ),

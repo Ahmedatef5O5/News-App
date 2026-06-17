@@ -35,7 +35,6 @@ class CategoryChips extends StatelessWidget {
                 selected: isSelected,
                 onSelected: (_) => onSelected(cat),
                 labelStyle: TextStyle(
-                  fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: isSelected ? colors.onPrimary : colors.onSurface,

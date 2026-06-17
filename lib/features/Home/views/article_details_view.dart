@@ -367,7 +367,7 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
                               child: OutlinedButton.icon(
                                 onPressed: _share,
                                 icon: const Icon(Icons.share_outlined),
-                                label: Text(l10n.linkCopied),
+                                label: Text(l10n.copyLink),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: colors.onSurface,
                                   side: BorderSide(color: colors.outline),

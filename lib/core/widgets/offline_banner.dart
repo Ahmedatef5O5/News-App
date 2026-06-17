@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 class OfflineBanner extends StatefulWidget {
   const OfflineBanner({
     super.key,
     required this.visible,
-    this.message = 'You\'re offline — showing cached news',
+    this.message,
   });
 
   final bool visible;
-  final String message;
+  final String? message;
 
   @override
   State<OfflineBanner> createState() => _OfflineBannerState();
@@ -54,6 +55,7 @@ class _OfflineBannerState extends State<OfflineBanner>
 
   @override
   Widget build(BuildContext context) {
+    final text = widget.message ?? context.l10n.offlineShowingCached;
     return SizeTransition(
       sizeFactor: _heightFactor,
       axisAlignment: -1,
@@ -80,9 +82,8 @@ class _OfflineBannerState extends State<OfflineBanner>
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  widget.message,
+                  text,
                   style: TextStyle(
-                    fontFamily: 'Poppins',
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
                     color: AppColors.primary.withValues(alpha: 0.9),

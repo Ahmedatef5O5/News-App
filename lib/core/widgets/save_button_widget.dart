@@ -3,9 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/features/favorites/cubit/favorite_cubit.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../features/favorites/cubit/favorite_state.dart';
 
 class SaveButton extends StatelessWidget {
+  final Article article;
+  final double size;
+  final bool isGlass;
+  final Color? iconColor;
+
   const SaveButton({
     super.key,
     required this.article,
@@ -13,11 +19,6 @@ class SaveButton extends StatelessWidget {
     this.isGlass = false,
     this.iconColor,
   });
-
-  final Article article;
-  final double size;
-  final bool isGlass;
-  final Color? iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +31,7 @@ class SaveButton extends StatelessWidget {
       builder: (context, state) {
         final isSaved = state.isSaved(article);
         final isDark = Theme.of(context).brightness == Brightness.dark;
+        final l10n = context.l10n;
 
         return GestureDetector(
           onTap: () {
@@ -39,9 +41,8 @@ class SaveButton extends StatelessWidget {
               ..showSnackBar(
                 SnackBar(
                   content: Text(
-                    isSaved ? 'Removed from saved' : 'Article saved',
+                    isSaved ? l10n.articleRemoved : l10n.articleSaved,
                     style: const TextStyle(
-                      fontFamily: 'Poppins',
                       fontWeight: FontWeight.w500,
                     ),
                   ),

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
 class GlowOrb extends StatelessWidget {
+  final Alignment alignment;
+  final Color color;
+  final double opacity;
+  final double size;
+
   const GlowOrb({
     super.key,
     required this.alignment,
@@ -8,11 +13,6 @@ class GlowOrb extends StatelessWidget {
     required this.opacity,
     required this.size,
   });
-
-  final Alignment alignment;
-  final Color color;
-  final double opacity;
-  final double size;
 
   @override
   Widget build(BuildContext context) {

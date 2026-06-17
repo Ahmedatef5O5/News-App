@@ -4,6 +4,14 @@ import 'package:news_app/features/splash/widgets/tag_line.dart';
 import 'package:news_app/features/splash/widgets/wordmark_with_sweep.dart';
 
 class SplashLogo extends StatelessWidget {
+  final double iconScale;
+  final double iconOpacity;
+  final double wordmarkOffset;
+  final double wordmarkOpacity;
+  final double taglineOpacity;
+  final double taglineOffset;
+  final double sweepProgress;
+
   const SplashLogo({
     super.key,
     required this.iconScale,
@@ -14,14 +22,6 @@ class SplashLogo extends StatelessWidget {
     required this.taglineOffset,
     required this.sweepProgress,
   });
-
-  final double iconScale;
-  final double iconOpacity;
-  final double wordmarkOffset;
-  final double wordmarkOpacity;
-  final double taglineOpacity;
-  final double taglineOffset;
-  final double sweepProgress;
 
   @override
   Widget build(BuildContext context) {
