@@ -80,14 +80,27 @@ class _InAppBrowserViewState extends State<InAppBrowserView> {
               if (raw.isNotEmpty) setState(() => _currentTitle = raw);
             });
           },
-          onWebResourceError: (_) {
+          onWebResourceError: (error) {
+            if (error.isForMainFrame != true) return;
+
             if (!mounted) return;
-            setState(() {
-              _isLoading = false;
-              _hasError = true;
-            });
+
+            if (_currentUrl.isEmpty) {
+              setState(() {
+                _isLoading = false;
+                _hasError = true;
+              });
+            }
           },
-          onNavigationRequest: (request) => NavigationDecision.navigate,
+          onNavigationRequest: (request) {
+            final uri = Uri.tryParse(request.url);
+
+            if (uri != null &&
+                (uri.scheme == 'http' || uri.scheme == 'https')) {
+              return NavigationDecision.navigate;
+            }
+            return NavigationDecision.prevent;
+          },
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
