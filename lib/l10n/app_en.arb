@@ -171,12 +171,12 @@
     "description": "Tooltip on the browser copy-link button"
   },
 
-  "back": "Back",
+  "back": "Prev",
   "@back": {
     "description": "Tooltip on the browser back-navigation button"
   },
 
-  "forward": "Forward",
+  "forward": "Next",
   "@forward": {
     "description": "Tooltip on the browser forward-navigation button"
   },
@@ -568,6 +568,15 @@
   "@errorTooManyAttempts": {
     "description": "Auth exception: rate limited"
   },
+
+"authErrAgreeToTerms": "Please agree to the Terms & Privacy Policy.",
+
+"authErrPasswordResetSent": "A password reset link has been sent to {email}.",
+"@authErrPasswordResetSent": {
+  "placeholders": { "email": { "type": "String" } }
+},
+
+"authErrUnknown": "Something went wrong. Please try again.",
 
   "onboardingSkip": "Skip for now",
   "@onboardingSkip": {

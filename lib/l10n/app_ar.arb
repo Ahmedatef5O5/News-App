@@ -83,9 +83,9 @@
 
   "copyLink": "نسخ الرابط",
 
-  "back": "رجوع",
+  "back": "السابق",
 
-  "forward": "للأمام",
+  "forward": "التالي",
 
   "refresh": "تحديث",
 
@@ -245,6 +245,15 @@
   "errorSessionExpired": "انتهت صلاحية جلستك. يرجى تسجيل الدخول مجدداً.",
 
   "errorTooManyAttempts": "محاولات كثيرة جداً. يرجى الانتظار لحظة والمحاولة مجدداً.",
+
+  "authErrAgreeToTerms": "يرجى الموافقة على الشروط وسياسة الخصوصية.",
+
+  "authErrPasswordResetSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى {email}.",
+  "@authErrPasswordResetSent": {
+  "placeholders": { "email": { "type": "String" } }
+  },
+  
+  "authErrUnknown": "حدث خطأ ما. يرجى المحاولة مجدداً.",
 
   "onboardingSkip": "تخطي الآن",
 
