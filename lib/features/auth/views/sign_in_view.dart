@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
+import 'package:news_app/core/widgets/app_snack_bar.dart';
+import 'package:news_app/features/auth/cubit/auth_error_x.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -63,15 +65,8 @@ class _SignInViewState extends State<SignInView> {
           }
         }
         if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-          );
+          AppSnackBar.show(context,
+              state.code.localizedMessage(context, extra: state.extra));
         }
       },
       child: GlassAuthScaffold(
