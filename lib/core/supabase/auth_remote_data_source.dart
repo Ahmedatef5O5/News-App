@@ -158,12 +158,14 @@ class AuthRemoteDataSource {
   }) async {
     try {
       final ext = imageFile.path.split('.').last;
-      final path = '$userId/avatar.$ext';
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      final path = '$userId/avatar_$timestamp.$ext';
 
       await _client.storage.from('avatars').upload(
             path,
             imageFile,
-            fileOptions: const FileOptions(upsert: true),
+            fileOptions: const FileOptions(upsert: false),
           );
 
       final url = _client.storage.from('avatars').getPublicUrl(path);
