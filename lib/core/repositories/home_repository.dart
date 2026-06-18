@@ -4,7 +4,7 @@ import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/network/network_info.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/features/home/services/home_services.dart';
-
+import '../models/news_api_response.dart';
 import '../translation/article_translation_repository.dart';
 
 class PageResult {
@@ -35,7 +35,7 @@ class HomeRepository {
   final NetworkInfo _network;
   final ArticleTranslationRepository _translation;
 
-  // ── Headlines (simple list) ────────────────────────────────────────────────
+  // ── Headlines (simple list) ───────────────────────────────────────────────
 
   Future<List<Article>> getHeadlines({
     String country = 'us',
@@ -63,7 +63,7 @@ class HomeRepository {
   }) async {
     final cacheKey = _headlinesCacheKey(category);
 
-    // Offline — serve cache instantly, skip Dio entirely.
+    // Offline – serve cache instantly, skip Dio entirely.
     final online = await _network.isConnected;
     if (!online) {
       final cached = await _getCachedArticles(cacheKey);
@@ -80,7 +80,7 @@ class HomeRepository {
       throw _offlineNoCache();
     }
 
-    // Online — try cache first (unless force-refresh requested).
+    // Online – try cache first (unless force-refresh requested).
     if (!forceRefresh) {
       final cached = await _getCachedArticles(cacheKey);
       if (cached != null) {
@@ -92,13 +92,23 @@ class HomeRepository {
       }
     }
 
-    // Network call.
     try {
-      final response = await _services.getTopHeadlines(
-        country: country,
-        category: category,
-        pageSize: pageSize,
-      );
+      final NewsApiResponse response;
+
+      if (locale == 'ar') {
+        final arabicQuery = _getArabicQueryForCategory(category);
+        response = await _services.getEverything(
+          q: arabicQuery,
+          pageSize: pageSize,
+        );
+      } else {
+        response = await _services.getTopHeadlines(
+          country: country,
+          category: category,
+          pageSize: pageSize,
+        );
+      }
+
       await _cacheArticles(cacheKey, response.articles);
       final localized = await _translation.localizeArticles(
         response.articles,
@@ -107,7 +117,7 @@ class HomeRepository {
       return PageResult(
           articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
-      // Last-resort fallback — server error despite being online.
+      // Last-resort fallback – server error despite being online.
       final cached = await _getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -123,7 +133,7 @@ class HomeRepository {
     }
   }
 
-  // ── Recommended (paginated) ────────────────────────────────────────────────
+  // ── Recommended (paginated) ───────────────────────────────────────────────
 
   Future<PageResult> getRecommendedPage({
     String country = 'us',
@@ -133,7 +143,7 @@ class HomeRepository {
   }) async {
     final cacheKey = '${AppConstants.recommendedPageKeyPrefix}$page';
 
-    // ① Offline — serve cache instantly.
+    // ① Offline – serve cache instantly.
     final online = await _network.isConnected;
     if (!online) {
       final cached = await _getCachedPage(cacheKey, isOffline: true);
@@ -162,11 +172,22 @@ class HomeRepository {
             articles: localized, totalResults: cached.totalResults);
       }
     }
+
     try {
-      final response = await _services.getRecommended(
-        country: country,
-        page: page,
-      );
+      final NewsApiResponse response;
+
+      if (locale == 'ar') {
+        response = await _services.getEverything(
+          q: _getArabicQueryForCategory(null),
+          pageSize: AppConstants.recommendedPageSize,
+        );
+      } else {
+        response = await _services.getRecommended(
+          country: country,
+          page: page,
+        );
+      }
+
       final result = PageResult(
         articles: response.articles,
         totalResults: response.totalResults,
@@ -197,7 +218,7 @@ class HomeRepository {
     }
   }
 
-  // ── Cache management ───────────────────────────────────────────────────────
+  // ── Cache management ──────────────────────────────────────────────────────
 
   Future<void> clearRecommendedCache() async {
     await Future.wait(List.generate(
@@ -207,7 +228,28 @@ class HomeRepository {
             )));
   }
 
-  // ── Private helpers ────────────────────────────────────────────────────────
+  String _getArabicQueryForCategory(String? category) {
+    switch (category) {
+      case 'business':
+        return 'اقتصاد OR أعمال OR بورصة OR استثمار';
+      case 'entertainment':
+        return 'ترفيه OR فن OR سينما OR موسيقى';
+      case 'health':
+        return 'صحة OR طب OR مرض OR علاج';
+      case 'science':
+        return 'علوم OR اكتشاف OR فضاء OR تكنولوجيا';
+      case 'sports':
+        return 'رياضة OR كرة قدم OR بطولة OR ملعب';
+      case 'technology':
+        return 'تقنية OR ذكاء اصطناعي OR إنترنت OR ابتكار';
+      case 'general':
+      case null:
+      default:
+        return 'أخبار عاجلة OR عاجل OR أحداث';
+    }
+  }
+
+  // ── Private helpers ───────────────────────────────────────────────────────
 
   Future<void> _cacheArticles(String key, List<Article> articles) =>
       _db.put(key, articles);

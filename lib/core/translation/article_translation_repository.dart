@@ -1,6 +1,8 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+import 'package:news_app/core/models/article_model.dart';
+import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/core/translation/translation_service.dart';
-import '../models/article_model.dart';
-import '../services/local_database_hive.dart';
 
 class ArticleTranslationRepository {
   ArticleTranslationRepository({
@@ -31,7 +33,11 @@ class ArticleTranslationRepository {
   }
 
   Future<Article> _translateArticle(Article article) async {
-    final id = article.uniqueId;
+    if (_isArabic(article.title ?? article.description ?? '')) {
+      return article;
+    }
+
+    final id = _safeKey(article.uniqueId);
     final cacheKey = '$_prefix$id';
 
     final cached = await _fromCache(cacheKey);
@@ -63,6 +69,18 @@ class ArticleTranslationRepository {
     return result;
   }
 
+  String _safeKey(String raw) {
+    final bytes = utf8.encode(raw);
+    return md5.convert(bytes).toString();
+  }
+
+  bool _isArabic(String text) {
+    if (text.trim().isEmpty) return false;
+    final arabicChars =
+        text.codeUnits.where((c) => c >= 0x0600 && c <= 0x06FF).length;
+    return arabicChars / text.length > 0.30;
+  }
+
   Future<Article?> _fromCache(String key) async {
     final raw = await _db.get<Map>(key);
     if (raw == null) return null;
@@ -77,8 +95,5 @@ class ArticleTranslationRepository {
     await _db.put(key, article.toMap());
   }
 
-  /// امسح الـ cache لما المستخدم يرجع للإنجليزي (اختياري)
-  Future<void> clearCache() async {
-    // Hive مش بيوفر list keys بسهولة، الـ cache هيتمسح لما يتجدد الأخبار
-  }
+  Future<void> clearCache() async {}
 }

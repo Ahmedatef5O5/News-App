@@ -40,4 +40,24 @@ class HomeServices {
     );
     return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
+
+  Future<NewsApiResponse> getEverything({
+    required String q,
+    String language = 'ar',
+    String sortBy = 'publishedAt',
+    int page = 1,
+    int pageSize = AppConstants.headlinesPageSize,
+  }) async {
+    final response = await _dio.get(
+      AppConstants.everything,
+      queryParameters: {
+        'q': q,
+        'language': language,
+        'sortBy': sortBy,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
+  }
 }
