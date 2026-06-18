@@ -1,98 +1,102 @@
-sealed class AuthUserException implements Exception {
-  const AuthUserException(this.message);
-  final String message;
+enum AuthErrorCode {
+  invalidCredentials,
+  emailAlreadyInUse,
+  weakPassword,
+  invalidEmail,
+  emailNotConfirmed,
+  network,
+  sessionExpired,
+  rateLimit,
+  agreeToTerms,
+  passwordResetSent,
+  unknown,
+}
 
-  @override
-  String toString() => '$runtimeType: $message';
+sealed class AuthUserException implements Exception {
+  const AuthUserException(this.code, [this.extra]);
+
+  final AuthErrorCode code;
+  final String? extra;
 }
 
 /// Wrong email / password combination.
 final class InvalidCredentialsException extends AuthUserException {
-  const InvalidCredentialsException()
-      : super('Invalid email or password. Please try again.');
+  const InvalidCredentialsException() : super(AuthErrorCode.invalidCredentials);
 }
 
 /// Account already exists with that email.
 final class EmailAlreadyInUseException extends AuthUserException {
-  const EmailAlreadyInUseException()
-      : super('An account with this email already exists.');
+  const EmailAlreadyInUseException() : super(AuthErrorCode.emailAlreadyInUse);
 }
 
 /// Weak password rejected by Supabase.
 final class WeakPasswordException extends AuthUserException {
-  const WeakPasswordException()
-      : super('Password must be at least 6 characters.');
+  const WeakPasswordException() : super(AuthErrorCode.weakPassword);
 }
 
 /// Email format is not valid.
 final class InvalidEmailException extends AuthUserException {
-  const InvalidEmailException() : super('Please enter a valid email address.');
+  const InvalidEmailException() : super(AuthErrorCode.invalidEmail);
 }
 
 /// No network / timeout.
 final class NetworkException extends AuthUserException {
-  const NetworkException()
-      : super('Connection failed. Check your internet and try again.');
+  const NetworkException() : super(AuthErrorCode.network);
 }
 
 /// User cancelled or session expired.
 final class SessionExpiredException extends AuthUserException {
-  const SessionExpiredException()
-      : super('Your session has expired. Please sign in again.');
+  const SessionExpiredException() : super(AuthErrorCode.sessionExpired);
 }
 
 /// Rate-limited by Supabase.
 final class RateLimitException extends AuthUserException {
-  const RateLimitException()
-      : super('Too many attempts. Please wait a moment and try again.');
+  const RateLimitException() : super(AuthErrorCode.rateLimit);
 }
 
 /// Reset email sent – not really an error but used to signal success
 /// through the same result channel when needed.
 final class PasswordResetSentException extends AuthUserException {
   const PasswordResetSentException(String email)
-      : super('A password reset link has been sent to $email.');
+      : super(AuthErrorCode.passwordResetSent, email);
 }
 
 /// Anything that doesn't fit the above categories.
 final class UnknownAuthException extends AuthUserException {
-  const UnknownAuthException(super.message);
+  const UnknownAuthException([String? message])
+      : super(AuthErrorCode.unknown, message);
 }
 
-/// Helper to map raw Supabase / network error strings to typed exceptions.
 AuthUserException mapSupabaseError(Object error) {
   final msg = error.toString().toLowerCase();
 
-  if (msg.contains('invalid login credentials') ||
-      msg.contains('invalid password') ||
-      msg.contains('user not found')) {
+  if (msg.contains('invalid login credentials')) {
     return const InvalidCredentialsException();
   }
-  if (msg.contains('email already registered') ||
-      msg.contains('user already registered') ||
-      msg.contains('already in use')) {
+
+  if (msg.contains('already registered')) {
     return const EmailAlreadyInUseException();
   }
-  if (msg.contains('password should be at least') ||
-      msg.contains('weak password')) {
+
+  if (msg.contains('weak password')) {
     return const WeakPasswordException();
   }
-  if (msg.contains('invalid email') || msg.contains('not a valid email')) {
+
+  if (msg.contains('invalid email')) {
     return const InvalidEmailException();
   }
-  if (msg.contains('network') ||
-      msg.contains('socket') ||
-      msg.contains('timeout') ||
-      msg.contains('connection')) {
+
+  if (msg.contains('network') || msg.contains('timeout')) {
     return const NetworkException();
   }
-  if (msg.contains('session_not_found') ||
-      msg.contains('jwt expired') ||
-      msg.contains('session expired')) {
+
+  if (msg.contains('session expired')) {
     return const SessionExpiredException();
   }
-  if (msg.contains('rate limit') || msg.contains('too many requests')) {
+
+  if (msg.contains('rate limit')) {
     return const RateLimitException();
   }
-  return UnknownAuthException(error.toString());
+
+  return UnknownAuthException(msg);
 }
