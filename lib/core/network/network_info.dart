@@ -7,26 +7,21 @@ abstract class NetworkInfo {
 
 class NetworkInfoImpl implements NetworkInfo {
   NetworkInfoImpl({
-    Duration timeout = const Duration(seconds: 2),
+    Duration timeout = const Duration(seconds: 4),
     List<String>? hosts,
   })  : _timeout = timeout,
         _hosts = hosts ??
             const [
               'google.com',
               'cloudflare.com',
-              'bing.com',
+              'dns.google',
             ];
 
   final Duration _timeout;
   final List<String> _hosts;
 
-  Future<bool>? _pending;
-
   @override
-  Future<bool> get isConnected {
-    _pending ??= _check().whenComplete(() => _pending = null);
-    return _pending!;
-  }
+  Future<bool> get isConnected => _check();
 
   Future<bool> _check() async {
     final completer = Completer<bool>();

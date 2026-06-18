@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app/core/locale/locale_cubit.dart';
@@ -45,8 +46,11 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  sl.registerLazySingleton<Connectivity>(() => Connectivity());
+
   sl.registerLazySingleton<ConnectivityCubit>(
-    () => ConnectivityCubit(sl<NetworkInfo>()),
+    () =>
+        ConnectivityCubit(sl<NetworkInfo>(), connectivity: sl<Connectivity>()),
   );
 
   sl.registerLazySingleton<AuthListenerCubit>(() => AuthListenerCubit());
