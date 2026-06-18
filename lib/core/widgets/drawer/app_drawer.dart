@@ -193,7 +193,7 @@ class AppDrawer extends StatelessWidget {
                       padding:
                           const EdgeInsetsDirectional.fromSTEB(16, 4, 16, 12),
                       child: Text(
-                        '${AppConstants.appName} ${context.l10n.appVersion}',
+                        '${context.l10n.appName} ${context.l10n.appVersion}',
                         style: txtTheme.labelSmall
                             ?.copyWith(color: AppColors.ink300),
                       ),

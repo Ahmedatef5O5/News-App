@@ -5,7 +5,7 @@
 
   "@@author": "NewsWave Team",
 
-  "appName": "نيوز ويف",
+  "appName": "موجة الأخبار",
 
   "appVersion": "الإصدار 1.0.0",
 
@@ -111,7 +111,7 @@
 
   "signOutConfirmContent": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
 
-  "newsWaveUser": "مستخدم نيوز ويف",
+  "newsWaveUser": "مستخدم موجة الأخبار",
 
   "browsingAsGuest": "تصفح كضيف",
 
