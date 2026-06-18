@@ -37,8 +37,6 @@ class AuthRemoteDataSource {
         );
       }
       return UserModel.fromSupabaseUser(user);
-    } on AuthException catch (_) {
-      rethrow;
     } catch (e) {
       throw mapSupabaseError(e);
     }
@@ -56,8 +54,6 @@ class AuthRemoteDataSource {
       final user = response.user;
       if (user == null) throw const InvalidCredentialsException();
       return UserModel.fromSupabaseUser(user);
-    } on AuthException catch (_) {
-      rethrow;
     } catch (e) {
       throw mapSupabaseError(e);
     }
@@ -87,8 +83,6 @@ class AuthRemoteDataSource {
         email.trim(),
         redirectTo: redirectTo,
       );
-    } on AuthException catch (_) {
-      rethrow;
     } catch (e) {
       throw mapSupabaseError(e);
     }

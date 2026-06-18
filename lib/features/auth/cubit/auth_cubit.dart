@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/features/auth/cubit/auth_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../core/supabase/auth_exception.dart';
 import '../../profile/model/profile_model.dart';
 import '../data/auth_repository.dart';
 import '../data/auth_repository_impl.dart';
@@ -77,10 +77,8 @@ class AuthCubit extends Cubit<AuthUserState> {
       );
       // Profile row is created by the Supabase trigger; fetch it.
       await _loadProfileAndEmit(user);
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
-    } catch (e) {
-      emit(AuthError(e.toString()));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -98,10 +96,8 @@ class AuthCubit extends Cubit<AuthUserState> {
 
       final user = await _repo.signIn(email: email, password: password);
       await _loadProfileAndEmit(user);
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
-    } catch (e) {
-      emit(AuthError(e.toString()));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -115,8 +111,8 @@ class AuthCubit extends Cubit<AuthUserState> {
 
       await _repo.signOut();
       emit(const AuthUnauthenticated());
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -127,8 +123,8 @@ class AuthCubit extends Cubit<AuthUserState> {
     try {
       await _repo.sendPasswordReset(email);
       emit(AuthPasswordResetSent(email));
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -143,8 +139,8 @@ class AuthCubit extends Cubit<AuthUserState> {
       } else {
         emit(const AuthUnauthenticated());
       }
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -160,8 +156,8 @@ class AuthCubit extends Cubit<AuthUserState> {
         profile.copyWith(isOnboarded: true),
       );
       emit(AuthAuthenticated(user: current.user, profile: saved));
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -178,8 +174,8 @@ class AuthCubit extends Cubit<AuthUserState> {
       final updatedProfile =
           await _repo.upsertProfile(current.profile.copyWith(avatarUrl: url));
       emit(AuthAuthenticated(user: current.user, profile: updatedProfile));
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 
@@ -192,8 +188,8 @@ class AuthCubit extends Cubit<AuthUserState> {
     try {
       final saved = await _repo.upsertProfile(updatedProfile);
       emit(AuthAuthenticated(user: current.user, profile: saved));
-    } on AuthException catch (e) {
-      emit(AuthError(e.message));
+    } on AuthUserException catch (e) {
+      emit(AuthError(e.code, extra: e.extra));
     }
   }
 

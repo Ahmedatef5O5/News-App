@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../core/supabase/auth_exception.dart';
 import '../../profile/model/profile_model.dart';
 import '../model/user_model.dart';
 
@@ -41,11 +42,13 @@ final class AuthUnauthenticated extends AuthUserState {
 }
 
 final class AuthError extends AuthUserState {
-  const AuthError(this.message);
-  final String message;
+  const AuthError(this.code, {this.extra});
+
+  final AuthErrorCode code;
+  final String? extra;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [code, extra];
 }
 
 final class AuthPasswordResetSent extends AuthUserState {
