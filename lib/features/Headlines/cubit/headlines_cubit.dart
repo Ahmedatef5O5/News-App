@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/models/article_model.dart';
+import '../../../core/locale/locale_cubit.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
 
@@ -13,15 +15,31 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
   HeadlinesCubit({
     required this.categoryCubit,
     required HomeRepository repository,
+    required LocaleCubit localeCubit,
   })  : _repo = repository,
+        _locale = localeCubit,
         super(const HeadlinesState()) {
     _syncCategory(categoryCubit.state);
     _categorySubscription = categoryCubit.stream.listen(_syncCategory);
+    _localeSubscription = localeCubit.stream.listen(_onLocaleChanged);
   }
 
   final HomeRepository _repo;
+  final LocaleCubit _locale;
   final CategoryCubit categoryCubit;
   late final StreamSubscription<NewsCategory> _categorySubscription;
+  late final StreamSubscription<Locale> _localeSubscription;
+
+  void _onLocaleChanged(Locale locale) {
+    if (isClosed) return;
+    _fetchAndShowPage(
+      category: state.selectedCategory == NewsCategory.general
+          ? null
+          : state.selectedCategory.value,
+      page: 1,
+      forceRefresh: false,
+    );
+  }
 
   // ── Category sync ──────────────────────────────────────────────────────────
 
@@ -79,10 +97,10 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
     ));
     try {
       final result = await _repo.getHeadlinesWithMeta(
-        category: category,
-        pageSize: AppConstants.maxApiResults,
-        forceRefresh: forceRefresh,
-      );
+          category: category,
+          pageSize: AppConstants.maxApiResults,
+          forceRefresh: forceRefresh,
+          locale: _locale.state.languageCode);
       if (isClosed) return;
       _showPage(result.articles, page, fromCache: result.fromCache);
     } catch (e) {
@@ -124,6 +142,7 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
   @override
   Future<void> close() {
     _categorySubscription.cancel();
+    _localeSubscription.cancel();
     return super.close();
   }
 }

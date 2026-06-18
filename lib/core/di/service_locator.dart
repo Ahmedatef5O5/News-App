@@ -2,6 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app/core/locale/locale_cubit.dart';
+import 'package:news_app/core/translation/article_translation_repository.dart';
+import 'package:news_app/core/translation/translation_service.dart';
 import 'package:news_app/features/auth/cubit/auth_listener_cubit.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:news_app/core/constants/app_constants.dart';
@@ -79,11 +81,23 @@ Future<void> setupServiceLocator() async {
       services: sl<HomeServices>(),
       db: sl<LocalDatabaseHive>(),
       networkInfo: sl<NetworkInfo>(),
+      translationRepo: sl<ArticleTranslationRepository>(),
     ),
   );
 
   sl.registerLazySingleton<HomeServices>(
     () => HomeServices(dio: sl<Dio>()),
+  );
+
+  sl.registerLazySingleton<TranslationService>(
+    () => TranslationService(),
+  );
+
+  sl.registerLazySingleton<ArticleTranslationRepository>(
+    () => ArticleTranslationRepository(
+      translationService: sl<TranslationService>(),
+      db: sl<LocalDatabaseHive>(),
+    ),
   );
 
   sl.registerLazySingleton<FavoritesService>(
@@ -118,6 +132,7 @@ Future<void> setupServiceLocator() async {
     () => HomeCubit(
       categoryCubit: sl<CategoryCubit>(),
       repository: sl<HomeRepository>(),
+      localeCubit: sl<LocaleCubit>(),
     ),
   );
 
@@ -125,6 +140,7 @@ Future<void> setupServiceLocator() async {
     () => HeadlinesCubit(
       categoryCubit: sl<CategoryCubit>(),
       repository: sl<HomeRepository>(),
+      localeCubit: sl<LocaleCubit>(),
     ),
   );
 

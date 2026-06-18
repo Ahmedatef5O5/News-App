@@ -6,6 +6,7 @@ import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/features/home/cubit/home_cubit.dart';
 import 'package:news_app/features/home/widgets/headline_carousel_card.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/models/article_detail_args.dart';
 
 class HomeCarouselSection extends StatefulWidget {
@@ -71,7 +72,7 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
       return SizedBox(
         height: 278,
         child: ErrorState(
-          message: widget.error ?? 'Failed to load headlines',
+          message: widget.error ?? context.l10n.failedToLoad,
           onRetry: widget.onRetry,
         ),
       );

@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/models/article_model.dart';
+import '../../../core/locale/locale_cubit.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../../../core/repositories/home_repository.dart';
 part 'home_state.dart';
@@ -12,16 +14,28 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit({
     required this.categoryCubit,
     required HomeRepository repository,
+    required LocaleCubit localeCubit,
   })  : _repo = repository,
+        _locale = localeCubit,
         super(const HomeState()) {
     _syncCategory(categoryCubit.state);
     _categorySubscription = categoryCubit.stream.listen(_syncCategory);
+    _localeSubscription = localeCubit.stream.listen(_onLocaleChanged);
   }
 
   final HomeRepository _repo;
+  final LocaleCubit _locale;
   final CategoryCubit categoryCubit;
   late final StreamSubscription<NewsCategory> _categorySubscription;
+  late final StreamSubscription<Locale> _localeSubscription;
   bool _initialized = false;
+
+  void _onLocaleChanged(Locale locale) {
+    if (isClosed) return;
+    fetchHeadlines(forceRefresh: false);
+    _loadPage(state.currentPage,
+        mode: PageLoadStatus.loadingInitial, forceRefresh: false);
+  }
 
   // ── Category sync ──────────────────────────────────────────────────────────
 
@@ -77,6 +91,7 @@ class HomeCubit extends Cubit<HomeState> {
       final articles = await _repo.getHeadlines(
         category: category,
         forceRefresh: forceRefresh,
+        locale: _locale.languageCode,
       );
       if (isClosed) return;
       emit(state.copyWith(
@@ -105,6 +120,7 @@ class HomeCubit extends Cubit<HomeState> {
       final result = await _repo.getRecommendedPage(
         page: page,
         forceRefresh: forceRefresh,
+        locale: _locale.languageCode,
       );
       if (isClosed) return;
       emit(state.copyWith(
@@ -139,6 +155,7 @@ class HomeCubit extends Cubit<HomeState> {
   @override
   Future<void> close() {
     _categorySubscription.cancel();
+    _localeSubscription.cancel();
     return super.close();
   }
 }

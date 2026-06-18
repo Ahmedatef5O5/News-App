@@ -5,6 +5,8 @@ import 'package:news_app/core/network/network_info.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/features/home/services/home_services.dart';
 
+import '../translation/article_translation_repository.dart';
+
 class PageResult {
   const PageResult({
     required this.articles,
@@ -22,13 +24,16 @@ class HomeRepository {
     required HomeServices services,
     required LocalDatabaseHive db,
     required NetworkInfo networkInfo,
+    required ArticleTranslationRepository translationRepo,
   })  : _services = services,
         _db = db,
-        _network = networkInfo;
+        _network = networkInfo,
+        _translation = translationRepo;
 
   final HomeServices _services;
   final LocalDatabaseHive _db;
   final NetworkInfo _network;
+  final ArticleTranslationRepository _translation;
 
   // ── Headlines (simple list) ────────────────────────────────────────────────
 
@@ -37,12 +42,14 @@ class HomeRepository {
     String? category,
     int pageSize = AppConstants.headlinesPageSize,
     bool forceRefresh = false,
+    String locale = 'en',
   }) async {
     final result = await getHeadlinesWithMeta(
       country: country,
       category: category,
       pageSize: pageSize,
       forceRefresh: forceRefresh,
+      locale: locale,
     );
     return result.articles;
   }
@@ -52,6 +59,7 @@ class HomeRepository {
     String? category,
     int pageSize = AppConstants.headlinesPageSize,
     bool forceRefresh = false,
+    String locale = 'en',
   }) async {
     final cacheKey = _headlinesCacheKey(category);
 
@@ -60,11 +68,14 @@ class HomeRepository {
     if (!online) {
       final cached = await _getCachedArticles(cacheKey);
       if (cached != null) {
-        return PageResult(
-          articles: cached,
-          totalResults: cached.length,
-          fromCache: true,
+        final localized = await _translation.localizeArticles(
+          cached,
+          locale: locale,
         );
+        return PageResult(
+            articles: localized,
+            totalResults: localized.length,
+            fromCache: true);
       }
       throw _offlineNoCache();
     }
@@ -73,10 +84,11 @@ class HomeRepository {
     if (!forceRefresh) {
       final cached = await _getCachedArticles(cacheKey);
       if (cached != null) {
-        return PageResult(
-          articles: cached,
-          totalResults: cached.length,
+        final localized = await _translation.localizeArticles(
+          cached,
+          locale: locale,
         );
+        return PageResult(articles: localized, totalResults: localized.length);
       }
     }
 
@@ -88,19 +100,24 @@ class HomeRepository {
         pageSize: pageSize,
       );
       await _cacheArticles(cacheKey, response.articles);
-      return PageResult(
-        articles: response.articles,
-        totalResults: response.totalResults,
+      final localized = await _translation.localizeArticles(
+        response.articles,
+        locale: locale,
       );
+      return PageResult(
+          articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
       // Last-resort fallback — server error despite being online.
       final cached = await _getCachedArticles(cacheKey);
       if (cached != null) {
-        return PageResult(
-          articles: cached,
-          totalResults: cached.length,
-          fromCache: true,
+        final localized = await _translation.localizeArticles(
+          cached,
+          locale: locale,
         );
+        return PageResult(
+            articles: localized,
+            totalResults: localized.length,
+            fromCache: true);
       }
       throw _mapDioError(e);
     }
@@ -112,6 +129,7 @@ class HomeRepository {
     String country = 'us',
     required int page,
     bool forceRefresh = false,
+    String locale = 'en',
   }) async {
     final cacheKey = '${AppConstants.recommendedPageKeyPrefix}$page';
 
@@ -119,16 +137,31 @@ class HomeRepository {
     final online = await _network.isConnected;
     if (!online) {
       final cached = await _getCachedPage(cacheKey, isOffline: true);
-      if (cached != null) return cached;
+      if (cached != null) {
+        final localized = await _translation.localizeArticles(
+          cached.articles,
+          locale: locale,
+        );
+        return PageResult(
+            articles: localized,
+            totalResults: cached.totalResults,
+            fromCache: true);
+      }
       throw _offlineNoCache();
     }
 
     // Online path.
     if (!forceRefresh) {
       final cached = await _getCachedPage(cacheKey, isOffline: false);
-      if (cached != null) return cached;
+      if (cached != null) {
+        final localized = await _translation.localizeArticles(
+          cached.articles,
+          locale: locale,
+        );
+        return PageResult(
+            articles: localized, totalResults: cached.totalResults);
+      }
     }
-
     try {
       final response = await _services.getRecommended(
         country: country,
@@ -138,11 +171,28 @@ class HomeRepository {
         articles: response.articles,
         totalResults: response.totalResults,
       );
+
       await _cachePage(cacheKey, result);
-      return result;
+
+      final localized = await _translation.localizeArticles(
+        response.articles,
+        locale: locale,
+      );
+
+      return PageResult(
+          articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
       final cached = await _getCachedPage(cacheKey, isOffline: true);
-      if (cached != null) return cached;
+      if (cached != null) {
+        final localized = await _translation.localizeArticles(
+          cached.articles,
+          locale: locale,
+        );
+        return PageResult(
+            articles: localized,
+            totalResults: cached.totalResults,
+            fromCache: true);
+      }
       throw _mapDioError(e);
     }
   }
