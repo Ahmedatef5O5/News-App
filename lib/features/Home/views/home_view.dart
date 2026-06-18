@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/di/service_locator.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
-import 'package:news_app/core/network/connectivity_cubit.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/core/theme/model/theme_model.dart';
@@ -108,13 +107,8 @@ class _HomeContentState extends State<_HomeContent> {
                 const HomeAppBarWidget(),
 
                 // ── Offline banner ────────────────────────────────────────
-                SliverToBoxAdapter(
-                  child: BlocBuilder<ConnectivityCubit, bool>(
-                    builder: (_, isConnected) {
-                      return OfflineBanner(
-                          visible: !isConnected || state.fromCache);
-                    },
-                  ),
+                const SliverToBoxAdapter(
+                  child: OfflineBanner(),
                 ),
 
                 // ── Category filter chips ─────────────────────────────────

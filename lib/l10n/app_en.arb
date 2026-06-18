@@ -129,6 +129,12 @@
     "description": "OfflineBanner message text"
   },
 
+  "backOnline": "Back online",
+  "@backOnline": {
+    "description": "Back online Banner message text"
+  },
+  
+
   "tooManyRequests": "Too many requests. Please wait a moment.",
   "@tooManyRequests": {
     "description": "API rate-limit error message"
