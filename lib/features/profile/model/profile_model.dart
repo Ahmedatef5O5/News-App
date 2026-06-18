@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 
 part 'profile_model.g.dart';
 
@@ -257,6 +259,148 @@ abstract final class CountriesList {
     'Zambia',
     'Zimbabwe',
   ];
+  static const Map<String, String> _arabicNames = {
+    'Afghanistan': 'أفغانستان',
+    'Albania': 'ألبانيا',
+    'Algeria': 'الجزائر',
+    'Andorra': 'أندورا',
+    'Angola': 'أنغولا',
+    'Argentina': 'الأرجنتين',
+    'Armenia': 'أرمينيا',
+    'Australia': 'أستراليا',
+    'Austria': 'النمسا',
+    'Azerbaijan': 'أذربيجان',
+    'Bahrain': 'البحرين',
+    'Bangladesh': 'بنغلاديش',
+    'Belarus': 'بيلاروسيا',
+    'Belgium': 'بلجيكا',
+    'Belize': 'بليز',
+    'Bolivia': 'بوليفيا',
+    'Bosnia and Herzegovina': 'البوسنة والهرسك',
+    'Brazil': 'البرازيل',
+    'Bulgaria': 'بلغاريا',
+    'Cambodia': 'كمبوديا',
+    'Cameroon': 'الكاميرون',
+    'Canada': 'كندا',
+    'Chile': 'تشيلي',
+    'China': 'الصين',
+    'Colombia': 'كولومبيا',
+    'Costa Rica': 'كوستاريكا',
+    'Croatia': 'كرواتيا',
+    'Cuba': 'كوبا',
+    'Cyprus': 'قبرص',
+    'Czech Republic': 'جمهورية التشيك',
+    'Denmark': 'الدنمارك',
+    'Ecuador': 'الإكوادور',
+    'Egypt': 'مصر',
+    'El Salvador': 'السلفادور',
+    'Estonia': 'إستونيا',
+    'Ethiopia': 'إثيوبيا',
+    'Finland': 'فنلندا',
+    'France': 'فرنسا',
+    'Georgia': 'جورجيا',
+    'Germany': 'ألمانيا',
+    'Ghana': 'غانا',
+    'Greece': 'اليونان',
+    'Guatemala': 'غواتيمالا',
+    'Honduras': 'هندوراس',
+    'Hungary': 'المجر',
+    'India': 'الهند',
+    'Indonesia': 'إندونيسيا',
+    'Iran': 'إيران',
+    'Iraq': 'العراق',
+    'Ireland': 'أيرلندا',
+    'Israel': 'إسرائيل',
+    'Italy': 'إيطاليا',
+    'Jamaica': 'جامايكا',
+    'Japan': 'اليابان',
+    'Jordan': 'الأردن',
+    'Kazakhstan': 'كازاخستان',
+    'Kenya': 'كينيا',
+    'Kuwait': 'الكويت',
+    'Latvia': 'لاتفيا',
+    'Lebanon': 'لبنان',
+    'Libya': 'ليبيا',
+    'Lithuania': 'ليتوانيا',
+    'Luxembourg': 'لوكسمبورغ',
+    'Malaysia': 'ماليزيا',
+    'Maldives': 'المالديف',
+    'Mali': 'مالي',
+    'Malta': 'مالطا',
+    'Mexico': 'المكسيك',
+    'Moldova': 'مولدوفا',
+    'Morocco': 'المغرب',
+    'Mozambique': 'موزمبيق',
+    'Myanmar': 'ميانمار',
+    'Nepal': 'نيبال',
+    'Netherlands': 'هولندا',
+    'New Zealand': 'نيوزيلندا',
+    'Nicaragua': 'نيكاراغوا',
+    'Nigeria': 'نيجيريا',
+    'North Korea': 'كوريا الشمالية',
+    'Norway': 'النرويج',
+    'Oman': 'عُمان',
+    'Pakistan': 'باكستان',
+    'Palestine': 'فلسطين',
+    'Panama': 'بنما',
+    'Paraguay': 'باراغواي',
+    'Peru': 'بيرو',
+    'Philippines': 'الفلبين',
+    'Poland': 'بولندا',
+    'Portugal': 'البرتغال',
+    'Qatar': 'قطر',
+    'Romania': 'رومانيا',
+    'Russia': 'روسيا',
+    'Rwanda': 'رواندا',
+    'Saudi Arabia': 'المملكة العربية السعودية',
+    'Senegal': 'السنغال',
+    'Serbia': 'صربيا',
+    'Singapore': 'سنغافورة',
+    'Slovakia': 'سلوفاكيا',
+    'Slovenia': 'سلوفينيا',
+    'Somalia': 'الصومال',
+    'South Africa': 'جنوب أفريقيا',
+    'South Korea': 'كوريا الجنوبية',
+    'Spain': 'إسبانيا',
+    'Sri Lanka': 'سريلانكا',
+    'Sudan': 'السودان',
+    'Sweden': 'السويد',
+    'Switzerland': 'سويسرا',
+    'Syria': 'سوريا',
+    'Taiwan': 'تايوان',
+    'Tanzania': 'تنزانيا',
+    'Thailand': 'تايلاند',
+    'Tunisia': 'تونس',
+    'Turkey': 'تركيا',
+    'Uganda': 'أوغندا',
+    'Ukraine': 'أوكرانيا',
+    'United Arab Emirates': 'الإمارات العربية المتحدة',
+    'United Kingdom': 'المملكة المتحدة',
+    'United States': 'الولايات المتحدة الأمريكية',
+    'Uruguay': 'أوروغواي',
+    'Uzbekistan': 'أوزبكستان',
+    'Venezuela': 'فنزويلا',
+    'Vietnam': 'فيتنام',
+    'Yemen': 'اليمن',
+    'Zambia': 'زامبيا',
+    'Zimbabwe': 'زيمبابوي',
+  };
+
+  /// Returns the display name for a country key in the given locale.
+  static String displayName(String key, {required bool isArabic}) {
+    if (isArabic) return _arabicNames[key] ?? key;
+    return key;
+  }
+
+  /// Returns sorted display names mapped back to their raw keys.
+  static List<MapEntry<String, String>> sortedEntries(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final entries = all
+        .map((key) => MapEntry(key, displayName(key, isArabic: isArabic)))
+        .toList();
+    entries.sort((a, b) => a.value.compareTo(b.value));
+    return entries;
+  }
 }
 
 abstract final class HobbyList {
@@ -282,4 +426,35 @@ abstract final class HobbyList {
     'Meditation',
     'Business & Entrepreneurship',
   ];
+
+  static Map<String, String> localized(BuildContext context) {
+    final l10n = context.l10n;
+    return {
+      'Reading': l10n.hobbyReading,
+      'Writing': l10n.hobbyWriting,
+      'Photography': l10n.hobbyPhotography,
+      'Gaming': l10n.hobbyGaming,
+      'Cooking': l10n.hobbyCooking,
+      'Traveling': l10n.hobbyTraveling,
+      'Fitness & Sports': l10n.hobbyFitness,
+      'Music': l10n.hobbyMusic,
+      'Art & Design': l10n.hobbyArtDesign,
+      'Technology': l10n.hobbyTechnology,
+      'Finance & Investing': l10n.hobbyFinance,
+      'Science': l10n.hobbyScience,
+      'Politics': l10n.hobbyPolitics,
+      'Movies & TV': l10n.hobbyMoviesTV,
+      'Fashion': l10n.hobbyFashion,
+      'Nature & Outdoors': l10n.hobbyNature,
+      'Volunteering': l10n.hobbyVolunteering,
+      'Language Learning': l10n.hobbyLanguageLearning,
+      'Meditation': l10n.hobbyMeditation,
+      'Business & Entrepreneurship': l10n.hobbyBusiness,
+    };
+  }
+
+  /// Returns the localized label for a given raw key.
+  static String localizedLabel(BuildContext context, String rawKey) {
+    return localized(context)[rawKey] ?? rawKey;
+  }
 }

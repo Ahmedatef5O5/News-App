@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:news_app/core/helpers/category_localization_x.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/features/auth/cubit/auth_error_x.dart';
@@ -297,10 +298,10 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       decoration: _dropdownDecoration(
                           context, l10n.fieldCountry, Icons.public_rounded),
                       hint: Text(l10n.hintSelectCountry),
-                      items: CountriesList.all
-                          .map((c) => DropdownMenuItem(
-                                value: c,
-                                child: Text(c,
+                      items: CountriesList.sortedEntries(context)
+                          .map((entry) => DropdownMenuItem(
+                                value: entry.key,
+                                child: Text(entry.value,
                                     style: const TextStyle(fontSize: 13)),
                               ))
                           .toList(),
@@ -334,7 +335,8 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       items: HobbyList.suggestions
                           .map((h) => DropdownMenuItem(
                                 value: h,
-                                child: Text(h,
+                                child: Text(
+                                    HobbyList.localizedLabel(context, h),
                                     style: const TextStyle(fontSize: 13)),
                               ))
                           .toList(),
@@ -372,7 +374,7 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                               ),
                             ),
                             child: Text(
-                              cat.label,
+                              cat.localizedName(context),
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
