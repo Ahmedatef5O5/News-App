@@ -189,6 +189,8 @@
 
   "authWelcomeBack": "مرحباً بعودتك",
 
+  "signInToApp": "سجّل الدخول إلى حسابك بموجة الأخبار",
+
   "authFieldEmail": "البريد الإلكتروني",
 
   "authFieldPassword": "كلمة المرور",
@@ -201,9 +203,13 @@
 
   "authSignIn": "تسجيل الدخول",
 
-  "authSignUp": "إنشاء حساب",
-
+  "authOr": "أو",
+ 
   "authCreateAccount": "إنشاء حساب",
+   
+  "phoneNumberOptional": "رقم الهاتف (اختياري)",
+   
+  "authNoAccount": "ليس لديك حساب؟ ",
 
   "authAlreadyHaveAccount": "لديك حساب بالفعل؟ ",
 
@@ -248,6 +254,25 @@
 
   "authErrAgreeToTerms": "يرجى الموافقة على الشروط وسياسة الخصوصية.",
 
+
+
+  "joinApp": "انضم إلى موجة الأخبار",
+  "joinSubtitle": "تجربة أخبار مخصصة بانتظارك",
+
+
+  "agreePrefix": "أوافق على ",
+  "agreeAnd": " و ",
+  "agreeSuffix": ".",
+  "termsOfService": "شروط الاستخدام",
+  "privacyPolicy": "سياسة الخصوصية",
+
+
+
+
+
+
+  "resetPasswordHint": "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
+
   "authErrPasswordResetSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى {email}.",
   "@authErrPasswordResetSent": {
   "placeholders": { "email": { "type": "String" } }
@@ -264,6 +289,40 @@
   "onboardingHobbySubtitle": "اختر هوايتك أو اهتمامك المفضل.",
 
   "onboardingSelectCountryHint": "اختر دولتك",
+
+"onboardingTellUsTitle": "👋 أخبرنا عن نفسك",
+"onboardingPersonaliseSubtitle": "يساعدنا ذلك في تخصيص خلاصتك الإخبارية.",
+"onboardingPickTopicsTitle": "📰 اختر مواضيعك الإخبارية",
+"onboardingPickTopicsSubtitle": "اختر كل ما يثير اهتمامك (يمكنك تغيير ذلك لاحقاً).",
+"onboardingWhatAreYouIntoTitle": "🎯 ما الذي يثير اهتمامك؟",
+"fieldRequired": "{field} مطلوب",
+"@fieldRequired": {
+  "placeholders": {
+    "field": { "type": "String" }
+  }
+},
+
+"hobbyReading": "القراءة",
+"hobbyWriting": "الكتابة",
+"hobbyPhotography": "التصوير",
+"hobbyGaming": "الألعاب الإلكترونية",
+"hobbyCooking": "الطبخ",
+"hobbyTraveling": "السفر",
+"hobbyFitness": "اللياقة والرياضة",
+"hobbyMusic": "الموسيقى",
+"hobbyArtDesign": "الفن والتصميم",
+"hobbyTechnology": "التكنولوجيا",
+"hobbyFinance": "المال والاستثمار",
+"hobbyScience": "العلوم",
+"hobbyPolitics": "السياسة",
+"hobbyMoviesTV": "الأفلام والمسلسلات",
+"hobbyFashion": "الموضة",
+"hobbyNature": "الطبيعة والهواء الطلق",
+"hobbyVolunteering": "التطوع",
+"hobbyLanguageLearning": "تعلم اللغات",
+"hobbyMeditation": "التأمل",
+"hobbyBusiness": "الأعمال وريادة الأعمال",
+
 
   "categoryGeneral": "عام",
 

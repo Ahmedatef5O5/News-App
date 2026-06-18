@@ -255,6 +255,8 @@
   "@guestSubtitle": {
     "description": "Subtitle shown in the drawer guest header"
   },
+  
+  "authOr": "or",
 
   "signInCreateAccount": "Sign In / Create Account",
   "@signInCreateAccount": {
@@ -436,6 +438,10 @@
     "description": "Heading on the Sign-In screen"
   },
 
+  
+  "signInToApp": "Sign in to your NewsWave account",
+  
+
   "authFieldEmail": "Email address",
   "@authFieldEmail": {
     "description": "Label for email input fields across auth screens"
@@ -445,6 +451,7 @@
   "@authFieldPassword": {
     "description": "Label for the password field on Sign-In"
   },
+
 
   "authFieldConfirmPassword": "Confirm password",
   "@authFieldConfirmPassword": {
@@ -461,6 +468,23 @@
     "description": "Tappable label linking to ForgotPasswordView"
   },
 
+
+  "phoneNumberOptional": "Phone number (optional)",
+
+
+  "joinApp": "Join NewsWave",
+  "joinSubtitle": "Your personalised news experience awaits",
+
+
+  "agreePrefix": "I agree to the ",
+  "agreeAnd": " and ",
+  "agreeSuffix": ".",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+
+
+   "resetPasswordHint": "Enter your email and we'll send you a link to reset your password.",
+
   "authSignIn": "Sign In",
   "@authSignIn": {
     "description": "Primary button label and link text on Sign-In screen"
@@ -475,6 +499,8 @@
   "@authCreateAccount": {
     "description": "Heading and primary button label on the Sign-Up screen"
   },
+   
+  "authNoAccount": "Don't have an account? ",
 
   "authAlreadyHaveAccount": "Already have an account? ",
   "@authAlreadyHaveAccount": {
@@ -602,6 +628,39 @@
   "@onboardingSelectCountryHint": {
     "description": "Hint for the country dropdown on the onboarding step"
   },
+
+"onboardingTellUsTitle": "👋 Tell us about yourself",
+"onboardingPersonaliseSubtitle": "This helps us personalise your news feed.",
+"onboardingPickTopicsTitle": "📰 Pick your news topics",
+"onboardingPickTopicsSubtitle": "Select all that interest you (you can change this later).",
+"onboardingWhatAreYouIntoTitle": "🎯 What are you into?",
+"fieldRequired": "{field} is required",
+"@fieldRequired": {
+  "placeholders": {
+    "field": { "type": "String" }
+  }
+},
+
+"hobbyReading": "Reading",
+"hobbyWriting": "Writing",
+"hobbyPhotography": "Photography",
+"hobbyGaming": "Gaming",
+"hobbyCooking": "Cooking",
+"hobbyTraveling": "Traveling",
+"hobbyFitness": "Fitness & Sports",
+"hobbyMusic": "Music",
+"hobbyArtDesign": "Art & Design",
+"hobbyTechnology": "Technology",
+"hobbyFinance": "Finance & Investing",
+"hobbyScience": "Science",
+"hobbyPolitics": "Politics",
+"hobbyMoviesTV": "Movies & TV",
+"hobbyFashion": "Fashion",
+"hobbyNature": "Nature & Outdoors",
+"hobbyVolunteering": "Volunteering",
+"hobbyLanguageLearning": "Language Learning",
+"hobbyMeditation": "Meditation",
+"hobbyBusiness": "Business & Entrepreneurship",
 
   "categoryGeneral": "General",
   "@categoryGeneral": {

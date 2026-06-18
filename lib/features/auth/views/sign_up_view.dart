@@ -1,6 +1,6 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/core/theme/app_colors.dart';
 import 'package:news_app/features/auth/cubit/auth_error_x.dart';
@@ -113,14 +113,14 @@ class _SignUpViewState extends State<SignUpView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Join ${AppConstants.appName}',
+                        l10n.joinApp,
                         style: txtTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Your personalised news experience awaits',
+                        l10n.joinSubtitle,
                         style: txtTheme.bodySmall
                             ?.copyWith(color: AppColors.ink300),
                       ),
@@ -174,7 +174,7 @@ class _SignUpViewState extends State<SignUpView> {
                       // ── Phone (Optional) ─────────────────────────────────
                       AuthTextField(
                         controller: _phoneCtrl,
-                        label: 'Phone number (optional)',
+                        label: l10n.phoneNumberOptional,
                         icon: Icons.phone_outlined,
                         keyboardType: TextInputType.phone,
                         textInputAction: TextInputAction.done,
@@ -184,7 +184,7 @@ class _SignUpViewState extends State<SignUpView> {
                       const SizedBox(height: 20),
                       // ── Terms checkbox ────────────────────────────────────
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Checkbox(
                             value: _agreeToTerms,
@@ -192,7 +192,7 @@ class _SignUpViewState extends State<SignUpView> {
                                 setState(() => _agreeToTerms = v ?? false),
                             activeColor: AppColors.primary,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
+                              borderRadius: BorderRadius.circular(6),
                             ),
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
@@ -201,33 +201,42 @@ class _SignUpViewState extends State<SignUpView> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.only(top: 2),
-                              child: RichText(
-                                text: TextSpan(
-                                  style: txtTheme.bodySmall?.copyWith(
-                                    color: AppColors.ink500,
+                                padding: const EdgeInsets.only(top: 2),
+                                child: RichText(
+                                  text: TextSpan(
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                    children: [
+                                      TextSpan(
+                                        text: context.l10n.agreePrefix,
+                                      ),
+                                      TextSpan(
+                                        text: context.l10n.privacyPolicy,
+                                        style: const TextStyle(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {},
+                                      ),
+                                      TextSpan(
+                                        text: context.l10n.agreeAnd,
+                                      ),
+                                      TextSpan(
+                                        text: context.l10n.termsOfService,
+                                        style: const TextStyle(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {},
+                                      ),
+                                      TextSpan(
+                                        text: context.l10n.agreeSuffix,
+                                      ),
+                                    ],
                                   ),
-                                  children: [
-                                    const TextSpan(text: 'I agree to the '),
-                                    const TextSpan(
-                                      text: 'Terms of Service',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    const TextSpan(text: ' and '),
-                                    const TextSpan(
-                                      text: 'Privacy Policy',
-                                      style: TextStyle(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                                )),
                           ),
                         ],
                       ),
@@ -255,7 +264,7 @@ class _SignUpViewState extends State<SignUpView> {
                   GestureDetector(
                     onTap: () => Navigator.of(context).pop(),
                     child: Text(
-                      'Sign In',
+                      l10n.authSignIn,
                       style: txtTheme.bodyMedium?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,

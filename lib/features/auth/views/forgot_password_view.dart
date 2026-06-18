@@ -101,7 +101,7 @@ class _ForgotPasswordViewState extends State<ForgotPasswordView> {
               ),
               const SizedBox(height: 8),
               Text(
-                "Enter your email and we'll send you a link to reset your password.",
+                l10n.resetPasswordHint,
                 style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                 textAlign: TextAlign.center,
               ),

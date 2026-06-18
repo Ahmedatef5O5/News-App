@@ -92,7 +92,7 @@ class _SignInViewState extends State<SignInView> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Sign in to your ${AppConstants.appName} account',
+                        l10n.signInToApp,
                         style: txtTheme.bodyMedium?.copyWith(
                           color: AppColors.ink300,
                         ),
@@ -173,8 +173,7 @@ class _SignInViewState extends State<SignInView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    l10n.authAlreadyHaveAccount
-                        .replaceFirst('Already', "Don't"),
+                    l10n.authNoAccount,
                     style:
                         txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
                   ),
@@ -182,7 +181,7 @@ class _SignInViewState extends State<SignInView> {
                     onTap: () =>
                         Navigator.of(context).pushNamed(AppRoutes.signUpRoute),
                     child: Text(
-                      l10n.authSignUp,
+                      l10n.authCreateAccount,
                       style: txtTheme.bodyMedium?.copyWith(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w700,
@@ -250,21 +249,21 @@ class _LogoBadge extends StatelessWidget {
 class _OrDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Row(
+    return Row(
       children: [
-        Expanded(child: Divider()),
+        const Expanded(child: Divider()),
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(
-            'or',
-            style: TextStyle(
+            context.l10n.authOr,
+            style: const TextStyle(
               fontSize: 12,
               color: AppColors.ink300,
               fontWeight: FontWeight.w500,
             ),
           ),
         ),
-        Expanded(child: Divider()),
+        const Expanded(child: Divider()),
       ],
     );
   }
@@ -285,7 +284,7 @@ class _GuestButton extends StatelessWidget {
           );
         },
         icon: const Icon(Icons.person_outline_rounded),
-        label: const Text('Continue as Guest'),
+        label: Text(context.l10n.browsingAsGuest),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.ink500,
           side: const BorderSide(color: AppColors.ink100),

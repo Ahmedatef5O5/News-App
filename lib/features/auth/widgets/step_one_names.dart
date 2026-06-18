@@ -34,13 +34,13 @@ class StepOneNames extends StatelessWidget {
           children: [
             const SizedBox(height: 16),
             Text(
-              '👋 Tell us about yourself',
+              l10n.onboardingTellUsTitle,
               style:
                   txtTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 6),
             Text(
-              'This helps us personalise your news feed.',
+              l10n.onboardingPersonaliseSubtitle,
               style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
             ),
             const SizedBox(height: 28),
@@ -63,7 +63,7 @@ class StepOneNames extends StatelessWidget {
                     icon: Icons.person_outline_rounded,
                     textInputAction: TextInputAction.done,
                     validator: (v) => v == null || v.isEmpty
-                        ? '${l10n.fieldLastName} is required'
+                        ? l10n.fieldRequired(l10n.fieldFirstName)
                         : null,
                   ),
                   const SizedBox(height: 16),
@@ -99,10 +99,10 @@ class StepOneNames extends StatelessWidget {
                       ),
                     ),
                     hint: Text(l10n.onboardingSelectCountryHint),
-                    items: CountriesList.all
-                        .map((c) => DropdownMenuItem(
-                              value: c,
-                              child: Text(c,
+                    items: CountriesList.sortedEntries(context)
+                        .map((entry) => DropdownMenuItem(
+                              value: entry.key,
+                              child: Text(entry.value,
                                   style: const TextStyle(
                                     fontSize: 13,
                                   )),

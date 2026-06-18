@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/helpers/category_localization_x.dart';
+import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -12,6 +14,7 @@ class StepThreeCategories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final txtTheme = Theme.of(context).textTheme;
+    final l10n = context.l10n;
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -19,13 +22,13 @@ class StepThreeCategories extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            '📰 Pick your news topics',
+            l10n.onboardingPickTopicsTitle,
             style:
                 txtTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 6),
           Text(
-            'Select all that interest you (you can change this later).',
+            l10n.onboardingPickTopicsSubtitle,
             style: txtTheme.bodyMedium?.copyWith(color: AppColors.ink300),
           ),
           const SizedBox(height: 24),
@@ -57,7 +60,7 @@ class StepThreeCategories extends StatelessWidget {
                         const SizedBox(width: 4),
                       ],
                       Text(
-                        cat.label,
+                        cat.localizedName(context),
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,

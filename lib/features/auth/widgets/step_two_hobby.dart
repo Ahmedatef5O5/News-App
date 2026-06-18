@@ -22,7 +22,7 @@ class StepTwoHobby extends StatelessWidget {
         children: [
           const SizedBox(height: 16),
           Text(
-            '🎯 What are you into?',
+            l10n.onboardingWhatAreYouIntoTitle,
             style:
                 txtTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
@@ -37,6 +37,7 @@ class StepTwoHobby extends StatelessWidget {
             runSpacing: 10,
             children: HobbyList.suggestions.map((h) {
               final isSelected = h == selected;
+              final displayLabel = HobbyList.localizedLabel(context, h);
               return GestureDetector(
                 onTap: () => onSelected(h),
                 child: AnimatedContainer(
@@ -52,7 +53,7 @@ class StepTwoHobby extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    h,
+                    displayLabel,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
