@@ -94,7 +94,7 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<TranslationService>(
-    () => TranslationService(),
+    () => MyMemoryTranslationService(),
     dispose: (service) => service.close(),
   );
 

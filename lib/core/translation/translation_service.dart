@@ -1,59 +1,82 @@
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class TranslationService {
-  TranslationService({http.Client? client}) : _client = client ?? http.Client();
+class TranslationRateLimitException implements Exception {
+  const TranslationRateLimitException();
+  @override
+  String toString() => 'Translation API rate limit exceeded (429).';
+}
+
+class TranslationNetworkException implements Exception {
+  final int statusCode;
+  const TranslationNetworkException(this.statusCode);
+  @override
+  String toString() => 'Translation API error: $statusCode';
+}
+
+abstract class TranslationService {
+  Future<String> translate(String text,
+      {required String from, required String to});
+  Future<List<String>> translateBatch(List<String> texts,
+      {required String from, required String to});
+  void close();
+}
+
+class MyMemoryTranslationService implements TranslationService {
+  MyMemoryTranslationService({http.Client? client})
+      : _client = client ?? http.Client();
 
   final http.Client _client;
-
-  void close() => _client.close();
-
   static const _base = 'https://api.mymemory.translated.net/get';
-
   static const _separator = '\n<<<SEP>>>\n';
 
-  Future<String> translate(
-    String text, {
-    required String from,
-    required String to,
-  }) async {
+  @override
+  Future<String> translate(String text,
+      {required String from, required String to}) async {
     if (text.trim().isEmpty) return text;
 
-    final uri = Uri.parse(_base).replace(queryParameters: {
-      'q': text,
-      'langpair': '$from|$to',
-    });
-
+    final uri =
+        Uri.parse('$_base?q=${Uri.encodeComponent(text)}&langpair=$from|$to');
     final res = await _client.get(uri);
+
+    if (res.statusCode == 429) {
+      throw const TranslationRateLimitException();
+    }
     if (res.statusCode != 200) {
-      return text;
+      throw TranslationNetworkException(res.statusCode);
     }
 
-    final json = jsonDecode(res.body) as Map<String, dynamic>;
-    final translated = json['responseData']['translatedText'] as String;
-    return _fixEntities(translated);
+    final data = jsonDecode(res.body);
+
+    if (data['responseStatus'] != 200) {
+      throw TranslationNetworkException(data['responseStatus']);
+    }
+
+    if (data['responseStatus'] == 429) {
+      throw const TranslationRateLimitException();
+    }
+
+    return data['responseData']['translatedText'] ?? text;
   }
 
+  @override
   Future<List<String>> translateBatch(
     List<String> texts, {
     required String from,
     required String to,
   }) async {
     final combined =
-        texts.map((t) => t.trim().isEmpty ? '' : t).join(_separator);
+        texts.map((t) => t.trim().isEmpty ? '.' : t).join(_separator);
+
     final result = await translate(combined, from: from, to: to);
     final parts = result.split(_separator);
 
     return List.generate(texts.length, (i) {
-      final translated = i < parts.length ? parts[i] : '';
+      final translated = i < parts.length ? parts[i].trim() : '';
       return translated.isEmpty ? texts[i] : translated;
     });
   }
 
-  String _fixEntities(String s) => s
-      .replaceAll('&amp;', '&')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>')
-      .replaceAll('&quot;', '"')
-      .replaceAll('&#39;', "'");
+  @override
+  void close() => _client.close();
 }
