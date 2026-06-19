@@ -1,108 +1,125 @@
-import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:news_app/core/network/network_info.dart';
 
-typedef LookupFn = Future<List<InternetAddress>> Function(String host);
+class _FakeAdapter implements HttpClientAdapter {
+  _FakeAdapter(this._responses);
 
-class TestableNetworkInfo extends NetworkInfoImpl {
-  TestableNetworkInfo({
-    required this.lookupFn,
-    super.timeout,
-    super.hosts,
-  });
-
-  final LookupFn lookupFn;
+  final List<Future<ResponseBody> Function()> _responses;
+  int _callIndex = 0;
 
   @override
-  Future<bool> get isConnected => _checkWithFn();
+  void close({bool force = false}) {}
 
-  Future<bool> _checkWithFn() async {
-    for (final host in _hostsForTest) {
-      try {
-        final result = await lookupFn(host).timeout(_timeoutForTest);
-        if (result.isNotEmpty && result.first.rawAddress.isNotEmpty) {
-          return true;
-        }
-      } catch (_) {
-        continue;
-      }
-    }
-    return false;
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<List<int>>? requestStream,
+    Future<void>? cancelFuture,
+  ) {
+    final index = _callIndex++;
+    return _responses[index % _responses.length]();
   }
-
-  // Expose private fields for test use via getters on the subclass.
-  List<String> get _hostsForTest => ['google.com', 'cloudflare.com'];
-  Duration get _timeoutForTest => const Duration(seconds: 5);
 }
 
+Dio _dioReturning(List<Future<ResponseBody> Function()> responses) {
+  final dio = Dio(BaseOptions(validateStatus: (_) => true));
+  dio.httpClientAdapter = _FakeAdapter(responses);
+  return dio;
+}
+
+Future<ResponseBody> _ok([int status = 204]) async =>
+    ResponseBody.fromString('', status);
+
+Future<ResponseBody> _fail() async => throw DioException(
+      requestOptions: RequestOptions(path: ''),
+      type: DioExceptionType.connectionTimeout,
+    );
+
 void main() {
-  group('NetworkInfoImpl — unit (stub)', () {
-    test('returns true when lookup resolves a non-empty address', () async {
-      final info = TestableNetworkInfo(
-        lookupFn: (_) async => [
-          InternetAddress('142.250.80.46'), // fake but valid IP format
-        ],
-        hosts: const ['google.com'],
+  group('NetworkInfoImpl — unit (fake Dio adapter)', () {
+    test('returns true when the first probe succeeds', () async {
+      final info = NetworkInfoImpl(
+        probeUrls: const ['https://a.test', 'https://b.test'],
+        dio: _dioReturning([_ok]),
       );
 
       expect(await info.isConnected, isTrue);
     });
 
-    test('returns false when lookup returns an empty list', () async {
-      final info = TestableNetworkInfo(
-        lookupFn: (_) async => [],
-        hosts: const ['google.com'],
+    test('returns false when every probe throws', () async {
+      final info = NetworkInfoImpl(
+        probeUrls: const ['https://a.test', 'https://b.test'],
+        dio: _dioReturning([_fail]),
       );
 
       expect(await info.isConnected, isFalse);
     });
 
-    test('returns false when lookup throws SocketException', () async {
-      final info = TestableNetworkInfo(
-        lookupFn: (_) async => throw const SocketException('No route to host'),
-        hosts: const ['google.com'],
+    test('falls through to a later host if an earlier one throws', () async {
+      final info = NetworkInfoImpl(
+        probeUrls: const ['https://a.test', 'https://b.test'],
+        dio: _dioReturning([_fail, _ok]),
       );
 
-      expect(await info.isConnected, isFalse);
+      expect(await info.isConnected, isTrue);
     });
 
-    test('falls through to second host if first throws', () async {
+    test('treats any HTTP response (even an error status) as reachable',
+        () async {
+      // A 401/404/500 still proves the server was reached over the network
+      // — that's what matters for "is the path online", not the status.
+      final info = NetworkInfoImpl(
+        probeUrls: const ['https://a.test'],
+        dio: _dioReturning([() => _ok(401)]),
+      );
+
+      expect(await info.isConnected, isTrue);
+    });
+
+    test('concurrent calls share a single in-flight check', () async {
       var callCount = 0;
-      final info = TestableNetworkInfo(
-        lookupFn: (host) async {
+      final dio = Dio(BaseOptions(validateStatus: (_) => true));
+      dio.httpClientAdapter = _FakeAdapter([
+        () async {
           callCount++;
-          if (callCount == 1) throw const SocketException('No route to host');
-          // Second host succeeds
-          return [InternetAddress('1.1.1.1')];
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          return ResponseBody.fromString('', 204);
         },
-        hosts: const ['google.com', 'cloudflare.com'],
+      ]);
+
+      final info = NetworkInfoImpl(
+        probeUrls: const ['https://a.test'],
+        dio: dio,
       );
 
-      expect(await info.isConnected, isTrue);
-      expect(callCount, 2);
+      final results = await Future.wait([
+        info.isConnected,
+        info.isConnected,
+        info.isConnected,
+      ]);
+
+      expect(results, everyElement(isTrue));
+      expect(callCount, 1);
     });
 
-    test('returns false when ALL hosts fail', () async {
-      final info = TestableNetworkInfo(
-        lookupFn: (_) async =>
-            throw const SocketException('Network unreachable'),
-        hosts: const ['google.com', 'cloudflare.com', 'dns.google'],
-      );
-
+    test('returns false immediately when probeUrls is empty', () async {
+      final info = NetworkInfoImpl(probeUrls: const []);
       expect(await info.isConnected, isFalse);
     });
   });
 
-  group('NetworkInfoImpl — integration (real DNS)', () {
+  group('NetworkInfoImpl — integration (real network)', () {
     test(
-      'returns true on a device with internet',
+      'returns true on a device/CI runner with internet',
       () async {
-        final info = NetworkInfoImpl();
+        final info = NetworkInfoImpl(
+          probeUrls: const ['https://www.gstatic.com/generate_204'],
+        );
         final result = await info.isConnected;
-        // This test is environment-dependent; we just verify it doesn't throw.
+        // Environment-dependent — just verify it completes without throwing.
         expect(result, isA<bool>());
       },
-      // Skip automatically in CI by checking for the GITHUB_ACTIONS env var.
       skip: const bool.fromEnvironment('CI'),
     );
   });

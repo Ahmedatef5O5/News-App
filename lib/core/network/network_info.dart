@@ -1,41 +1,58 @@
 import 'dart:async';
-import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:news_app/core/constants/app_constants.dart';
 
 abstract class NetworkInfo {
   Future<bool> get isConnected;
 }
 
+/// HTTP-based connectivity check.
+
 class NetworkInfoImpl implements NetworkInfo {
   NetworkInfoImpl({
     Duration timeout = const Duration(seconds: 4),
-    List<String>? hosts,
+    List<String>? probeUrls,
+    Dio? dio,
   })  : _timeout = timeout,
-        _hosts = hosts ??
-            const [
-              'google.com',
-              'cloudflare.com',
-              'dns.google',
-            ];
+        _probeUrls = probeUrls ??
+            [
+              AppConstants.baseUrl,
+              'https://www.gstatic.com/generate_204',
+              'https://cloudflare.com/cdn-cgi/trace',
+            ],
+        _dio = dio ??
+            Dio(BaseOptions(
+              connectTimeout: timeout,
+              receiveTimeout: timeout,
+              validateStatus: (_) => true,
+            ));
 
   final Duration _timeout;
-  final List<String> _hosts;
+  final List<String> _probeUrls;
+  final Dio _dio;
+
+  Future<bool>? _pending;
 
   @override
-  Future<bool> get isConnected => _check();
+  Future<bool> get isConnected {
+    _pending ??= _check().whenComplete(() => _pending = null);
+    return _pending!;
+  }
 
   Future<bool> _check() async {
+    if (_probeUrls.isEmpty) return false;
+
     final completer = Completer<bool>();
     int failed = 0;
 
-    for (final host in _hosts) {
-      _checkHost(host).then((isUp) {
-        if (isUp && !completer.isCompleted) {
+    for (final url in _probeUrls) {
+      _probe(url).then((isUp) {
+        if (completer.isCompleted) return;
+        if (isUp) {
           completer.complete(true);
-        } else if (!isUp) {
+        } else {
           failed++;
-          if (failed == _hosts.length && !completer.isCompleted) {
-            completer.complete(false);
-          }
+          if (failed == _probeUrls.length) completer.complete(false);
         }
       });
     }
@@ -43,11 +60,10 @@ class NetworkInfoImpl implements NetworkInfo {
     return completer.future;
   }
 
-  Future<bool> _checkHost(String host) async {
+  Future<bool> _probe(String url) async {
     try {
-      final socket = await Socket.connect(host, 443, timeout: _timeout);
-      socket.destroy();
-      return true;
+      final response = await _dio.get(url);
+      return response.statusCode != null;
     } catch (_) {
       return false;
     }
