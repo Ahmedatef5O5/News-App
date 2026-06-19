@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:news_app/core/locale/locale_cubit.dart';
 import 'package:news_app/core/translation/article_translation_repository.dart';
-import 'package:news_app/core/translation/translation_service.dart';
 import 'package:news_app/features/auth/cubit/auth_listener_cubit.dart';
 import 'package:news_app/features/home/domain/repositories/home_repository_contract.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -26,6 +25,8 @@ import '../../features/search/services/search_services.dart';
 import '../cache/news_cache_manager.dart';
 import '../network/connectivity_cubit.dart';
 import '../repositories/home_repository.dart';
+import '../translation/libre_translation_service.dart';
+import '../translation/translation_service.dart';
 
 final sl = GetIt.instance;
 
@@ -94,7 +95,7 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<TranslationService>(
-    () => MyMemoryTranslationService(),
+    () => LibreTranslationService(),
     dispose: (service) => service.close(),
   );
 
