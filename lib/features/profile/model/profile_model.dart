@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
-import 'package:news_app/l10n/app_localizations_x.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 part 'profile_model.g.dart';
 
 @HiveType(typeId: 2)
@@ -403,58 +402,28 @@ abstract final class CountriesList {
   }
 }
 
-abstract final class HobbyList {
-  static const List<String> suggestions = [
-    'Reading',
-    'Writing',
-    'Photography',
-    'Gaming',
-    'Cooking',
-    'Traveling',
-    'Fitness & Sports',
-    'Music',
-    'Art & Design',
-    'Technology',
-    'Finance & Investing',
-    'Science',
-    'Politics',
-    'Movies & TV',
-    'Fashion',
-    'Nature & Outdoors',
-    'Volunteering',
-    'Language Learning',
-    'Meditation',
-    'Business & Entrepreneurship',
-  ];
+enum Hobby {
+  reading,
+  writing,
+  photography,
+  gaming,
+  cooking,
+  traveling,
+  fitnessSports,
+  music,
+  artDesign,
+  technology;
 
-  static Map<String, String> localized(BuildContext context) {
-    final l10n = context.l10n;
-    return {
-      'Reading': l10n.hobbyReading,
-      'Writing': l10n.hobbyWriting,
-      'Photography': l10n.hobbyPhotography,
-      'Gaming': l10n.hobbyGaming,
-      'Cooking': l10n.hobbyCooking,
-      'Traveling': l10n.hobbyTraveling,
-      'Fitness & Sports': l10n.hobbyFitness,
-      'Music': l10n.hobbyMusic,
-      'Art & Design': l10n.hobbyArtDesign,
-      'Technology': l10n.hobbyTechnology,
-      'Finance & Investing': l10n.hobbyFinance,
-      'Science': l10n.hobbyScience,
-      'Politics': l10n.hobbyPolitics,
-      'Movies & TV': l10n.hobbyMoviesTV,
-      'Fashion': l10n.hobbyFashion,
-      'Nature & Outdoors': l10n.hobbyNature,
-      'Volunteering': l10n.hobbyVolunteering,
-      'Language Learning': l10n.hobbyLanguageLearning,
-      'Meditation': l10n.hobbyMeditation,
-      'Business & Entrepreneurship': l10n.hobbyBusiness,
-    };
-  }
-
-  /// Returns the localized label for a given raw key.
-  static String localizedLabel(BuildContext context, String rawKey) {
-    return localized(context)[rawKey] ?? rawKey;
-  }
+  String localize(AppLocalizations l10n) => switch (this) {
+        Hobby.reading => l10n.hobbyReading,
+        Hobby.writing => l10n.hobbyWriting,
+        Hobby.photography => l10n.hobbyPhotography,
+        Hobby.gaming => l10n.hobbyGaming,
+        Hobby.cooking => l10n.hobbyCooking,
+        Hobby.traveling => l10n.hobbyTraveling,
+        Hobby.fitnessSports => l10n.categorySports,
+        Hobby.music => l10n.hobbyMusic,
+        Hobby.artDesign => l10n.hobbyArtDesign,
+        Hobby.technology => l10n.hobbyTechnology,
+      };
 }

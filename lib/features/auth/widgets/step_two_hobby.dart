@@ -35,11 +35,12 @@ class StepTwoHobby extends StatelessWidget {
           Wrap(
             spacing: 10,
             runSpacing: 10,
-            children: HobbyList.suggestions.map((h) {
-              final isSelected = h == selected;
-              final displayLabel = HobbyList.localizedLabel(context, h);
+            children: Hobby.values.map((h) {
+              final isSelected = h.name == selected;
+              final displayLabel = h.localize(context.l10n);
+
               return GestureDetector(
-                onTap: () => onSelected(h),
+                onTap: () => onSelected(h.name),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   padding:

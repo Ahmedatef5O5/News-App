@@ -329,17 +329,21 @@ class _ProfileSettingsViewState extends State<ProfileSettingsView> {
                       value: _selectedHobby,
                       isExpanded: true,
                       onChanged: (h) => setState(() => _selectedHobby = h),
-                      decoration: _dropdownDecoration(context, l10n.fieldHobby,
-                          Icons.favorite_outline_rounded),
+                      decoration: _dropdownDecoration(
+                        context,
+                        l10n.fieldHobby,
+                        Icons.favorite_outline_rounded,
+                      ),
                       hint: Text(l10n.hintSelectHobby),
-                      items: HobbyList.suggestions
-                          .map((h) => DropdownMenuItem(
-                                value: h,
-                                child: Text(
-                                    HobbyList.localizedLabel(context, h),
-                                    style: const TextStyle(fontSize: 13)),
-                              ))
-                          .toList(),
+                      items: Hobby.values.map((h) {
+                        return DropdownMenuItem<String>(
+                          value: h.name,
+                          child: Text(
+                            h.localize(l10n),
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 20),
                     SectionTitle(title: l10n.sectionPreferredCategories),
