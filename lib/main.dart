@@ -79,8 +79,11 @@ class NewsWave extends StatelessWidget {
         ),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
+        buildWhen: (previous, current) => previous != current,
         builder: (context, themeMode) {
           return BlocBuilder<LocaleCubit, Locale>(
+            buildWhen: (previous, current) =>
+                previous.languageCode != current.languageCode,
             builder: (context, locale) {
               return MaterialApp(
                 navigatorKey: navigatorKey,
