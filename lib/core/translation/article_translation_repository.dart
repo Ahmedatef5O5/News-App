@@ -21,7 +21,16 @@ class ArticleTranslationRepository {
     required String locale,
   }) async {
     if (locale != 'ar') return articles;
-    return Future.wait(articles.map(_translateArticle));
+
+    final results = <Article>[];
+    const chunkSize = 3;
+
+    for (var i = 0; i < articles.length; i += chunkSize) {
+      final chunk = articles.skip(i).take(chunkSize).toList();
+      final translated = Future.wait(chunk.map(_translateArticle));
+      results.addAll(await translated);
+    }
+    return results;
   }
 
   Future<Article> translateSingle(
@@ -29,6 +38,7 @@ class ArticleTranslationRepository {
     required String locale,
   }) async {
     if (locale != 'ar') return article;
+
     return _translateArticle(article);
   }
 

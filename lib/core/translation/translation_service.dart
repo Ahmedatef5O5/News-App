@@ -8,6 +8,8 @@ class TranslationService {
 
   static const _base = 'https://api.mymemory.translated.net/get';
 
+  static const _separator = '\n<<<SEP>>>\n';
+
   Future<String> translate(
     String text, {
     required String from,
@@ -35,9 +37,15 @@ class TranslationService {
     required String from,
     required String to,
   }) async {
-    return Future.wait(
-      texts.map((t) => translate(t, from: from, to: to)),
-    );
+    final combined =
+        texts.map((t) => t.trim().isEmpty ? '' : t).join(_separator);
+    final result = await translate(combined, from: from, to: to);
+    final parts = result.split(_separator);
+
+    return List.generate(texts.length, (i) {
+      final translated = i < parts.length ? parts[i] : '';
+      return translated.isEmpty ? texts[i] : translated;
+    });
   }
 
   String _fixEntities(String s) => s
