@@ -9,7 +9,6 @@ environment:
 
 dependencies:
   cached_network_image: ^3.4.1
-  connectivity_plus: ^7.1.1
   crypto: ^3.0.7
   cupertino_icons: ^1.0.8
   device_preview: ^1.2.0
