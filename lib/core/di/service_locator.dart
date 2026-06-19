@@ -4,6 +4,7 @@ import 'package:news_app/core/locale/locale_cubit.dart';
 import 'package:news_app/core/translation/article_translation_repository.dart';
 import 'package:news_app/core/translation/translation_service.dart';
 import 'package:news_app/features/auth/cubit/auth_listener_cubit.dart';
+import 'package:news_app/features/home/domain/repositories/home_repository_contract.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
@@ -74,17 +75,17 @@ Future<void> setupServiceLocator() async {
     ),
   );
 
+  sl.registerLazySingleton<HomeRepositoryContract>(
+    () => HomeServices(dio: sl<Dio>()),
+  );
+
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepository(
-      services: sl<HomeServices>(),
+      services: sl<HomeRepositoryContract>(),
       db: sl<LocalDatabaseHive>(),
       networkInfo: sl<NetworkInfo>(),
       translationRepo: sl<ArticleTranslationRepository>(),
     ),
-  );
-
-  sl.registerLazySingleton<HomeServices>(
-    () => HomeServices(dio: sl<Dio>()),
   );
 
   sl.registerLazySingleton<TranslationService>(

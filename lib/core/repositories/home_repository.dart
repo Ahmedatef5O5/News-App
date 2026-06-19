@@ -3,7 +3,7 @@ import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/network/network_info.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
-import 'package:news_app/features/home/services/home_services.dart';
+import '../../features/home/domain/repositories/home_repository_contract.dart';
 import '../exceptions/news_exceptions.dart';
 import '../models/news_api_response.dart';
 import '../translation/article_translation_repository.dart';
@@ -22,7 +22,7 @@ class PageResult {
 
 class HomeRepository {
   HomeRepository({
-    required HomeServices services,
+    required HomeRepositoryContract services,
     required LocalDatabaseHive db,
     required NetworkInfo networkInfo,
     required ArticleTranslationRepository translationRepo,
@@ -31,7 +31,7 @@ class HomeRepository {
         _network = networkInfo,
         _translation = translationRepo;
 
-  final HomeServices _services;
+  final HomeRepositoryContract _services;
   final LocalDatabaseHive _db;
   final NetworkInfo _network;
   final ArticleTranslationRepository _translation;

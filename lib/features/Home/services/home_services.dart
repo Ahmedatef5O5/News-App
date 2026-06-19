@@ -1,12 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/news_api_response.dart';
+import '../domain/repositories/home_repository_contract.dart';
 
-class HomeServices {
+class HomeServices implements HomeRepositoryContract {
   final Dio _dio;
 
   HomeServices({required Dio dio}) : _dio = dio;
 
+  @override
   Future<NewsApiResponse> getTopHeadlines({
     String country = 'us',
     String? category,
@@ -25,6 +27,7 @@ class HomeServices {
     return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
+  @override
   Future<NewsApiResponse> getRecommended({
     String country = 'us',
     int page = 1,
@@ -41,6 +44,7 @@ class HomeServices {
     return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
   }
 
+  @override
   Future<NewsApiResponse> getEverything({
     required String q,
     String language = 'ar',
