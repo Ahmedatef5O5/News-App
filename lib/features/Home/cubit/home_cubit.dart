@@ -32,9 +32,8 @@ class HomeCubit extends Cubit<HomeState> {
 
   void _onLocaleChanged(Locale locale) {
     if (isClosed) return;
-    fetchHeadlines(forceRefresh: false);
-    _loadPage(state.currentPage,
-        mode: PageLoadStatus.loadingInitial, forceRefresh: false);
+    fetchHeadlines(forceRefresh: true);
+    _loadPage(1, mode: PageLoadStatus.loadingInitial, forceRefresh: true);
   }
 
   // ── Category sync ──────────────────────────────────────────────────────────

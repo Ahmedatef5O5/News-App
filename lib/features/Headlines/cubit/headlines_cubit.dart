@@ -37,7 +37,7 @@ class HeadlinesCubit extends Cubit<HeadlinesState> {
           ? null
           : state.selectedCategory.value,
       page: 1,
-      forceRefresh: false,
+      forceRefresh: true,
     );
   }
 

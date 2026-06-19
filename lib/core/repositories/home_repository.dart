@@ -61,7 +61,7 @@ class HomeRepository {
     bool forceRefresh = false,
     String locale = 'en',
   }) async {
-    final cacheKey = _headlinesCacheKey(category);
+    final cacheKey = _headlinesCacheKey(category, locale: locale);
 
     // Offline – serve cache instantly, skip Dio entirely.
     final online = await _network.isConnected;
@@ -141,8 +141,7 @@ class HomeRepository {
     bool forceRefresh = false,
     String locale = 'en',
   }) async {
-    final cacheKey = '${AppConstants.recommendedPageKeyPrefix}$page';
-
+    final cacheKey = _recommendedCacheKey(page, locale: locale);
     // ① Offline – serve cache instantly.
     final online = await _network.isConnected;
     if (!online) {
@@ -281,9 +280,16 @@ class HomeRepository {
     );
   }
 
-  String _headlinesCacheKey(String? category) => category != null
-      ? '${AppConstants.cachedHeadlinesKey}_$category'
-      : AppConstants.cachedHeadlinesKey;
+  String _headlinesCacheKey(String? category, {required String locale}) {
+    final base = category != null
+        ? '${AppConstants.cachedHeadlinesKey}_$category'
+        : AppConstants.cachedHeadlinesKey;
+    return '${base}_$locale';
+  }
+
+  String _recommendedCacheKey(int page, {required String locale}) {
+    return '${AppConstants.recommendedPageKeyPrefix}${page}_$locale';
+  }
 
   String _offlineNoCache() =>
       'You\'re offline and there\'s no cached news yet. '
