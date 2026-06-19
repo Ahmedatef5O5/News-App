@@ -4,6 +4,7 @@ import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/network/network_info.dart';
 import 'package:news_app/core/services/local_database_hive.dart';
 import 'package:news_app/features/home/services/home_services.dart';
+import '../exceptions/news_exceptions.dart';
 import '../models/news_api_response.dart';
 import '../translation/article_translation_repository.dart';
 
@@ -291,25 +292,16 @@ class HomeRepository {
     return '${AppConstants.recommendedPageKeyPrefix}${page}_$locale';
   }
 
-  String _offlineNoCache() =>
-      'You\'re offline and there\'s no cached news yet. '
-      'Please connect to the internet for your first load.';
+  NewsException _offlineNoCache() => const OfflineNoCacheException();
 
-  String _mapDioError(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionError:
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-        return 'No internet connection. Showing cached news.';
-      case DioExceptionType.badResponse:
-        final code = e.response?.statusCode;
-        if (code == 401) {
-          return 'Invalid API key. Please check your configuration.';
-        }
-        if (code == 429) return 'Too many requests. Please wait a moment.';
-        return 'Server error ($code). Please try again later.';
-      default:
-        return e.message ?? 'Something went wrong. Please try again.';
-    }
+  NewsException _mapDioError(DioException e) {
+    return switch (e.type) {
+      DioExceptionType.connectionError ||
+      DioExceptionType.connectionTimeout ||
+      DioExceptionType.receiveTimeout =>
+        const NetworkTimeoutException(),
+      DioExceptionType.badResponse => ServerException(e.response?.statusCode),
+      _ => const ServerException(null),
+    };
   }
 }
