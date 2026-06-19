@@ -30,8 +30,9 @@
 
 
 ### *Your world, curated — in real time.*
+<!--### *Your world, curated — in real time. بلغتك، كما تريد.*-->
 
-A **production-grade Flutter news application** delivering breaking headlines, personalized feeds, and offline-first reading — all wrapped in a polished, modern UI.
+A **production-grade Flutter news application** delivering breaking headlines, personalized feeds, and offline-first reading — fully bilingual (English / Arabic) with reactive RTL support, all wrapped in a polished, modern UI.
 
 <br/>
 
@@ -40,11 +41,12 @@ A **production-grade Flutter news application** delivering breaking headlines, p
 [![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.io)
 [![Hive](https://img.shields.io/badge/Hive-Local_DB-FF7043?style=for-the-badge&logo=hive&logoColor=white)](https://pub.dev/packages/hive)
 [![NewsAPI](https://img.shields.io/badge/NewsAPI-v2-E53935?style=for-the-badge&logo=rss&logoColor=white)](https://newsapi.org)
+[![i18n](https://img.shields.io/badge/i18n-EN_%7C_AR-6f42c1?style=for-the-badge&logo=googletranslate&logoColor=white)](#-localization--i18n)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 <br/>
 
-[Features](#-features-at-a-glance) · [Screenshots](#-screenshots) · [Architecture](#-architecture-overview) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [Project Structure](#-project-structure) · [Roadmap](#-roadmap)
+[Features](#-features-at-a-glance) · [Screenshots](#-screenshots) · [Architecture](#-architecture-overview) · [Localization](#-localization--i18n) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [Project Structure](#-project-structure) · [Roadmap](#-roadmap)
 
 <br/>
 
@@ -58,7 +60,7 @@ NewsWave is a **full-featured, production-ready news reader** built entirely in 
 
 Whether you're exploring as a guest, or signed in with a personalized profile, NewsWave adapts to you. Authenticated users get a tailored onboarding experience where they choose their country, hobbies, and preferred news categories — shaping a feed that's truly theirs.
 
-> Built to showcase real-world Flutter patterns: clean architecture, reactive state management, secure authentication, offline-first data, and a UI that users will actually want to come back to.
+> Built to showcase real-world Flutter patterns: clean architecture, reactive state management, secure authentication, offline-first data, full app-wide localization (EN/AR) with RTL support, and a UI that users will actually want to come back to.
 
 ---
 
@@ -69,13 +71,14 @@ Whether you're exploring as a guest, or signed in with a personalized profile, N
 | 🔐 **Authentication** | Sign Up, Sign In, Forgot Password, Deep-Link Password Recovery, Guest Mode |
 | 📰 **News Feed** | Breaking Headlines Carousel, "For You" paginated feed, 7 categories |
 | 🔍 **Search** | Full-text search with 500ms debounce, infinite scroll, page-size 15 |
+| 🌍 **Localization** | Full English / Arabic support, reactive RTL/LTR layout switching, locale-aware API requests |
 | 💾 **Offline** | Hive local cache for headlines & recommended articles per page |
-| 🎨 **Theming** | Light / Dark mode with animated toggle, Poppins typography |
+| 🎨 **Theming** | Light / Dark mode with animated toggle, locale-aware typography (Poppins / Cairo) |
 | 🧭 **Onboarding** | 3-step profile wizard (name, country/hobby, category preferences) |
 | 📌 **Favorites** | Save articles locally, persisted across sessions via Hive |
 | 🗂️ **Categories** | General, Business, Technology, Sports, Health, Entertainment, Science |
 | 🚀 **Navigation** | Custom page transitions: Fade, Slide, Shared-Axis |
-| 👤 **Profile** | Update display name, theme preference, sign out |
+| 👤 **Profile** | Update display name, theme preference, language preference, sign out |
 
 ---
 
@@ -109,17 +112,17 @@ AuthUserState
 The Home screen is split into two independent data streams:
 
 **1. Breaking Headlines Carousel**
-- Fetches `top-headlines` from NewsAPI
+- English locale fetches `top-headlines` from NewsAPI; Arabic locale fetches `everything` with curated Arabic-language category queries, since `top-headlines` has no reliable Arabic coverage
 - Displayed as a full-bleed horizontal carousel with glassmorphism overlays
 - Page size: 10 articles, cached in Hive under `cached_headlines`
 
 **2. "For You" Recommended Feed**
-- Fetches from `everything` endpoint, filtered by the active category
+- Mirrors the same locale-aware endpoint switch as the carousel, filtered by the active category
 - Rendered as a paginated list with a visible **Page X of Y** counter
 - Page size: 5 articles — each page individually cached (`rec_page_N`)
 - Lazy-loads the next page when the user scrolls within 3 items of the bottom (`infiniteScrollThreshold`)
 
-**Categories** are managed globally via `CategoryCubit` and surfaced as animated `FilterChip` pills. Switching categories triggers a fresh paginated fetch while preserving cached pages already loaded.
+**Categories** are managed globally via `CategoryCubit` and surfaced as animated `FilterChip` pills, with category labels pulled from the active `AppLocalizations`. Switching categories triggers a fresh paginated fetch while preserving cached pages already loaded. Both the headlines and recommended feed cubits subscribe to `LocaleCubit`'s stream, so switching the app language re-fetches and re-localizes the feed automatically — no manual refresh required.
 
 ---
 
@@ -138,12 +141,33 @@ Articles are serialized as `@HiveType` objects with generated adapters, ensuring
 
 ---
 
+## 🌍 Localization & i18n
+
+NewsWave is fully localized into **English and Arabic**, driven by a reactive `LocaleCubit` rather than a static, restart-required setting.
+
+- **`flutter_localizations` + ARB files** — all UI strings (navigation, dialogs, errors, validation messages, category labels, hobby labels) are generated through `AppLocalizations`, with zero hardcoded copy in the widget tree
+- **`LocaleCubit`** — a `Cubit<Locale>` that persists the chosen language to a dedicated Hive `settings_box`, restores it on cold launch, and exposes a one-tap `toggle()` between English and Arabic
+- **Reactive RTL/LTR layout** — `Directionality` flips automatically with the locale; layout-sensitive widgets use `EdgeInsetsDirectional` and locale-aware icon mirroring (e.g. back/forward chevrons) instead of hardcoded left/right values
+- **Locale-aware typography** — `AppTheme.of(locale: ..., brightness: ...)` swaps the active font family (Poppins for English, Cairo for Arabic) at the `ThemeData` level
+- **Locale-aware data fetching** — `HomeCubit` and `HeadlinesCubit` both subscribe to `LocaleCubit`'s stream and re-fetch automatically when the language changes, so headlines, the recommended feed, and category labels stay in sync with the active locale without any manual screen refresh
+- **On-device article translation** — articles fetched for the Arabic locale are passed through an `ArticleTranslationRepository`, which translates and caches the title/description/content per article so repeat views don't re-hit the translation API
+- **Language picker** — a dedicated `LanguagePickerDialog` lets the user choose their language explicitly from the Drawer or Profile Settings, in addition to the quick `toggle()` shortcut
+
+```
+LocaleCubit
+ ├── init()        → reads persisted locale from Hive on app start
+ ├── setLocale(_)  → persists + emits a new Locale
+ └── toggle()      → flips between Locale('en') and Locale('ar')
+```
+
+---
+
 ## 🔍 Advanced Search & Pagination
 
 Search is built on a dedicated `SearchCubit` with these production-level details:
 
 - **Debouncing** — 500ms `searchDebounce` timer; no API call fires until the user pauses typing
-- **Retrofit + Dio** — type-safe HTTP client generated via `@RestApi` annotation
+- **`SearchService`** — a thin, plain-Dio service wired through the service locator (a `@RestApi`-annotated `SearchServicesRetrofit` interface also exists in the codebase as an alternative typed-client implementation, generated via `build_runner`)
 - **Paginated results** — page size 15, with a `paginationWindowSize` of 5 for the visible page controls
 - **Max API results cap** — hard limit of 100 results respects NewsAPI's free-tier constraints
 - **Infinite scroll** — triggers at 3 items from the bottom of the current page
@@ -155,7 +179,7 @@ Search is built on a dedicated `SearchCubit` with these production-level details
 
 - **Light & Dark themes** fully defined via `AppTheme.light` / `AppTheme.dark` using Material 3 `ColorScheme`
 - **Brand palette**: Primary `#1A73E8` (Google Blue), Dark `#0D47A1`, Accent `#FF6B35`
-- **Typography**: Poppins font family across all text styles with carefully tuned weights
+- **Typography**: locale-aware font selection — Poppins for English, Cairo for Arabic — applied at the `ThemeData` level via `AppTheme.of(locale: ...)`
 - **Animated shimmer** — custom `ShimmerBox` with `AnimationController` for skeleton loading states on both carousel cards and list rows
 - **Theme persistence** — `ThemeCubit` saves and restores the user's mode preference via Hive
 - **Animated background** — auth screens feature a subtle `_AnimatedBackground` widget using `SingleTickerProviderStateMixin`
@@ -269,25 +293,38 @@ lib/
 ├── core/                          # Shared infrastructure
 │   ├── constants/                 # AppConstants, NewsCategory enum
 │   ├── cubits/                    # CategoryCubit (global)
+│   ├── di/                        # service_locator.dart (GetIt setup)
+│   ├── locale/                    # LocaleCubit, LanguagePickerDialog, LanguageOption
+│   ├── translation/                # ArticleTranslationRepository, TranslationService
+│   ├── network/                   # NetworkInfo (Socket-based), ConnectivityCubit
+│   ├── browser/                   # In-app WebView (InAppBrowserView)
+│   ├── repositories/               # HomeRepository (news + cache orchestration)
 │   ├── models/                    # Article, Source (Hive + JSON)
+│   ├── pagination/                # PaginationMeta, pagination bar widgets
 │   ├── router/                    # AppRouter, AppRoutes
 │   ├── secrets/                   # AppSecrets (reads .env)
-│   ├── services/                  # DioClient (singleton), LocalDatabaseHive
+│   ├── services/                  # LocalDatabaseHive (Hive init, box helpers)
+│   ├── supabase/                  # AuthLocalDataSource, AuthRemoteDataSource, exceptions
 │   ├── theme/                     # AppTheme, AppColors, ThemeCubit
-│   └── widgets/                   # Shared: CategoryChips, ShimmerBox,
-│                                  #         EmptyState, ErrorState, AppDrawer
+│   ├── helpers/                    # EmptyState, ErrorState, ShimmerBox, category l10n extension
+│   └── widgets/                   # Shared: ArticleCard, SaveButton, ShareButton,
+│                                  #         OfflineBanner, AppDrawer
+│
+├── l10n/                          # ARB files + generated AppLocalizations + context.l10n extension
 │
 └── features/
-    ├── auth/                      # AuthCubit, AuthRepository, Auth Views
-    │   ├── cubit/                 #   auth_cubit.dart · auth_state.dart
+    ├── auth/                      # AuthCubit, AuthRepository, Auth + Onboarding views
+    │   ├── cubit/                 #   auth_cubit.dart · auth_listener_cubit.dart
     │   ├── data/                  #   auth_repository.dart (interface + impl)
-    │   └── views/                 #   SignIn, SignUp, ForgotPassword, UpdatePassword
-    ├── Home/                      # HomeView, HeadlinesCubit, RecommendedCubit
-    ├── Headlines/                 # HeadlinesView (full-screen carousel list)
-    ├── search/                    # SearchCubit, SearchServicesRetrofit, SearchView
+    │   └── views/                 #   SignIn, SignUp, ForgotPassword, UpdatePassword, Onboarding
+    ├── home/                      # HomeView, HomeCubit (headlines + paginated "For You" feed)
+    │   ├── cubit/                 #   home_cubit.dart (single cubit drives both data streams)
+    │   ├── services/              #   home_services.dart (Dio-backed NewsAPI calls)
+    │   └── views/                 #   home_view.dart, article_detail_view.dart
+    ├── Headlines/                 # HeadlinesCubit + HeadlinesView (full-screen, paginated list)
+    ├── search/                    # SearchCubit, SearchService, SearchView
     ├── favorites/                 # FavoritesCubit (Hive-backed), FavoritesView
-    ├── profile/                   # ProfileSettingsView
-    ├── onboarding/                # 3-step OnboardingView wizard
+    ├── profile/                   # ProfileSettingsView (theme, language, account)
     └── splash/                    # SplashView (session restore + routing logic)
 ```
 
@@ -297,10 +334,10 @@ lib/
 UI (View)
   └─► Cubit (state logic)
         └─► Repository (interface)
-              └─► Impl (Supabase / Retrofit / Hive)
+              └─► Impl (Supabase / Dio / Hive)
 ```
 
-The `core` layer has **zero dependency on any feature**. Features may only depend on `core`, never on each other.
+The `core` layer has **zero dependency on any feature**. Features may only depend on `core`, never on each other. All cross-cutting singletons — `Dio`, `NetworkInfo`, `LocaleCubit`, `ThemeCubit`, repositories, and services — are wired through a single `setupServiceLocator()` entry point using `GetIt`.
 
 ---
 
@@ -311,15 +348,18 @@ The `core` layer has **zero dependency on any feature**. Features may only depen
 | **Framework** | Flutter 3.x | Cross-platform UI |
 | **Language** | Dart 3.x | Null-safe, strong-typed |
 | **State Management** | `flutter_bloc` / Cubit | Predictable reactive state |
+| **Dependency Injection** | `get_it` | Centralized service locator (`setupServiceLocator()`) |
 | **Backend / Auth** | Supabase | Auth, Postgres DB, Realtime |
-| **News Data** | NewsAPI v2 | Headlines & search endpoints |
-| **HTTP Client** | Dio + Retrofit | Type-safe REST, singleton client |
-| **Local Database** | Hive | NoSQL key-value, offline cache |
+| **News Data** | NewsAPI v2 | Headlines, everything, and search endpoints |
+| **Localization** | `flutter_localizations` + ARB | English / Arabic UI strings, reactive locale switching |
+| **Translation** | MyMemory Translation API | On-the-fly article translation for the Arabic locale, Hive-cached |
+| **HTTP Client** | Dio | Shared instance registered as a lazy singleton in the DI container |
+| **Local Database** | Hive | NoSQL key-value, offline cache, locale & theme persistence |
 | **Environment** | `flutter_dotenv` | Secrets management via `.env` |
 | **Routing** | `onGenerateRoute` | Named routes with custom transitions |
-| **Fonts** | Poppins | Consistent brand typography |
+| **Fonts** | Poppins (EN) / Cairo (AR) | Locale-aware brand typography |
 | **Dev Tools** | DevicePreview | Multi-device debug preview |
-| **Code Generation** | `build_runner` | Hive adapters, Retrofit clients |
+| **Code Generation** | `build_runner` | Hive adapters, generated `AppLocalizations` |
 
 ---
 
@@ -335,8 +375,8 @@ The `core` layer has **zero dependency on any feature**. Features may only depen
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/news_wave.git
-cd news_wave
+git clone https://github.com/<your-username>/news_app.git
+cd news_app
 ```
 
 ### 2. Configure Environment Variables
@@ -398,11 +438,13 @@ flutter pub get
 
 ### 5. Run Code Generation
 
-Required for Hive TypeAdapters and Retrofit clients:
+Required for Hive TypeAdapters:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
+
+> Generated `AppLocalizations` classes are produced automatically by the Flutter toolchain from the ARB files under `lib/l10n/` on `flutter pub get` / `flutter run` — no extra command needed, as long as `generate: true` is set under `flutter:` in `pubspec.yaml`.
 
 ### 6. Run the App
 
@@ -421,50 +463,84 @@ flutter run -d <device_id>
 ## 📁 Project Structure
 
 ```
-news_wave/
+news_app/
 ├── .env                          # ← create this (see setup)
 ├── pubspec.yaml
 ├── lib/
-│   ├── main.dart                 # App entry: Supabase init, Hive init, BlocProviders
+│   ├── main.dart                 # App entry: Supabase, Hive, DI, BlocProviders, MaterialApp
 │   ├── core/
 │   │   ├── constants/
-│   │   │   ├── app_constants.dart        # API urls, pagination sizes, cache keys
-│   │   │   ├── app_images.dart           # Asset path constants
-│   │   │   └── app_constants.dart        # NewsCategory enum
+│   │   │   ├── app_constants.dart        # API urls, pagination sizes, cache keys, NewsCategory enum
+│   │   │   └── app_images.dart           # Asset path constants
 │   │   ├── cubits/
 │   │   │   └── category_cubit.dart       # Global active-category state
+│   │   ├── di/
+│   │   │   └── service_locator.dart      # GetIt setup — every singleton/factory lives here
+│   │   ├── locale/
+│   │   │   ├── locale_cubit.dart         # LocaleCubit (persists to Hive `settings_box`)
+│   │   │   ├── language_option.dart
+│   │   │   └── language_picker_dialog.dart
+│   │   ├── translation/
+│   │   │   ├── translation_service.dart            # MyMemory API client
+│   │   │   └── article_translation_repository.dart # Per-article translate + Hive cache
+│   │   ├── network/
+│   │   │   ├── network_info.dart         # Socket-based connectivity check (no 3rd-party plugin)
+│   │   │   └── connectivity_cubit.dart   # Debounced connectivity state
+│   │   ├── browser/
+│   │   │   ├── view/in_app_browser_view.dart
+│   │   │   └── widgets/                  # error_page_widget.dart, nav_icon_widget.dart
+│   │   ├── repositories/
+│   │   │   └── home_repository.dart      # Orchestrates network + cache + translation for news
 │   │   ├── models/
 │   │   │   ├── article_model.dart        # @HiveType Article + Source + extensions
-│   │   │   └── article_model.g.dart      # Generated Hive adapter
+│   │   │   ├── article_model.g.dart      # Generated Hive adapter
+│   │   │   ├── article_detail_args.dart
+│   │   │   └── news_api_response.dart
+│   │   ├── pagination/
+│   │   │   ├── helpers/nav_button.dart
+│   │   │   └── widgets/                  # pagination_bar_widget.dart, load_more_footer.dart
 │   │   ├── router/
 │   │   │   ├── app_router.dart           # onGenerateRoute + transition builders
 │   │   │   └── app_routes.dart           # Route name constants
 │   │   ├── secrets/
 │   │   │   └── app_secrets.dart          # Reads .env values
 │   │   ├── services/
-│   │   │   ├── dio_client.dart           # Singleton Dio with base config & logging
 │   │   │   └── local_database_hive.dart  # Hive init, box helpers
+│   │   ├── supabase/
+│   │   │   ├── auth_local_data_source.dart
+│   │   │   ├── auth_remote_data_source.dart
+│   │   │   └── auth_exception.dart       # Sealed AuthUserException hierarchy
 │   │   ├── theme/
 │   │   │   ├── app_colors.dart           # Brand color palette
-│   │   │   ├── app_theme.dart            # Light + Dark ThemeData
+│   │   │   ├── app_theme.dart            # Light + Dark ThemeData, locale-aware fonts
 │   │   │   ├── theme_cubit.dart          # ThemeCubit (persists to Hive)
 │   │   │   └── model/theme_model.dart
+│   │   ├── helpers/
+│   │   │   ├── category_localization_x.dart  # NewsCategory → localized label extension
+│   │   │   ├── empty_state.dart
+│   │   │   ├── error_state.dart
+│   │   │   └── shimmer_box.dart
 │   │   └── widgets/
 │   │       ├── drawer/
-│   │       │   ├── app_drawer.dart
-│   │       │   └── guest_header_widget.dart
-│   │       ├── category_chips.dart       # Animated FilterChip row
-│   │       ├── empty_state.dart
-│   │       ├── error_state.dart
-│   │       └── shimmer/
-│   │           ├── shimmer_box.dart
-│   │           ├── article_card_skeleton.dart
-│   │           └── carousel_card_skeleton.dart
+│   │       │   ├── authenticated_header_widget.dart
+│   │       │   ├── guest_header_widget.dart
+│   │       │   ├── category_item.dart
+│   │       │   └── drawer_item.dart
+│   │       ├── article_card_widget.dart
+│   │       ├── save_button_widget.dart
+│   │       ├── share_button_widget.dart
+│   │       ├── offline_banner.dart
+│   │       └── app_snack_bar.dart
+│   ├── l10n/
+│   │   ├── app_en.arb                    # English source strings
+│   │   ├── app_ar.arb                    # Arabic translations
+│   │   ├── app_localizations_x.dart      # `context.l10n` extension
+│   │   └── gen_l10n/app_localizations.dart  # Auto-generated by Flutter
 │   └── features/
 │       ├── auth/
 │       │   ├── cubit/
 │       │   │   ├── auth_cubit.dart       # signIn/Up/Out, guest, password reset
-│       │   │   └── auth_state.dart       # AuthInitial|Loading|Authenticated|Guest|Error
+│       │   │   └── auth_listener_cubit.dart
 │       │   ├── data/
 │       │   │   ├── auth_repository.dart
 │       │   │   └── auth_repository_impl.dart
@@ -472,24 +548,30 @@ news_wave/
 │       │       ├── sign_in_view.dart
 │       │       ├── sign_up_view.dart
 │       │       ├── forgot_password_view.dart
-│       │       └── update_password_view.dart
-│       ├── Home/
+│       │       ├── update_password_view.dart
+│       │       └── onboarding_view.dart  # 3-page PageView wizard
+│       ├── home/
+│       │   ├── cubit/home_cubit.dart     # Drives both headlines + paginated "For You" feed
+│       │   ├── services/home_services.dart  # Dio calls: top-headlines / everything / recommended
 │       │   └── views/
 │       │       ├── home_view.dart
-│       │       └── article_details_view.dart
+│       │       └── article_detail_view.dart
 │       ├── Headlines/
+│       │   ├── cubit/headlines_cubit.dart
+│       │   ├── widgets/                  # glass_category_row.dart, glass_category_card.dart
 │       │   └── views/headlines_view.dart
 │       ├── search/
-│       │   ├── Search_cubit/search_cubit.dart
-│       │   ├── services/search_services_retrofit.dart  # @RestApi
+│       │   ├── cubit/search_cubit.dart
+│       │   ├── services/
+│       │   │   ├── search_services.dart            # Plain-Dio SearchService (used by SearchCubit)
+│       │   │   └── search_services_retrofit.dart    # @RestApi alternative client
 │       │   └── views/search_view.dart
 │       ├── favorites/
-│       │   ├── favorite_cubit/favorite_cubit.dart
+│       │   ├── cubit/favorite_cubit.dart
+│       │   ├── services/favorite_services.dart
 │       │   └── views/favorites_view.dart
 │       ├── profile/
-│       │   └── views/profile_settings_view.dart
-│       ├── onboarding/
-│       │   └── views/onboarding_view.dart  # 3-page PageView wizard
+│       │   └── views/profile_settings_view.dart  # Theme, language, account
 │       └── splash/
 │           └── view/splash_view.dart
 ├── assets/
@@ -502,13 +584,15 @@ news_wave/
 
 ## ⚙️ Key Implementation Details
 
-**Pagination architecture:** Each page of recommended articles is independently cached using the key prefix `rec_page_N`. On cache hit, the UI renders instantly; on miss, a Retrofit call is made and the result is written to Hive before emission. This means pages the user has already seen are always available offline.
+**Pagination architecture:** Each page of recommended articles is independently cached using the key prefix `rec_page_N`. On cache hit, the UI renders instantly; on miss, a Dio call is made and the result is written to Hive before emission. This means pages the user has already seen are always available offline.
 
 **Auth deep-link handling:** The `navigatorKey` is registered at the `MaterialApp` level and used inside `main()` to intercept `AuthChangeEvent.passwordRecovery` from Supabase's auth stream — routing the user to `UpdatePasswordView` regardless of which screen they're currently on.
 
-**Singleton Dio client:** `DioClient._()` uses a private constructor and a static `_instance` field. All features share the same configured `Dio` instance with base URL, auth header injection, logging interceptor, and retry logic.
+**Dio via dependency injection:** A single `Dio` instance is built once inside `service_locator.dart` (base URL, auth header, conditional logging interceptor in non-release builds) and registered as a lazy singleton with `GetIt`. Every feature service (`HomeServices`, `SearchService`, etc.) receives that same instance through constructor injection rather than instantiating its own client.
 
-**Article model cleanliness:** The `ArticleExtension` strips HTML tags, resolves HTML entities, and removes NewsAPI's `[+N chars]` truncation suffix from `content` — so the UI always receives clean, renderable text.
+**Reactive locale switching:** `LocaleCubit` is the single source of truth for the active `Locale`. `HomeCubit` and `HeadlinesCubit` both subscribe to its stream on construction and re-fetch their data whenever the language changes, so a language switch ripples through the feed, category labels, and theme typography without any screen needing to be manually rebuilt or popped.
+
+**Article model cleanliness:** The `ArticleExtension` strips HTML tags, resolves HTML entities, and removes NewsAPI's `[+N chars]` truncation suffix from `content` — so the UI always receives clean, renderable text, in either language.
 
 ---
 
@@ -516,16 +600,17 @@ news_wave/
 
 Based on the current codebase, these are the most impactful improvements that would push NewsWave from portfolio-ready to production-ready:
 
-- [ ] **Push Notifications** — Supabase Realtime or FCM integration for breaking news alerts
+- [ ] **Push Notifications** — Supabase Realtime or FCM integration for breaking news alerts, with locale-aware topic subscriptions
 - [ ] **Social Auth** — Google / Apple Sign-In via Supabase OAuth providers
-- [ ] **Article Web View** — In-app `WebView` or `url_launcher` to open full articles
-- [ ] **Share Article** — Native share sheet via `share_plus`
+- [ ] **Native Share Sheet polish** — refine in-app browser navigation guards and share result messaging
 - [ ] **Personalized Feed Algorithm** — Weight recommended articles by onboarding category preferences
-- [ ] **Connectivity Banner** — Real-time offline/online indicator using `connectivity_plus`
-- [ ] **Unit & Widget Tests** — Cubit state tests, widget golden tests for core components
+- [ ] **Dedicated Translation Provider** — move off the free-tier MyMemory endpoint to a production translation API with proper rate-limit handling
+- [ ] **Unit & Widget Tests** — Cubit state tests (including locale-switch behavior), widget golden tests for core components
 - [ ] **CI/CD Pipeline** — GitHub Actions for lint, test, and Flutter build on each PR
-- [ ] **Localization (i18n)** — `flutter_localizations` + ARB files for Arabic and English
+- [ ] **Additional Locales** — extend the existing ARB-based localization beyond English / Arabic
 - [ ] **Accessibility** — Semantic labels, sufficient color contrast audit, dynamic text scaling
+
+> ✅ ~~Connectivity Banner~~ and ~~Localization (i18n)~~ — both shipped: connectivity is detected via a dependency-free `Socket`-based `NetworkInfo`, and the app is fully localized into English and Arabic with reactive RTL support.
 
 ---
 
