@@ -1,33 +1,32 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:news_app/core/network/network_info.dart';
+import 'network_info.dart';
 
 class ConnectivityCubit extends Cubit<bool> {
-  ConnectivityCubit(
-    this._networkInfo, {
-    Duration pollInterval = const Duration(seconds: 10),
-  })  : _pollInterval = pollInterval,
-        super(false) {
-    _init();
+  ConnectivityCubit(this._networkInfo) : super(true) {
+    _checkNow();
+    _startMonitoring();
   }
 
   final NetworkInfo _networkInfo;
-  final Duration _pollInterval;
   Timer? _timer;
 
-  Future<void> _init() async {
-    final initial = await _networkInfo.isConnected;
-    if (!isClosed) emit(initial);
-
-    _timer = Timer.periodic(_pollInterval, (_) async {
-      final connected = await _networkInfo.isConnected;
-      if (!isClosed && connected != state) emit(connected);
-    });
+  Future<void> _checkNow() async {
+    final connected = await _networkInfo.isConnected;
+    if (isClosed) return;
+    if (connected != state) emit(connected);
   }
 
-  Future<void> recheck() async {
-    final connected = await _networkInfo.isConnected;
-    if (!isClosed && connected != state) emit(connected);
+  void _startMonitoring() {
+    _timer = Timer.periodic(
+      const Duration(seconds: 3),
+      (_) async {
+        final connected = await _networkInfo.isConnected;
+        if (connected != state) {
+          emit(connected);
+        }
+      },
+    );
   }
 
   @override

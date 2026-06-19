@@ -45,8 +45,7 @@ Future<void> setupServiceLocator() async {
 
   sl.registerLazySingleton<NetworkInfo>(
     () => NetworkInfoImpl(
-      timeout: const Duration(seconds: 5),
-      hosts: const ['google.com', 'cloudflare.com', 'dns.google'],
+      timeout: const Duration(seconds: 4),
     ),
   );
 

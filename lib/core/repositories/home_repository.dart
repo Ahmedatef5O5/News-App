@@ -64,9 +64,9 @@ class HomeRepository {
   }) async {
     final cacheKey = _cache.headlinesCacheKey(category, locale: locale);
 
-    // Offline – serve cache instantly, skip Dio entirely.
-    final online = await _network.isConnected;
-    if (!online) {
+    final probablyOnline = await _network.isConnected;
+
+    if (!probablyOnline) {
       final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -78,11 +78,8 @@ class HomeRepository {
             totalResults: localized.length,
             fromCache: true);
       }
-      throw _offlineNoCache();
-    }
-
-    // Online – try cache first (unless force-refresh requested).
-    if (!forceRefresh) {
+      // No cache — don't give up yet. Fall through and try the real call.
+    } else if (!forceRefresh) {
       final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -118,7 +115,9 @@ class HomeRepository {
       return PageResult(
           articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
-      // Last-resort fallback – server error despite being online.
+      // Last-resort fallback — failed despite the probe saying "online",
+      // or genuinely offline and we only got here because there was no
+      // cache to serve above.
       final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -129,6 +128,9 @@ class HomeRepository {
             articles: localized,
             totalResults: localized.length,
             fromCache: true);
+      }
+      if (_isConnectivityError(e)) {
+        throw _offlineNoCache();
       }
       throw mapDioError(e);
     }
@@ -143,9 +145,11 @@ class HomeRepository {
     String locale = 'en',
   }) async {
     final cacheKey = _cache.recommendedCacheKey(page, locale: locale);
-    // ① Offline – serve cache instantly.
-    final online = await _network.isConnected;
-    if (!online) {
+
+    // ① Connectivity probe — hint only, doesn't block the real call.
+    final probablyOnline = await _network.isConnected;
+
+    if (!probablyOnline) {
       final cached = await _cache.getCachedPage(cacheKey, isOffline: true);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -157,11 +161,8 @@ class HomeRepository {
             totalResults: cached.totalResults,
             fromCache: true);
       }
-      throw _offlineNoCache();
-    }
-
-    // Online path.
-    if (!forceRefresh) {
+      // No cache — fall through and try the real network call.
+    } else if (!forceRefresh) {
       final cached = await _cache.getCachedPage(cacheKey, isOffline: false);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
@@ -214,9 +215,16 @@ class HomeRepository {
             totalResults: cached.totalResults,
             fromCache: true);
       }
+      if (_isConnectivityError(e)) {
+        throw _offlineNoCache();
+      }
       throw mapDioError(e);
     }
   }
+
+  bool _isConnectivityError(DioException e) =>
+      e.type == DioExceptionType.connectionError ||
+      e.type == DioExceptionType.connectionTimeout;
 
   String _getArabicQueryForCategory(String? category) {
     switch (category) {
