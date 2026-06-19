@@ -130,7 +130,7 @@ class HomeRepository {
             totalResults: localized.length,
             fromCache: true);
       }
-      throw _mapDioError(e);
+      throw mapDioError(e);
     }
   }
 
@@ -214,7 +214,7 @@ class HomeRepository {
             totalResults: cached.totalResults,
             fromCache: true);
       }
-      throw _mapDioError(e);
+      throw mapDioError(e);
     }
   }
 
@@ -293,15 +293,4 @@ class HomeRepository {
   }
 
   NewsException _offlineNoCache() => const OfflineNoCacheException();
-
-  NewsException _mapDioError(DioException e) {
-    return switch (e.type) {
-      DioExceptionType.connectionError ||
-      DioExceptionType.connectionTimeout ||
-      DioExceptionType.receiveTimeout =>
-        const NetworkTimeoutException(),
-      DioExceptionType.badResponse => ServerException(e.response?.statusCode),
-      _ => const ServerException(null),
-    };
-  }
 }

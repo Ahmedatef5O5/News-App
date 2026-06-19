@@ -147,7 +147,10 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerFactory<SearchCubit>(
-    () => SearchCubit(service: sl<SearchService>()),
+    () => SearchCubit(
+      service: sl<SearchService>(),
+      localeCubit: sl<LocaleCubit>(),
+    ),
   );
 }
 

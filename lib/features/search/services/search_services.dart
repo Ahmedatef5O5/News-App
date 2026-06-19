@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/news_api_response.dart';
 
+import '../../../core/exceptions/news_exceptions.dart';
+
 /// Network service for the /v2/everything (search) endpoint.
 class SearchService {
   final Dio _dio;
@@ -10,18 +12,30 @@ class SearchService {
   Future<NewsApiResponse> search({
     required String query,
     String searchIn = 'title',
+    String? language,
     int page = 1,
     int pageSize = AppConstants.searchPageSize,
   }) async {
-    final response = await _dio.get(
-      AppConstants.everything,
-      queryParameters: {
+    try {
+      final queryParams = <String, dynamic>{
         'q': query,
         'searchIn': searchIn,
         'page': page,
         'pageSize': pageSize,
-      },
-    );
-    return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
+      };
+
+      if (language != null && language.isNotEmpty) {
+        queryParams['language'] = language;
+      }
+
+      final response = await _dio.get(
+        AppConstants.everything,
+        queryParameters: queryParams,
+      );
+
+      return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      throw mapDioError(e);
+    }
   }
 }

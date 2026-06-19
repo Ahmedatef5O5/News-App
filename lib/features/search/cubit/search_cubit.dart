@@ -1,18 +1,28 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
+import '../../../core/locale/locale_cubit.dart';
 import '../../../core/pagination/model/pagination_meta.dart';
 import '../services/search_services.dart';
 part 'search_state.dart';
 
 class SearchCubit extends Cubit<SearchState> {
-  SearchCubit({required SearchService service})
-      : _service = service,
-        super(const SearchState());
+  SearchCubit({
+    required SearchService service,
+    required LocaleCubit localeCubit,
+  })  : _service = service,
+        _locale = localeCubit,
+        super(const SearchState()) {
+    _localeSubscription = _locale.stream.listen(_onLocaleChanged);
+  }
 
   final SearchService _service;
+  final LocaleCubit _locale;
+  StreamSubscription<Locale>? _localeSubscription;
+
   Timer? _debounce;
 
   /// Called on every keystroke — debounced by 500ms.
@@ -59,6 +69,12 @@ class SearchCubit extends Cubit<SearchState> {
 
   // ── Core fetch ─────────────────────────────────────────────────────────────
 
+  void _onLocaleChanged(Locale _) {
+    if (state.query.isNotEmpty) {
+      _fetchPage(state.query, 1, SearchStatus.loading);
+    }
+  }
+
   Future<void> _fetchPage(
     String query,
     int page,
@@ -70,6 +86,7 @@ class SearchCubit extends Cubit<SearchState> {
         query: query,
         page: page,
         pageSize: AppConstants.searchPageSize,
+        language: _locale.state.languageCode,
       );
 
       final newPagination = state.pagination.copyWith(
@@ -93,6 +110,7 @@ class SearchCubit extends Cubit<SearchState> {
 
   @override
   Future<void> close() {
+    _localeSubscription?.cancel();
     _debounce?.cancel();
     return super.close();
   }
