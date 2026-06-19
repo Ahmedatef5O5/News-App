@@ -36,12 +36,14 @@ class _ArticleDetailViewState extends State<ArticleDetailView> {
   }
 
   void _openInAppBrowser() {
+    final l10n = context.l10n;
+
     if (!widget.article.hasUrl) return;
     Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => InAppBrowserView(
           url: widget.article.url!,
-          title: widget.article.title ?? 'Article',
+          title: widget.article.title ?? l10n.untitled,
         ),
         transitionsBuilder: (_, animation, __, child) {
           final curved = CurvedAnimation(

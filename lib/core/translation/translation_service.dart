@@ -6,6 +6,8 @@ class TranslationService {
 
   final http.Client _client;
 
+  void close() => _client.close();
+
   static const _base = 'https://api.mymemory.translated.net/get';
 
   static const _separator = '\n<<<SEP>>>\n';
