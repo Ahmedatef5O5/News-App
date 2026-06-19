@@ -23,6 +23,7 @@ import '../../features/auth/data/auth_repository_impl.dart';
 import '../../features/favorites/services/favorite_services.dart';
 import '../../features/search/cubit/search_cubit.dart';
 import '../../features/search/services/search_services.dart';
+import '../cache/news_cache_manager.dart';
 import '../network/connectivity_cubit.dart';
 import '../repositories/home_repository.dart';
 
@@ -79,10 +80,14 @@ Future<void> setupServiceLocator() async {
     () => HomeServices(dio: sl<Dio>()),
   );
 
+  sl.registerLazySingleton<NewsCacheManager>(
+    () => NewsCacheManager(db: sl<LocalDatabaseHive>()),
+  );
+
   sl.registerLazySingleton<HomeRepository>(
     () => HomeRepository(
       services: sl<HomeRepositoryContract>(),
-      db: sl<LocalDatabaseHive>(),
+      cache: sl<NewsCacheManager>(),
       networkInfo: sl<NetworkInfo>(),
       translationRepo: sl<ArticleTranslationRepository>(),
     ),

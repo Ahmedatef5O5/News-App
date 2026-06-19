@@ -2,37 +2,37 @@ import 'package:dio/dio.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/article_model.dart';
 import 'package:news_app/core/network/network_info.dart';
-import 'package:news_app/core/services/local_database_hive.dart';
 import '../../features/home/domain/repositories/home_repository_contract.dart';
+import '../cache/news_cache_manager.dart';
 import '../exceptions/news_exceptions.dart';
 import '../models/news_api_response.dart';
 import '../translation/article_translation_repository.dart';
 
 class PageResult {
+  final List<Article> articles;
+  final int totalResults;
+  final bool fromCache;
+
   const PageResult({
     required this.articles,
     required this.totalResults,
     this.fromCache = false,
   });
-
-  final List<Article> articles;
-  final int totalResults;
-  final bool fromCache;
 }
 
 class HomeRepository {
   HomeRepository({
     required HomeRepositoryContract services,
-    required LocalDatabaseHive db,
+    required NewsCacheManager cache,
     required NetworkInfo networkInfo,
     required ArticleTranslationRepository translationRepo,
   })  : _services = services,
-        _db = db,
+        _cache = cache,
         _network = networkInfo,
         _translation = translationRepo;
 
   final HomeRepositoryContract _services;
-  final LocalDatabaseHive _db;
+  final NewsCacheManager _cache;
   final NetworkInfo _network;
   final ArticleTranslationRepository _translation;
 
@@ -62,12 +62,12 @@ class HomeRepository {
     bool forceRefresh = false,
     String locale = 'en',
   }) async {
-    final cacheKey = _headlinesCacheKey(category, locale: locale);
+    final cacheKey = _cache.headlinesCacheKey(category, locale: locale);
 
     // Offline – serve cache instantly, skip Dio entirely.
     final online = await _network.isConnected;
     if (!online) {
-      final cached = await _getCachedArticles(cacheKey);
+      final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached,
@@ -83,7 +83,7 @@ class HomeRepository {
 
     // Online – try cache first (unless force-refresh requested).
     if (!forceRefresh) {
-      final cached = await _getCachedArticles(cacheKey);
+      final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached,
@@ -110,7 +110,7 @@ class HomeRepository {
         );
       }
 
-      await _cacheArticles(cacheKey, response.articles);
+      await _cache.cacheArticles(cacheKey, response.articles);
       final localized = await _translation.localizeArticles(
         response.articles,
         locale: locale,
@@ -119,7 +119,7 @@ class HomeRepository {
           articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
       // Last-resort fallback – server error despite being online.
-      final cached = await _getCachedArticles(cacheKey);
+      final cached = await _cache.getCachedArticles(cacheKey);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached,
@@ -142,11 +142,11 @@ class HomeRepository {
     bool forceRefresh = false,
     String locale = 'en',
   }) async {
-    final cacheKey = _recommendedCacheKey(page, locale: locale);
+    final cacheKey = _cache.recommendedCacheKey(page, locale: locale);
     // ① Offline – serve cache instantly.
     final online = await _network.isConnected;
     if (!online) {
-      final cached = await _getCachedPage(cacheKey, isOffline: true);
+      final cached = await _cache.getCachedPage(cacheKey, isOffline: true);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached.articles,
@@ -162,7 +162,7 @@ class HomeRepository {
 
     // Online path.
     if (!forceRefresh) {
-      final cached = await _getCachedPage(cacheKey, isOffline: false);
+      final cached = await _cache.getCachedPage(cacheKey, isOffline: false);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached.articles,
@@ -193,7 +193,7 @@ class HomeRepository {
         totalResults: response.totalResults,
       );
 
-      await _cachePage(cacheKey, result);
+      await _cache.cachePage(cacheKey, result);
 
       final localized = await _translation.localizeArticles(
         response.articles,
@@ -203,7 +203,7 @@ class HomeRepository {
       return PageResult(
           articles: localized, totalResults: response.totalResults);
     } on DioException catch (e) {
-      final cached = await _getCachedPage(cacheKey, isOffline: true);
+      final cached = await _cache.getCachedPage(cacheKey, isOffline: true);
       if (cached != null) {
         final localized = await _translation.localizeArticles(
           cached.articles,
@@ -216,16 +216,6 @@ class HomeRepository {
       }
       throw mapDioError(e);
     }
-  }
-
-  // ── Cache management ──────────────────────────────────────────────────────
-
-  Future<void> clearRecommendedCache() async {
-    await Future.wait(List.generate(
-        AppConstants.maxCachablePages,
-        (i) => _db.delete(
-              '${AppConstants.recommendedPageKeyPrefix}${i + 1}',
-            )));
   }
 
   String _getArabicQueryForCategory(String? category) {
@@ -247,49 +237,6 @@ class HomeRepository {
       default:
         return 'أخبار عاجلة OR عاجل OR أحداث';
     }
-  }
-
-  // ── Private helpers ───────────────────────────────────────────────────────
-
-  Future<void> _cacheArticles(String key, List<Article> articles) =>
-      _db.put(key, articles);
-
-  Future<List<Article>?> _getCachedArticles(String key) async {
-    final raw = await _db.get<List<dynamic>>(key);
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      return raw.cast<Article>();
-    } catch (_) {
-      return null;
-    }
-  }
-
-  Future<void> _cachePage(String key, PageResult result) async {
-    await _db.put('${key}_articles', result.articles);
-    await _db.put('${key}_total', result.totalResults);
-  }
-
-  Future<PageResult?> _getCachedPage(String key,
-      {bool isOffline = false}) async {
-    final articles = await _getCachedArticles('${key}_articles');
-    final total = await _db.get<int>('${key}_total');
-    if (articles == null || total == null) return null;
-    return PageResult(
-      articles: articles,
-      totalResults: total,
-      fromCache: isOffline,
-    );
-  }
-
-  String _headlinesCacheKey(String? category, {required String locale}) {
-    final base = category != null
-        ? '${AppConstants.cachedHeadlinesKey}_$category'
-        : AppConstants.cachedHeadlinesKey;
-    return '${base}_$locale';
-  }
-
-  String _recommendedCacheKey(int page, {required String locale}) {
-    return '${AppConstants.recommendedPageKeyPrefix}${page}_$locale';
   }
 
   NewsException _offlineNoCache() => const OfflineNoCacheException();
