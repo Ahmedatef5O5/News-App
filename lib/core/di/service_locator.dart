@@ -111,7 +111,9 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<LocaleCubit>(
-    () => LocaleCubit(),
+    () => LocaleCubit(
+      translationRepo: sl<ArticleTranslationRepository>(),
+    ),
   );
 
   sl.registerLazySingleton<AuthCubit>(

@@ -27,6 +27,11 @@ class LocalDatabaseHive {
     }
   }
 
+  Future<Iterable<dynamic>> keys() async {
+    final box = await _getBox();
+    return box.keys;
+  }
+
   Future<Box> _getBox() async {
     if (_box != null && _box!.isOpen) return _box!;
     _box = await Hive.openBox(AppConstants.articlesBox);

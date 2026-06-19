@@ -95,5 +95,10 @@ class ArticleTranslationRepository {
     await _db.put(key, article.toMap());
   }
 
-  Future<void> clearCache() async {}
+  Future<void> clearCache() async {
+    final keys = await _db.keys();
+    final translationKeys =
+        keys.where((k) => k.toString().startsWith(_prefix)).toList();
+    await Future.wait(translationKeys.map((k) => _db.delete(k.toString())));
+  }
 }

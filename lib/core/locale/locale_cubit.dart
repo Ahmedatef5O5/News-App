@@ -2,18 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 
+import '../translation/article_translation_repository.dart';
+
 const String _settingsBox = 'settings_box';
 const String _localeModeKey = 'locale_mode';
 
 class LocaleCubit extends Cubit<Locale> {
-  LocaleCubit() : super(const Locale('en'));
+  LocaleCubit({required ArticleTranslationRepository translationRepo})
+      : _translationRepo = translationRepo,
+        super(const Locale('en'));
 
+  final ArticleTranslationRepository _translationRepo;
   Box? _box;
+  bool _initialized = false;
 
   // ── Initialisation ──────────────────────────────────────────────────────────
 
   Future<void> init() async {
     _box = await _openBox();
+    _initialized = true;
     final saved = _box!.get(_localeModeKey, defaultValue: 'en') as String;
     emit(_fromString(saved));
   }
@@ -26,7 +33,15 @@ class LocaleCubit extends Cubit<Locale> {
   bool get isEnglish => state.languageCode == 'en';
 
   Future<void> setLocale(Locale locale) async {
-    await _box?.put(_localeModeKey, locale.languageCode);
+    if (locale == state) return;
+
+    if (!_initialized) {
+      _box = await _openBox();
+      _initialized = true;
+    }
+
+    await _box!.put(_localeModeKey, locale.languageCode);
+    await _translationRepo.clearCache();
     emit(locale);
   }
 
