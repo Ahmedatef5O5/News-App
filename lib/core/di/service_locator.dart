@@ -127,7 +127,11 @@ Future<void> setupServiceLocator() async {
   );
 
   sl.registerLazySingleton<FavoritesCubit>(
-    () => FavoritesCubit(service: sl<FavoritesService>()),
+    () => FavoritesCubit(
+      service: sl<FavoritesService>(),
+      translationRepo: sl<ArticleTranslationRepository>(),
+      localeCubit: sl<LocaleCubit>(),
+    ),
   );
 
   sl.registerFactory<HomeCubit>(
