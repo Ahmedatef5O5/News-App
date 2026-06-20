@@ -103,7 +103,7 @@ class SearchCubit extends Cubit<SearchState> {
     } catch (e) {
       emit(state.copyWith(
         status: SearchStatus.failure,
-        error: e.toString(),
+        error: e,
       ));
     }
   }

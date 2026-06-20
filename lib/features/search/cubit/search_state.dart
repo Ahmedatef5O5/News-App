@@ -14,7 +14,7 @@ class SearchState extends Equatable {
   final String query;
   final List<Article> results;
   final PaginationMeta pagination;
-  final String? error;
+  final Object? error;
 
   const SearchState({
     this.status = SearchStatus.initial,
@@ -40,7 +40,7 @@ class SearchState extends Equatable {
     List<Article>? results,
     PaginationMeta? pagination,
     int? totalResults,
-    String? error,
+    Object? error,
     bool clearError = false,
   }) {
     return SearchState(

@@ -1,10 +1,19 @@
 import 'package:dio/dio.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/models/news_api_response.dart';
-
 import '../../../core/exceptions/news_exceptions.dart';
 
+enum SearchErrorCode {
+  offline,
+}
+
+class SearchOfflineException implements Exception {
+  const SearchOfflineException();
+  SearchErrorCode get code => SearchErrorCode.offline;
+}
+
 /// Network service for the /v2/everything (search) endpoint.
+
 class SearchService {
   final Dio _dio;
   SearchService({required Dio dio}) : _dio = dio;
@@ -35,6 +44,11 @@ class SearchService {
 
       return NewsApiResponse.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw const SearchOfflineException();
+      }
       throw mapDioError(e);
     }
   }

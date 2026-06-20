@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/di/service_locator.dart';
+import 'package:news_app/core/exceptions/error_localization.dart';
 import 'package:news_app/core/helpers/empty_state.dart';
 import 'package:news_app/core/helpers/error_state.dart';
 import 'package:news_app/core/helpers/shimmer_box.dart';
@@ -143,7 +144,11 @@ class _SearchContentState extends State<_SearchContent> {
                             },
                           ),
                     SearchStatus.failure => ErrorState(
-                        message: state.error ?? l10n.searchFailed,
+                        message: resolveErrorMessage(
+                          state.error,
+                          l10n,
+                          fallback: l10n.searchFailed,
+                        ),
                         onRetry: () => context.read<SearchCubit>().retry(),
                       ),
                   };
