@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/exceptions/error_localization.dart';
 import 'package:news_app/core/router/app_routes.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/helpers/empty_state.dart';
@@ -42,7 +43,11 @@ class FavoritesView extends StatelessWidget {
           return switch (state.status) {
             FavStatus.initial || FavStatus.loading => const _LoadingSkeleton(),
             FavStatus.failure => ErrorState(
-                message: state.error ?? l10n.failedToLoadSaved,
+                message: resolveErrorMessage(
+                  state.error,
+                  l10n,
+                  fallback: l10n.failedToLoadSaved,
+                ),
                 onRetry: () => context.read<FavoritesCubit>().loadFavorites(),
               ),
             FavStatus.success => state.articles.isEmpty

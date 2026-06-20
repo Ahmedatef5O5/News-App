@@ -6,7 +6,7 @@ enum FavStatus { initial, loading, success, failure }
 class FavoritesState extends Equatable {
   final FavStatus status;
   final List<Article> articles;
-  final String? error;
+  final Object? error;
 
   const FavoritesState({
     this.status = FavStatus.initial,
@@ -20,7 +20,7 @@ class FavoritesState extends Equatable {
   FavoritesState copyWith({
     FavStatus? status,
     List<Article>? articles,
-    String? error,
+    Object? error,
     bool clearError = false,
   }) {
     return FavoritesState(

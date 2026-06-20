@@ -38,7 +38,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
 
       emit(state.copyWith(status: FavStatus.success, articles: localized));
     } catch (e) {
-      emit(state.copyWith(status: FavStatus.failure, error: e.toString()));
+      emit(state.copyWith(status: FavStatus.failure, error: e));
     }
   }
 
@@ -56,7 +56,7 @@ class FavoritesCubit extends Cubit<FavoritesState> {
       emit(state.copyWith(articles: updated, status: FavStatus.success));
       await _service.toggleFavorite(article);
     } catch (e) {
-      emit(state.copyWith(error: e.toString()));
+      emit(state.copyWith(error: e));
     }
   }
 
