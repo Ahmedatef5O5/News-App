@@ -123,6 +123,11 @@
   "@offlineNoCacheYet": {
     "description": "Shown when the device is offline and no cached data exists"
   },
+  
+  "searchOffline": "No internet connection. Please check your connection and try again.",
+
+  "translationOffline": "No internet connection — translation unavailable.",
+
 
   "offlineShowingCached": "You're offline – showing cached news",
   "@offlineShowingCached": {
