@@ -412,6 +412,7 @@ enum Hobby {
   fitnessSports,
   music,
   artDesign,
+  politics,
   technology;
 
   String localize(AppLocalizations l10n) => switch (this) {
@@ -425,5 +426,6 @@ enum Hobby {
         Hobby.music => l10n.hobbyMusic,
         Hobby.artDesign => l10n.hobbyArtDesign,
         Hobby.technology => l10n.hobbyTechnology,
+        Hobby.politics => l10n.hobbyPolitics,
       };
 }

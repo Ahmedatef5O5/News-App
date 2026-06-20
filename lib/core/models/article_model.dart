@@ -124,19 +124,46 @@ extension ArticleExtension on Article {
   /// Strip HTML and remove the "[+N chars]" truncation NewsAPI adds.
   String get cleanContent {
     if (content == null || content!.isEmpty) return '';
-    final stripped = _stripHtml(content!);
-    // Remove "[+1234 chars]" pattern
-    return stripped.replaceAll(RegExp(r'\[\+\d+ chars?\]'), '').trim();
+    var stripped = _stripHtml(content!);
+    stripped = stripped.replaceAll(RegExp(r'\[\+\d+ chars?\]'), '');
+    return _removeNoise(stripped).trim();
+  }
+
+  String _removeNoise(String input) {
+    var cleaned = input.replaceAll(RegExp(r'https?://\S+'), '');
+
+    final lines = cleaned.split('\n');
+    final kept = lines.where((line) {
+      final trimmed = line.trim();
+      if (trimmed.isEmpty) return false;
+
+      final totalLetters =
+          RegExp(r'[\p{L}]', unicode: true).allMatches(trimmed).length;
+      if (totalLetters == 0) return false;
+
+      final ratio = totalLetters / trimmed.length;
+      if (ratio <= 0.4) return false;
+
+      final arabicLetters =
+          RegExp(r'[\u0600-\u06FF]').allMatches(trimmed).length;
+      final arabicRatio = arabicLetters / totalLetters;
+
+      return arabicRatio > 0.3;
+    });
+
+    return kept.join('\n').replaceAll(RegExp(r'\n{3,}'), '\n\n');
   }
 
   String _stripHtml(String input) {
     return input
-        .replaceAll(RegExp(r'<[^>]*>'), '') // remove HTML tags
+        .replaceAll(RegExp(r'<[^>]*>'), '')
         .replaceAll('&amp;', '&')
         .replaceAll('&lt;', '<')
         .replaceAll('&gt;', '>')
         .replaceAll('&nbsp;', ' ')
         .replaceAll('&quot;', '"')
+        .replaceAll('&#039;', "'")
+        .replaceAll('\r\n', '\n') //
         .trim();
   }
 

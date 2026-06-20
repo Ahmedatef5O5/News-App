@@ -43,10 +43,16 @@ class ArticleTranslationRepository {
   }
 
   Future<Article> _translateArticle(Article article) async {
-    if (_isArabic(article.title ?? article.description ?? '')) {
-      return article;
-    }
+    final titleIsArabic = _isArabic(article.title ?? '');
+    final descIsArabic = _isArabic(article.cleanDescription);
+    final contentIsArabic = _isArabic(article.cleanContent);
 
+    final arabicCount =
+        [titleIsArabic, descIsArabic, contentIsArabic].where((v) => v).length;
+
+    if (arabicCount >= 2) return article;
+
+    // ── Cache check ───────────────────────────────────────────────────────
     final id = _safeKey(article.uniqueId);
     final cacheKey = '$_prefix$id';
 
@@ -54,32 +60,46 @@ class ArticleTranslationRepository {
     if (cached != null) return cached;
 
     try {
-      final raw = [
-        article.title ?? '',
-        article.description ?? '',
-        article.content ?? '',
-      ];
-
-      final translated = await _service.translateBatch(
-        raw,
-        from: 'en',
-        to: 'ar',
-      );
+      final futures = await Future.wait([
+        titleIsArabic
+            ? Future.value(article.title ?? '')
+            : _translateSafe(article.title ?? '', article.title ?? ''),
+        // description
+        descIsArabic
+            ? Future.value(article.cleanDescription)
+            : _translateSafe(
+                article.cleanDescription, article.cleanDescription),
+        // content
+        contentIsArabic
+            ? Future.value(article.cleanContent)
+            : _translateSafe(article.cleanContent, article.cleanContent),
+      ]);
 
       final result = Article(
         article.source,
         article.author,
-        translated[0].isNotEmpty ? translated[0] : article.title,
-        translated[1].isNotEmpty ? translated[1] : article.description,
+        futures[0].isNotEmpty ? futures[0] : article.title,
+        futures[1].isNotEmpty ? futures[1] : article.cleanDescription,
         article.url,
         article.urlToImage,
         article.publishedAt,
-        translated[2].isNotEmpty ? translated[2] : article.content,
+        futures[2].isNotEmpty ? futures[2] : article.cleanContent,
       );
+
       await _toCache(cacheKey, result);
       return result;
     } catch (_) {
       return article;
+    }
+  }
+
+  Future<String> _translateSafe(String text, String fallback) async {
+    if (text.trim().isEmpty) return fallback;
+    try {
+      final result = await _service.translate(text, from: 'en', to: 'ar');
+      return result.trim().isEmpty ? fallback : result;
+    } catch (_) {
+      return fallback;
     }
   }
 
