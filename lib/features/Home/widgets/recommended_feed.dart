@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:news_app/core/exceptions/error_localization.dart';
 import 'package:news_app/l10n/app_localizations_x.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/helpers/empty_state.dart';
@@ -49,7 +50,11 @@ class RecommendedFeed extends StatelessWidget {
         state.recommendedArticles.isEmpty) {
       return SliverToBoxAdapter(
         child: ErrorState(
-          message: state.pageError ?? l10n.failedToLoad,
+          message: resolveErrorMessage(
+            state.pageError,
+            l10n,
+            fallback: l10n.failedToLoad,
+          ),
           onRetry: () => context.read<HomeCubit>().goToPage(state.currentPage),
         ),
       );

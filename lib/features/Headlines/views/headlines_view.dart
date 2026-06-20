@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants/app_constants.dart';
 import 'package:news_app/core/cubits/category_cubit.dart';
 import 'package:news_app/core/di/service_locator.dart';
+import 'package:news_app/core/exceptions/error_localization.dart';
 import 'package:news_app/core/helpers/empty_state.dart';
 import 'package:news_app/core/helpers/error_state.dart';
 import 'package:news_app/core/helpers/shimmer_box.dart';
@@ -191,20 +192,27 @@ class _HeadlinesContentState extends State<_HeadlinesContent> {
         );
 
       case HeadlinesPageLoadStatus.failure:
-        return SliverToBoxAdapter(
-          child: ErrorState(
-            message: state.error ?? l10n.somethingWentWrong,
-            onRetry: () => context.read<HeadlinesCubit>().retry(),
+        return SliverFillRemaining(
+          hasScrollBody: false,
+          child: Center(
+            child: ErrorState(
+              message: resolveErrorMessage(state.error, l10n,
+                  fallback: l10n.failedToLoad),
+              onRetry: () => context.read<HeadlinesCubit>().retry(),
+            ),
           ),
         );
 
       case HeadlinesPageLoadStatus.success:
         if (state.pageArticles.isEmpty) {
-          return SliverToBoxAdapter(
-            child: EmptyState(
-              icon: Icons.newspaper_rounded,
-              title: l10n.noArticlesFound,
-              subtitle: l10n.tryAgain,
+          return SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: EmptyState(
+                icon: Icons.newspaper_rounded,
+                title: l10n.noArticlesFound,
+                subtitle: l10n.tryAgain,
+              ),
             ),
           );
         }

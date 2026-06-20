@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news_app/core/exceptions/error_localization.dart';
 import 'package:news_app/core/helpers/empty_state.dart';
 import 'package:news_app/core/helpers/error_state.dart';
 import 'package:news_app/core/helpers/shimmer_box.dart';
@@ -21,7 +22,7 @@ class HomeCarouselSection extends StatefulWidget {
 
   final LoadStatus status;
   final List<Article> articles;
-  final String? error;
+  final Object? error;
   final VoidCallback onRetry;
   final void Function(Article)? onTap;
 
@@ -52,6 +53,8 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     if (widget.status == LoadStatus.loading ||
         widget.status == LoadStatus.initial) {
       return SizedBox(
@@ -72,18 +75,22 @@ class _HomeCarouselSectionState extends State<HomeCarouselSection> {
       return SizedBox(
         height: 278,
         child: ErrorState(
-          message: widget.error ?? context.l10n.failedToLoad,
+          message: resolveErrorMessage(
+            widget.error,
+            l10n,
+            fallback: l10n.failedToLoad,
+          ),
           onRetry: widget.onRetry,
         ),
       );
     }
 
     if (widget.articles.isEmpty) {
-      return const SizedBox(
+      return SizedBox(
         height: 200,
         child: EmptyState(
           icon: Icons.newspaper_rounded,
-          title: 'No headlines',
+          title: l10n.noArticlesFound,
         ),
       );
     }
