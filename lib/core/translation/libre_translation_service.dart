@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:news_app/core/translation/translation_exceptions.dart';
 import 'package:news_app/core/translation/translation_service.dart';
@@ -25,19 +26,27 @@ class LibreTranslationService implements TranslationService {
 
     final uri = Uri.parse('$_baseUrl/translate');
 
-    final response = await _client.post(
-      uri,
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: jsonEncode({
-        'q': text,
-        'source': from,
-        'target': to,
-        'format': 'text',
-      }),
-    );
+    final http.Response response;
+    try {
+      response = await _client.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: jsonEncode({
+          'q': text,
+          'source': from,
+          'target': to,
+          'format': 'text',
+        }),
+      );
+    } on SocketException {
+      // DNS failure / connection refused — no network path at all.
+      throw const TranslationOfflineException();
+    } on http.ClientException {
+      throw const TranslationOfflineException();
+    }
 
     if (response.statusCode == 429 ||
         response.statusCode == 503 ||

@@ -53,30 +53,34 @@ class ArticleTranslationRepository {
     final cached = await _fromCache(cacheKey);
     if (cached != null) return cached;
 
-    final raw = [
-      article.title ?? '',
-      article.description ?? '',
-      article.content ?? '',
-    ];
+    try {
+      final raw = [
+        article.title ?? '',
+        article.description ?? '',
+        article.content ?? '',
+      ];
 
-    final translated = await _service.translateBatch(
-      raw,
-      from: 'en',
-      to: 'ar',
-    );
+      final translated = await _service.translateBatch(
+        raw,
+        from: 'en',
+        to: 'ar',
+      );
 
-    final result = Article(
-      article.source,
-      article.author,
-      translated[0].isNotEmpty ? translated[0] : article.title,
-      translated[1].isNotEmpty ? translated[1] : article.description,
-      article.url,
-      article.urlToImage,
-      article.publishedAt,
-      translated[2].isNotEmpty ? translated[2] : article.content,
-    );
-    await _toCache(cacheKey, result);
-    return result;
+      final result = Article(
+        article.source,
+        article.author,
+        translated[0].isNotEmpty ? translated[0] : article.title,
+        translated[1].isNotEmpty ? translated[1] : article.description,
+        article.url,
+        article.urlToImage,
+        article.publishedAt,
+        translated[2].isNotEmpty ? translated[2] : article.content,
+      );
+      await _toCache(cacheKey, result);
+      return result;
+    } catch (_) {
+      return article;
+    }
   }
 
   String _safeKey(String raw) {

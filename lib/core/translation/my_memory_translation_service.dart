@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:news_app/core/translation/translation_exceptions.dart';
 import 'dart:convert';
@@ -18,7 +19,15 @@ class MyMemoryTranslationService implements TranslationService {
 
     final uri =
         Uri.parse('$_base?q=${Uri.encodeComponent(text)}&langpair=$from|$to');
-    final res = await _client.get(uri);
+
+    final http.Response res;
+    try {
+      res = await _client.get(uri);
+    } on SocketException {
+      throw const TranslationOfflineException();
+    } on http.ClientException {
+      throw const TranslationOfflineException();
+    }
 
     if (res.statusCode == 429) {
       throw const TranslationRateLimitException();
