@@ -26,3 +26,12 @@ class LibreNetworkException implements Exception {
   @override
   String toString() => 'LibreTranslate API error: $statusCode';
 }
+
+enum TranslationErrorCode {
+  offline,
+}
+
+class TranslationOfflineException implements Exception {
+  const TranslationOfflineException();
+  TranslationErrorCode get code => TranslationErrorCode.offline;
+}
